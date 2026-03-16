@@ -14,7 +14,7 @@ COPERNICUS_CLIENT_SECRET = os.environ.get("COPERNICUS_CLIENT_SECRET", "")
 TOKEN_URL = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
 CATALOG_URL = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
 
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "config", "locations.json")
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), "locations.json")
 
 
 def filter_active_locations(locations: list, month: int) -> list:
@@ -113,6 +113,11 @@ def handler(event, context):
 
     active = filter_active_locations(locations, month)
     print(f"Found {len(active)} active locations for month {month}")
+
+    # Skip if Copernicus credentials not configured
+    if not COPERNICUS_CLIENT_ID or not COPERNICUS_CLIENT_SECRET:
+        print("Copernicus credentials not configured, skipping satellite ingest")
+        return {"date": date_str, "locations": []}
 
     token = get_copernicus_token()
     s3 = boto3.client("s3")

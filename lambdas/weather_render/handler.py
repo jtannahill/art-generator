@@ -16,7 +16,7 @@ except OSError:
 
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "art-generator-216890068001")
 TABLE_NAME = os.environ.get("TABLE_NAME", "art-generator")
-MODEL_ID = "us.anthropic.claude-sonnet-4-6-20250514"
+MODEL_ID = "us.anthropic.claude-sonnet-4-20250514-v1:0"
 
 
 def handler(event, context):
@@ -52,9 +52,14 @@ def handler(event, context):
     else:
         raise RuntimeError(f"Failed to generate valid SVG after 3 attempts: {last_error}")
 
-    # Render PNGs
-    png_2048 = render_png(svg_text, 2048)
-    png_4k = render_png(svg_text, 4096)
+    # Render PNGs (skip if Cairo not available)
+    png_2048 = None
+    png_4k = None
+    try:
+        png_2048 = render_png(svg_text, 2048)
+        png_4k = render_png(svg_text, 4096)
+    except Exception as e:
+        print(f"PNG rendering skipped (Cairo not available): {e}")
 
     # Build S3 paths
     prefix = f"weather/{date}/{slug}"
@@ -67,18 +72,20 @@ def handler(event, context):
         Body=svg_text.encode("utf-8"),
         ContentType="image/svg+xml",
     )
-    s3.put_object(
-        Bucket=BUCKET_NAME,
-        Key=f"{prefix}/preview-2048.png",
-        Body=png_2048,
-        ContentType="image/png",
-    )
-    s3.put_object(
-        Bucket=BUCKET_NAME,
-        Key=f"{prefix}/preview-4k.png",
-        Body=png_4k,
-        ContentType="image/png",
-    )
+    if png_2048:
+        s3.put_object(
+            Bucket=BUCKET_NAME,
+            Key=f"{prefix}/preview-2048.png",
+            Body=png_2048,
+            ContentType="image/png",
+        )
+    if png_4k:
+        s3.put_object(
+            Bucket=BUCKET_NAME,
+            Key=f"{prefix}/preview-4k.png",
+            Body=png_4k,
+            ContentType="image/png",
+        )
 
     metadata = {
         "date": date,

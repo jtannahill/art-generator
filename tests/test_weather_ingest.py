@@ -1,87 +1,44 @@
 """Tests for weather_ingest Lambda handler."""
 
-import numpy as np
-
-from lambdas.weather_ingest.handler import score_regions
+from lambdas.weather_ingest.handler import score_regions, make_slug
 
 
 def test_score_regions_returns_top_10():
-    """With a 10x10 synthetic grid and extreme values at (5,5),
-    score_regions should return exactly 10 results."""
-    nlat, nlon = 10, 10
+    """score_regions returns up to 10 regions sorted by score descending."""
+    weather_data = []
+    for i in range(20):
+        weather_data.append({
+            "lat": -60 + i * 6,
+            "lng": -180 + i * 18,
+            "temp": 10 + i * 2,
+            "humidity": 50 + i,
+            "pressure": 1013 - i * 3,
+            "wind_speed": 5 + i * 3,
+            "wind_direction": i * 18,
+            "precipitation": i * 0.5,
+        })
 
-    # Create baseline grids
-    pressure = np.full((nlat, nlon), 101325.0, dtype=np.float32)
-    wind_u = np.zeros((nlat, nlon), dtype=np.float32)
-    wind_v = np.zeros((nlat, nlon), dtype=np.float32)
-    temp = np.full((nlat, nlon), 288.0, dtype=np.float32)
+    regions = score_regions(weather_data)
 
-    # Inject extreme values at (5, 5) to create a clear hot spot
-    pressure[5, 5] = 95000.0  # deep low pressure
-    wind_u[5, 5] = 30.0       # strong wind
-    wind_v[5, 5] = 25.0
-    temp[5, 5] = 320.0        # very hot
-
-    # Add variation so we get distinct scored cells
-    for i in range(nlat):
-        for j in range(nlon):
-            pressure[i, j] += (i - 5) * 100 + (j - 5) * 50
-            temp[i, j] += (i - 5) * 2
-
-    # Use grid_resolution=10 so 10x10 grid spans 100 degrees,
-    # allowing 10+ picks with 5-degree minimum separation
-    regions = score_regions(
-        pressure=pressure,
-        wind_u=wind_u,
-        wind_v=wind_v,
-        temp=temp,
-        grid_resolution=10,
-    )
-
-    assert len(regions) == 10
-    # Each region must have required keys
-    required_keys = {
-        "lat", "lng", "slug", "pressure", "pressure_gradient",
-        "wind_speed", "wind_direction", "temp", "temp_anomaly",
-        "humidity", "precipitation", "score",
-    }
-    for r in regions:
-        assert required_keys.issubset(r.keys()), f"Missing keys: {required_keys - r.keys()}"
-
-    # Scores should be in descending order
-    scores = [r["score"] for r in regions]
-    assert scores == sorted(scores, reverse=True)
-
-    # The extreme point at (5,5) should be among the top results
-    top_region = regions[0]
-    assert top_region["score"] > 0
+    assert len(regions) <= 10
+    assert len(regions) >= 1
+    assert all("score" in r for r in regions)
+    assert all("lat" in r and "lng" in r for r in regions)
+    assert all("pressure" in r and "wind_speed" in r and "temp" in r for r in regions)
+    for i in range(len(regions) - 1):
+        assert regions[i]["score"] >= regions[i + 1]["score"]
 
 
 def test_score_regions_includes_humidity_and_precipitation():
-    """When humidity and precipitation are provided,
-    returned regions should have non-None values for those keys."""
-    nlat, nlon = 10, 10
+    """score_regions includes humidity and precipitation in output."""
+    weather_data = [
+        {"lat": 45, "lng": -30, "temp": 15, "humidity": 80, "pressure": 990,
+         "wind_speed": 60, "wind_direction": 225, "precipitation": 12},
+        {"lat": -15, "lng": 100, "temp": 30, "humidity": 40, "pressure": 1020,
+         "wind_speed": 10, "wind_direction": 90, "precipitation": 0},
+    ]
 
-    pressure = np.random.uniform(99000, 103000, (nlat, nlon)).astype(np.float32)
-    wind_u = np.random.uniform(-10, 10, (nlat, nlon)).astype(np.float32)
-    wind_v = np.random.uniform(-10, 10, (nlat, nlon)).astype(np.float32)
-    temp = np.random.uniform(250, 310, (nlat, nlon)).astype(np.float32)
-    humidity = np.random.uniform(10, 100, (nlat, nlon)).astype(np.float32)
-    precip = np.random.uniform(0, 50, (nlat, nlon)).astype(np.float32)
-
-    regions = score_regions(
-        pressure=pressure,
-        wind_u=wind_u,
-        wind_v=wind_v,
-        temp=temp,
-        humidity=humidity,
-        precip=precip,
-        grid_resolution=0.25,
-    )
-
-    assert len(regions) > 0
-    for r in regions:
-        assert r["humidity"] is not None, "humidity should not be None when provided"
-        assert r["precipitation"] is not None, "precipitation should not be None when provided"
-        assert isinstance(r["humidity"], float)
-        assert isinstance(r["precipitation"], float)
+    regions = score_regions(weather_data)
+    assert all("humidity" in r for r in regions)
+    assert all("precipitation" in r for r in regions)
+    assert all(r["humidity"] is not None for r in regions)

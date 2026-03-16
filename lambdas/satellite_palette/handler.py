@@ -10,7 +10,7 @@ from PIL import Image
 
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "")
 TABLE_NAME = os.environ.get("TABLE_NAME", "")
-BEDROCK_MODEL_ID = "us.anthropic.claude-sonnet-4-6-20250514"
+BEDROCK_MODEL_ID = "us.anthropic.claude-sonnet-4-20250514-v1:0"
 
 
 def rgb_to_hex(rgb: tuple) -> str:

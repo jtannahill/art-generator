@@ -75,7 +75,7 @@ export class ArtGeneratorStack extends cdk.Stack {
     // Shared Bedrock policy
     const bedrockPolicy = new iam.PolicyStatement({
       actions: ['bedrock:InvokeModel'],
-      resources: ['arn:aws:bedrock:us-east-1::foundation-model/us.anthropic.claude-sonnet-4-6-20250514'],
+      resources: ['*'],
     });
 
     // Weather Ingest
