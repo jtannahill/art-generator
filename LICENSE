@@ -1,21 +1,26 @@
-MIT License
+# License
 
-Copyright (c) 2026 James Tannahill
+## Artwork (SVG Outputs)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+All generated artwork is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0).
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+You are free to share (copy and redistribute) the artwork in any medium or format under the following terms:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+- **Attribution** — You must credit "James Tannahill / art.jamestannahill.com"
+- **NonCommercial** — You may not use the artwork for commercial purposes
+- **NoDerivatives** — You may not remix, transform, or build upon the artwork
+
+Full license: https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+For commercial licensing inquiries (prints, publications, corporate use), contact james@plocamium.ventures.
+
+## Generative System (Code)
+
+Copyright (c) 2026 James Tannahill. All Rights Reserved.
+
+The source code, algorithms, prompt engineering, and generative system architecture are proprietary. No part of this codebase may be reproduced, distributed, or used to create derivative works without explicit written permission.
+
+## Data Attribution
+
+Meteorological data: Open-Meteo API (GFS model, NOAA)
+Satellite imagery: Copernicus Sentinel-2 (European Space Agency)
