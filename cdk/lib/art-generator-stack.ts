@@ -49,6 +49,24 @@ export class ArtGeneratorStack extends cdk.Stack {
         }),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        functionAssociations: [{
+          function: new cloudfront.Function(this, 'IndexRewrite', {
+            code: cloudfront.FunctionCode.fromInline(`
+              function handler(event) {
+                var request = event.request;
+                var uri = request.uri;
+                if (uri.endsWith('/')) {
+                  request.uri += 'index.html';
+                } else if (!uri.includes('.')) {
+                  request.uri += '/index.html';
+                }
+                return request;
+              }
+            `),
+            runtime: cloudfront.FunctionRuntime.JS_2_0,
+          }),
+          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+        }],
       },
       defaultRootObject: 'index.html',
       errorResponses: [

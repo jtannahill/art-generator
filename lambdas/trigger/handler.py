@@ -20,7 +20,7 @@ def handler(event, context):
     if running.get("executions"):
         return {
             "statusCode": 200,
-            "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"},
+            "headers": {"Content-Type": "application/json"},
             "body": json.dumps({"status": "already_running", "message": "Pipeline is already generating art"}),
         }
 
@@ -28,6 +28,6 @@ def handler(event, context):
 
     return {
         "statusCode": 200,
-        "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"},
+        "headers": {"Content-Type": "application/json"},
         "body": json.dumps({"status": "started", "executionArn": resp["executionArn"]}),
     }
