@@ -1,0 +1,16 @@
+node_modules
+cdk.out
+*.js
+*.d.ts
+!cdk.json
+__pycache__
+*.pyc
+.venv
+*.egg-info
+dist
+.superpowers
+
+# Lambda layer build artifacts
+layers/cairosvg/dist/
+!layers/cairosvg/dist/python/.gitkeep
+.DS_Store
