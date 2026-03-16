@@ -10,7 +10,7 @@
 
 <h1>Weather Art Archive</h1>
 
-{% for run_id, artworks in weather_by_date.items() %}
+{% for run_id, artworks in weather_by_run.items() %}
 {% set artist_name = artworks[0].artist|default('sam_francis')|replace('_', ' ')|title if artworks else '' %}
 <h2><a href="/weather/{{ run_id }}/">{{ run_id }}</a> <span style="font-size:0.8rem; color:#888; font-weight:normal;">{{ artist_name }}</span></h2>
 <div class="grid">
