@@ -24,7 +24,12 @@ def handler(event, context):
             "body": json.dumps({"status": "already_running", "message": "Pipeline is already generating art"}),
         }
 
-    resp = sfn.start_execution(stateMachineArn=STATE_MACHINE_ARN, input="{}")
+    # Extract artist from query string
+    query = event.get("queryStringParameters") or {}
+    artist = query.get("artist", "sam_francis")
+    sfn_input = json.dumps({"artist": artist})
+
+    resp = sfn.start_execution(stateMachineArn=STATE_MACHINE_ARN, input=sfn_input)
 
     return {
         "statusCode": 200,

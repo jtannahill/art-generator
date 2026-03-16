@@ -88,6 +88,11 @@ def handler(event, context):
         ContentType="application/json",
     )
 
+    # Pass artist through from Step Function input
+    artist = event.get("artist", "sam_francis") if isinstance(event, dict) else "sam_francis"
+    for r in regions:
+        r["artist"] = artist
+
     return {"regions": regions}
 
 

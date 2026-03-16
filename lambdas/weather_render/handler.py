@@ -191,6 +191,20 @@ def extract_rationale(text):
     return text.strip() if text.strip() else None
 
 
+ARTIST_PROMPTS = {
+    "sam_francis": "Sam Francis — bold saturated color fields, energetic splashes and splatters, luminous negative space, lyrical abstraction. Think of his late works where color pools at the edges leaving breathing room in the center, or his earlier explosive compositions where color bursts outward.",
+    "gerhard_richter": "Gerhard Richter — his abstract paintings with sweeping squeegee strokes that layer and reveal color beneath. Bold horizontal and vertical drags of paint creating depth through concealment and revelation. Rich, complex color layering.",
+    "hilma_af_klint": "Hilma af Klint — mystical geometric abstraction with biomorphic forms. Soft pastels alongside deep saturated colors. Spirals, circles within circles, botanical symmetry. Sacred geometry meets organic growth.",
+    "wassily_kandinsky": "Wassily Kandinsky — dynamic geometric compositions with circles, triangles, and lines in musical harmony. Bold primary colors against muted backgrounds. Shapes that suggest movement and rhythm, like visual music.",
+    "helen_frankenthaler": "Helen Frankenthaler — stain painting technique where color soaks and bleeds into the canvas. Transparent washes of color that pool and overlap. Ethereal, atmospheric fields of luminous color with soft edges.",
+    "piet_mondrian": "Piet Mondrian — neoplasticism with primary colors (red, blue, yellow) in rectangular fields divided by bold black lines. Asymmetric balance, white space as an active element. Pure geometric abstraction.",
+    "yayoi_kusama": "Yayoi Kusama — obsessive repetition of dots and circles. Infinity nets, polka dots in vivid colors against contrasting backgrounds. Patterns that suggest infinity and cosmic expansion.",
+    "mark_rothko": "Mark Rothko — luminous color field paintings with soft-edged rectangular forms floating on the canvas. Two or three horizontal bands of deeply saturated color that seem to glow from within. Contemplative, immersive, emotional.",
+    "bridget_riley": "Bridget Riley — op art with precise geometric patterns that create optical illusions of movement and vibration. Undulating lines, chevrons, and curves in carefully calibrated color relationships.",
+    "kazimir_malevich": "Kazimir Malevich — suprematist compositions with basic geometric forms (squares, circles, crosses, rectangles) floating in white space. Bold, flat colors. Dynamic diagonal arrangements suggesting weightlessness and cosmic space.",
+}
+
+
 def build_art_prompt(region):
     """Builds prompt from atmospheric data including humidity and precipitation."""
     humidity_line = ""
@@ -200,6 +214,9 @@ def build_art_prompt(region):
     precip_line = ""
     if region.get("precipitation") is not None:
         precip_line = f"\n- Precipitation: {region['precipitation']} kg/m^2"
+
+    artist_key = region.get("artist", "sam_francis")
+    artist_desc = ARTIST_PROMPTS.get(artist_key, ARTIST_PROMPTS["sam_francis"])
 
     return f"""You are a generative artist creating abstract SVG artwork inspired by real-time
 atmospheric data. Create a single, self-contained SVG artwork (viewBox="0 0 2048 2048")
@@ -213,15 +230,11 @@ Atmospheric conditions:
 - Visual interest score: {region['score']}
 
 Artistic direction:
-- Draw inspiration from Sam Francis — bold saturated color fields, energetic splashes and
-  splatters, luminous negative space, lyrical abstraction. Think of his late works where
-  color pools at the edges leaving breathing room in the center, or his earlier explosive
-  compositions where color bursts outward.
-- Let the atmospheric data drive the composition: high wind = dynamic splatters and movement;
-  deep low pressure = dense, heavy color pooling; temperature extremes = vivid, saturated hues;
-  calm conditions = open space and transparency.
-- Each piece should feel unique — vary your approach between edge-weighted compositions,
-  explosive center-out patterns, grid-like color cells, or flowing organic washes.
+- Draw inspiration from {artist_desc}
+- Let the atmospheric data drive the composition: high wind = dynamic energy and movement;
+  deep low pressure = density and weight; temperature extremes = vivid, saturated hues;
+  calm conditions = open space and restraint.
+- Each piece should feel unique — vary your approach while staying true to the artist's aesthetic.
 
 Technical requirements:
 1. First, briefly explain your artistic interpretation (2-3 sentences)

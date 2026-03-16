@@ -3,12 +3,26 @@
 {% block title %}art.jt — Generative Weather Art{% endblock %}
 
 {% block content %}
-<div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+<div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
   <h1 style="margin-bottom:0">Today's Weather Art</h1>
-  <button class="generate-btn" onclick="generateArt(this)">
-    <span class="spinner"></span>
-    Generate New Art
-  </button>
+  <div style="display:flex; align-items:center; gap:0.5rem;">
+    <select id="artist-select" style="background:#1a1a2e; color:#c4b5fd; border:1px solid #444; border-radius:6px; padding:0.5rem 0.8rem; font-size:0.85rem; cursor:pointer;">
+      <option value="sam_francis">Sam Francis</option>
+      <option value="gerhard_richter">Gerhard Richter</option>
+      <option value="hilma_af_klint">Hilma af Klint</option>
+      <option value="wassily_kandinsky">Wassily Kandinsky</option>
+      <option value="helen_frankenthaler">Helen Frankenthaler</option>
+      <option value="piet_mondrian">Piet Mondrian</option>
+      <option value="yayoi_kusama">Yayoi Kusama</option>
+      <option value="mark_rothko">Mark Rothko</option>
+      <option value="bridget_riley">Bridget Riley</option>
+      <option value="kazimir_malevich">Kazimir Malevich</option>
+    </select>
+    <button class="generate-btn" onclick="generateArt(this)" style="margin-bottom:0">
+      <span class="spinner"></span>
+      Generate
+    </button>
+  </div>
 </div>
 {% if today_weather %}
 <div class="grid">
@@ -53,7 +67,8 @@
 function generateArt(btn) {
   btn.classList.add('loading');
   var toast = document.getElementById('toast');
-  fetch('https://sggzeske3z3l4cy7rc3jyw6bm40nkbzp.lambda-url.us-east-1.on.aws/')
+  var artist = document.getElementById('artist-select').value;
+  fetch('https://sggzeske3z3l4cy7rc3jyw6bm40nkbzp.lambda-url.us-east-1.on.aws/?artist=' + artist)
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.status === 'already_running') {
