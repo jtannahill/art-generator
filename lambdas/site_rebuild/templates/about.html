@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}About — art.jt{% endblock %}
+
+{% block content %}
+<div style="max-width:720px; margin:0 auto;">
+
+<h1>About</h1>
+
+<p style="font-size:1.1rem; color:#ccc; line-height:1.8; margin-bottom:1.5rem;">
+I've always been drawn to the places where science becomes visual — where a pressure gradient reads like a brushstroke, where a temperature anomaly carries the same emotional weight as a Rothko field. This project lives at that intersection.
+</p>
+
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+Every day, this system scans fifty points across the globe, measuring what the atmosphere is doing in real time — pressure systems building and collapsing, winds accelerating across open ocean, temperature anomalies pushing against their zonal means. The ten most visually dramatic conditions become the raw material for original artwork, generated through a collaboration between atmospheric data and AI.
+</p>
+
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+The visual language draws from the abstract expressionists and color field painters who understood that color, form, and energy could communicate something words can't — Sam Francis's luminous splatters, Rothko's glowing horizons, Frankenthaler's stained washes, Hilma af Klint's sacred geometries. Each artist's aesthetic becomes a lens through which the same atmospheric data produces radically different work.
+</p>
+
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+What fascinates me is the feedback loop: weather is the most dynamic visual system on Earth, constantly painting and repainting the sky in ways no human artist could anticipate. By feeding that data through the sensibility of great abstract painters, each piece becomes a collaboration between the atmosphere, art history, and computation — a daily record of what the planet looked like, translated into color and form.
+</p>
+
+<h2 style="margin-top:2.5rem;">How It Works</h2>
+
+<p style="color:#aaa; line-height:1.8; margin-bottom:1rem;">
+The generative system runs as a daily pipeline on AWS. Weather data flows in from the <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a> (powered by NOAA's GFS model), gets scored for visual interest, and the most dramatic conditions are sent to Claude on Amazon Bedrock, which interprets the atmospheric data as SVG artwork in the style of the selected artist. The results are archived permanently — every piece ever generated is preserved and browsable.
+</p>
+
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+The satellite color palette system (coming soon) extracts dominant colors from Copernicus Sentinel-2 satellite imagery of visually striking locations worldwide, building a seasonal archive of Earth's real color palette as seen from space.
+</p>
+
+<h2 style="margin-top:2.5rem;">About Me</h2>
+
+<p style="color:#aaa; line-height:1.8; margin-bottom:1rem;">
+I'm <a href="https://jamestannahill.com" target="_blank" rel="noopener">James Tannahill</a> — I build things at the intersection of data, design, and infrastructure. This project reflects a lifelong interest in weather systems, color theory, and the abstract expressionist tradition. I believe the most interesting creative work happens when you let real-world systems speak through artistic frameworks, rather than imposing vision onto blank canvas.
+</p>
+
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+For commercial licensing, print editions, or collaboration inquiries: <a href="mailto:james@plocamium.ventures">james@plocamium.ventures</a>
+</p>
+
+</div>
+{% endblock %}

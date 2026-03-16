@@ -94,6 +94,9 @@ def handler(event, context):
             api_url=api_url,
         )
 
+    # Render about page
+    pages["site/about/index.html"] = env.get_template("about.html").render()
+
     # Render palette archive
     pages["site/palettes/index.html"] = env.get_template(
         "palette_archive.html"
