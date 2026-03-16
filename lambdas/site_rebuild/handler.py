@@ -83,8 +83,23 @@ def handler(event, context):
         "kazimir_malevich": ("Kazimir Malevich", "https://www.guggenheim.org/artwork/artist/kazimir-malevich"),
         "lesley_tannahill": ("Lesley Tannahill", "https://lesleytannahill.com"),
     }
+    # Group weather items by artist for thumbnail mosaics
+    artworks_by_artist = defaultdict(list)
+    for run_id, artworks in weather_by_run.items():
+        for a in artworks:
+            artist_key = a.get("artist", "sam_francis")
+            artworks_by_artist[artist_key].append({
+                "run_id": a.get("run_id", run_id),
+                "slug": a.get("SK", a.get("slug", "")),
+            })
+    # Sort each artist's works by run_id descending, take latest 4
+    for k in artworks_by_artist:
+        artworks_by_artist[k].sort(key=lambda x: x["run_id"], reverse=True)
+        artworks_by_artist[k] = artworks_by_artist[k][:4]
+
     pages["site/artist/index.html"] = env.get_template("artist_index.html").render(
         artists=[(k, v[0], v[1]) for k, v in artist_info.items()],
+        artworks_by_artist=dict(artworks_by_artist),
     )
     for artist_key, (artist_display, artist_link) in artist_info.items():
         pages[f"site/artist/{artist_key}/index.html"] = env.get_template("artist.html").render(
