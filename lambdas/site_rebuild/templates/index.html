@@ -93,6 +93,8 @@ function generateArt(btn) {
     .then(function(data) {
       if (data.status === 'already_running') {
         toast.textContent = 'Pipeline is already running — check back in a few minutes';
+      } else if (data.status === 'cooldown') {
+        toast.textContent = data.message;
       } else {
         toast.textContent = 'Generating new art — refresh in ~5 minutes';
       }
