@@ -3,15 +3,22 @@
 {% block title %}art.jt — Generative Weather Art{% endblock %}
 
 {% block content %}
-<h1>Today's Weather Art</h1>
+<div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+  <h1 style="margin-bottom:0">Today's Weather Art</h1>
+  <button class="generate-btn" onclick="generateArt(this)">
+    <span class="spinner"></span>
+    Generate New Art
+  </button>
+</div>
 {% if today_weather %}
 <div class="grid">
   {% for item in today_weather %}
   <a href="/weather/{{ today }}/{{ item.SK }}/" class="card">
-    <img src="/weather/{{ today }}/{{ item.SK }}/preview-2048.png" alt="{{ item.slug|default(item.SK) }} weather art" loading="lazy">
+    <img src="/weather/{{ today }}/{{ item.SK }}/artwork.svg" alt="{{ item.slug|default(item.SK) }} weather art" loading="lazy">
     <div class="card-body">
-      <h3>{{ item.slug|default(item.SK) }}</h3>
-      <p>Score: {{ item.score|default('—') }}</p>
+      <h3>{{ item.slug|default(item.SK)|replace('-', ' ')|title }}</h3>
+      <p class="card-description">{{ item.rationale|default('') }}</p>
+      <p class="card-meta">{{ item.temp|default('') }}°C · {{ item.wind_speed|default('') }} m/s · {{ item.pressure|default('') }} hPa</p>
     </div>
   </a>
   {% endfor %}
@@ -41,4 +48,27 @@
 {% else %}
 <p>No palettes available yet.</p>
 {% endif %}
+
+<script>
+function generateArt(btn) {
+  btn.classList.add('loading');
+  var toast = document.getElementById('toast');
+  fetch('https://sggzeske3z3l4cy7rc3jyw6bm40nkbzp.lambda-url.us-east-1.on.aws/')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.status === 'already_running') {
+        toast.textContent = 'Pipeline is already running — check back in a few minutes';
+      } else {
+        toast.textContent = 'Generating new art — refresh in ~5 minutes';
+      }
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); btn.classList.remove('loading'); }, 5000);
+    })
+    .catch(function(e) {
+      toast.textContent = 'Error triggering pipeline';
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); btn.classList.remove('loading'); }, 3000);
+    });
+}
+</script>
 {% endblock %}

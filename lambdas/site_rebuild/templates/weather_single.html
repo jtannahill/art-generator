@@ -4,11 +4,11 @@
 
 {% block meta %}
 <meta property="og:title" content="{{ slug }} weather art — {{ date }}">
-<meta property="og:image" content="/weather/{{ date }}/{{ slug }}/preview-2048.png">
+<meta property="og:image" content="/weather/{{ date }}/{{ slug }}/artwork.svg">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ slug }} weather art — {{ date }}">
-<meta name="twitter:image" content="/weather/{{ date }}/{{ slug }}/preview-2048.png">
+<meta name="twitter:image" content="/weather/{{ date }}/{{ slug }}/artwork.svg">
 {% endblock %}
 
 {% block content %}
@@ -27,7 +27,7 @@
 
 <div>
   <a href="/weather/{{ date }}/{{ slug }}/artwork.svg" class="download-btn" download>SVG</a>
-  <a href="/weather/{{ date }}/{{ slug }}/preview-2048.png" class="download-btn" download>PNG 2048</a>
+  <a href="/weather/{{ date }}/{{ slug }}/artwork.svg" class="download-btn" download>PNG 2048</a>
   <a href="/weather/{{ date }}/{{ slug }}/preview-4k.png" class="download-btn" download>PNG 4K</a>
 </div>
 

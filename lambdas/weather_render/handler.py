@@ -212,14 +212,24 @@ Atmospheric conditions:
 - Temperature: {region['temp']} K (anomaly from zonal mean: {region['temp_anomaly']} K){humidity_line}{precip_line}
 - Visual interest score: {region['score']}
 
-Guidelines:
+Artistic direction:
+- Draw inspiration from Sam Francis — bold saturated color fields, energetic splashes and
+  splatters, luminous negative space, lyrical abstraction. Think of his late works where
+  color pools at the edges leaving breathing room in the center, or his earlier explosive
+  compositions where color bursts outward.
+- Let the atmospheric data drive the composition: high wind = dynamic splatters and movement;
+  deep low pressure = dense, heavy color pooling; temperature extremes = vivid, saturated hues;
+  calm conditions = open space and transparency.
+- Each piece should feel unique — vary your approach between edge-weighted compositions,
+  explosive center-out patterns, grid-like color cells, or flowing organic washes.
+
+Technical requirements:
 1. First, briefly explain your artistic interpretation (2-3 sentences)
 2. Then output the complete SVG
-3. Use gradients, patterns, and organic shapes — no text elements
-4. Color palette should reflect the atmospheric mood (e.g., warm for high temp anomaly,
-   cool blues for high pressure, dynamic reds/oranges for high wind)
-5. The SVG must be valid XML and self-contained (no external references)
-6. Use the viewBox="0 0 2048 2048" attribute on the root <svg> element"""
+3. Use gradients, filters, organic shapes, and layered transparency — no text elements
+4. The SVG must be valid XML and self-contained (no external references)
+5. Use the viewBox="0 0 2048 2048" attribute on the root <svg> element
+6. Use at least 20-30 shape elements for visual richness"""
 
 
 def build_retry_prompt(original_prompt, bad_svg, error):

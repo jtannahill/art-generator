@@ -225,5 +225,33 @@ export class ArtGeneratorStack extends cdk.Stack {
       schedule: events.Schedule.cron({ hour: '6', minute: '0' }),
       targets: [new targets.SfnStateMachine(stateMachine)],
     });
+
+    // Trigger Lambda with function URL (for generate button)
+    const triggerFn = new lambda.Function(this, 'TriggerFn', {
+      functionName: 'art-trigger',
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambdas/trigger')),
+      timeout: cdk.Duration.seconds(10),
+      memorySize: 128,
+      environment: {
+        STATE_MACHINE_ARN: stateMachine.stateMachineArn,
+      },
+    });
+    stateMachine.grantStartExecution(triggerFn);
+    stateMachine.grantRead(triggerFn);
+
+    const triggerUrl = triggerFn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+        allowedMethods: [lambda.HttpMethod.GET, lambda.HttpMethod.POST],
+      },
+    });
+
+    new cdk.CfnOutput(this, 'TriggerUrl', {
+      value: triggerUrl.url,
+      description: 'URL for the generate button',
+    });
   }
 }

@@ -96,6 +96,9 @@ def handler(event, context):
             CacheControl="public, max-age=300",
         )
 
+    # Copy artwork assets into site/ prefix so CloudFront can serve them
+    _copy_assets_to_site(s3, weather_by_date, palettes_by_date)
+
     # Invalidate CloudFront
     if DISTRIBUTION_ID:
         cf = boto3.client("cloudfront")
@@ -204,3 +207,45 @@ def _latest_palettes(palettes_by_location):
             item["location_slug"] = slug
             latest.append(item)
     return latest
+
+
+def _copy_assets_to_site(s3, weather_by_date, palettes_by_date):
+    """Copy artwork SVGs and palette assets into the site/ prefix for CloudFront."""
+    for date, artworks in weather_by_date.items():
+        for artwork in artworks:
+            slug = artwork.get("SK", artwork.get("slug", ""))
+            src_prefix = f"weather/{date}/{slug}/"
+            dst_prefix = f"site/weather/{date}/{slug}/"
+            # List and copy all objects in the artwork folder
+            try:
+                resp = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=src_prefix)
+                for obj in resp.get("Contents", []):
+                    src_key = obj["Key"]
+                    filename = src_key.split("/")[-1]
+                    dst_key = dst_prefix + filename
+                    s3.copy_object(
+                        Bucket=BUCKET_NAME,
+                        CopySource={"Bucket": BUCKET_NAME, "Key": src_key},
+                        Key=dst_key,
+                    )
+            except Exception as e:
+                print(f"Failed to copy assets for {slug}: {e}")
+
+    for date, palettes in palettes_by_date.items():
+        for palette in palettes:
+            slug = palette.get("slug", palette.get("SK", ""))
+            src_prefix = f"palettes/{date}/{slug}/"
+            dst_prefix = f"site/palettes/{date}/{slug}/"
+            try:
+                resp = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=src_prefix)
+                for obj in resp.get("Contents", []):
+                    src_key = obj["Key"]
+                    filename = src_key.split("/")[-1]
+                    dst_key = dst_prefix + filename
+                    s3.copy_object(
+                        Bucket=BUCKET_NAME,
+                        CopySource={"Bucket": BUCKET_NAME, "Key": src_key},
+                        Key=dst_key,
+                    )
+            except Exception as e:
+                print(f"Failed to copy palette assets for {slug}: {e}")
