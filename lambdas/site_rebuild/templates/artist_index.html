@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Artists — art.jt{% endblock %}
+
+{% block content %}
+<h1>Browse by Artist</h1>
+<div class="grid">
+  {% for key, name, link in artists %}
+  <a href="/artist/{{ key }}/" class="card" style="text-decoration:none;">
+    <div class="card-body" style="padding:1.5rem;">
+      <h3>{{ name }}</h3>
+      <p class="card-meta"><a href="{{ link }}" target="_blank" rel="noopener" onclick="event.stopPropagation();">about this artist</a></p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

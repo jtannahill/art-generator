@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ artist_display }} — art.jt{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span>{{ artist_display }}</span>
+</div>
+
+<div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+  <h1 style="margin-bottom:0">{{ artist_display }}</h1>
+  <a href="{{ artist_link }}" target="_blank" rel="noopener" style="font-size:0.8rem; color:#666;">about this artist</a>
+</div>
+
+<div id="artwork-grid" class="grid"></div>
+
+<div id="loading" style="text-align:center; padding:2rem; display:none;">
+  <div style="display:inline-block; width:24px; height:24px; border:2px solid #333; border-top-color:#c4b5fd; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+  <p style="color:#666; margin-top:0.5rem;">Loading more artwork...</p>
+</div>
+
+<div id="end-message" style="text-align:center; padding:2rem; color:#444; display:none;">
+  All artwork loaded.
+</div>
+
+<script>
+var API_URL = '{{ api_url }}';
+var ARTIST = '{{ artist_key }}';
+var cursor = null;
+var loading = false;
+var allDone = false;
+
+function createCard(item) {
+  var card = document.createElement('a');
+  card.href = item.page_url;
+  card.className = 'card';
+  card.innerHTML =
+    '<img src="' + item.svg_url + '" alt="' + item.slug + '" loading="lazy">' +
+    '<div class="card-body">' +
+      '<h3>' + item.slug.replace(/-/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); }) + '</h3>' +
+      '<p class="card-description">' + (item.rationale || '') + '</p>' +
+      '<p class="card-meta">' + item.temp + '°C · ' + item.wind_speed + ' m/s · ' + item.pressure + ' hPa</p>' +
+    '</div>';
+  return card;
+}
+
+function loadMore() {
+  if (loading || allDone) return;
+  loading = true;
+  document.getElementById('loading').style.display = 'block';
+
+  var url = API_URL + '?artist=' + ARTIST + '&limit=12';
+  if (cursor) url += '&cursor=' + encodeURIComponent(cursor);
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var grid = document.getElementById('artwork-grid');
+      data.items.forEach(function(item) {
+        grid.appendChild(createCard(item));
+      });
+
+      cursor = data.next_cursor;
+      if (!cursor || data.items.length === 0) {
+        allDone = true;
+        document.getElementById('end-message').style.display = 'block';
+      }
+      loading = false;
+      document.getElementById('loading').style.display = 'none';
+    })
+    .catch(function(e) {
+      console.error('Failed to load:', e);
+      loading = false;
+      document.getElementById('loading').style.display = 'none';
+    });
+}
+
+// Infinite scroll
+window.addEventListener('scroll', function() {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+    loadMore();
+  }
+});
+
+// Initial load
+loadMore();
+</script>
+{% endblock %}

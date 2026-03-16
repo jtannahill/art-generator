@@ -271,5 +271,33 @@ export class ArtGeneratorStack extends cdk.Stack {
       value: triggerUrl.url,
       description: 'URL for the generate button',
     });
+
+    // API Lambda with function URL (for infinite scroll)
+    const apiFn = new lambda.Function(this, 'ApiFn', {
+      functionName: 'art-api',
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambdas/api')),
+      timeout: cdk.Duration.seconds(15),
+      memorySize: 256,
+      environment: {
+        TABLE_NAME: table.tableName,
+        BUCKET_NAME: bucket.bucketName,
+      },
+    });
+    table.grantReadData(apiFn);
+
+    const apiUrl = apiFn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+        allowedMethods: [lambda.HttpMethod.GET],
+      },
+    });
+
+    new cdk.CfnOutput(this, 'ApiUrl', {
+      value: apiUrl.url,
+      description: 'URL for the artwork API (infinite scroll)',
+    });
   }
 }

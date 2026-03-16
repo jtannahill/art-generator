@@ -68,6 +68,32 @@ def handler(event, context):
                 "weather_single.html"
             ).render(artwork=artwork, date=date, slug=slug)
 
+    # Render artist gallery pages with infinite scroll
+    api_url = os.environ.get("API_URL", "")
+    artist_info = {
+        "sam_francis": ("Sam Francis", "https://www.guggenheim.org/artwork/artist/sam-francis"),
+        "gerhard_richter": ("Gerhard Richter", "https://www.guggenheim.org/artwork/artist/gerhard-richter"),
+        "hilma_af_klint": ("Hilma af Klint", "https://www.guggenheim.org/artwork/artist/hilma-af-klint"),
+        "wassily_kandinsky": ("Wassily Kandinsky", "https://www.guggenheim.org/artwork/artist/vasily-kandinsky"),
+        "helen_frankenthaler": ("Helen Frankenthaler", "https://www.guggenheim.org/artwork/artist/helen-frankenthaler"),
+        "piet_mondrian": ("Piet Mondrian", "https://www.guggenheim.org/artwork/artist/piet-mondrian"),
+        "yayoi_kusama": ("Yayoi Kusama", "https://www.guggenheim.org/artwork/artist/yayoi-kusama"),
+        "mark_rothko": ("Mark Rothko", "https://www.guggenheim.org/artwork/artist/mark-rothko"),
+        "bridget_riley": ("Bridget Riley", "https://www.tate.org.uk/art/artists/bridget-riley-1845"),
+        "kazimir_malevich": ("Kazimir Malevich", "https://www.guggenheim.org/artwork/artist/kazimir-malevich"),
+        "lesley_tannahill": ("Lesley Tannahill", "https://lesleytannahill.com"),
+    }
+    pages["site/artist/index.html"] = env.get_template("artist_index.html").render(
+        artists=[(k, v[0], v[1]) for k, v in artist_info.items()],
+    )
+    for artist_key, (artist_display, artist_link) in artist_info.items():
+        pages[f"site/artist/{artist_key}/index.html"] = env.get_template("artist.html").render(
+            artist_key=artist_key,
+            artist_display=artist_display,
+            artist_link=artist_link,
+            api_url=api_url,
+        )
+
     # Render palette archive
     pages["site/palettes/index.html"] = env.get_template(
         "palette_archive.html"
