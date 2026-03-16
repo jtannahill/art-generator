@@ -4,13 +4,59 @@
 
 {% set run_id = artwork.run_id|default(date) %}
 
-{% block meta %}
-<meta property="og:title" content="{{ slug|replace('-', ' ')|title }} weather art — {{ date }}">
-<meta property="og:image" content="/weather/{{ run_id }}/{{ slug }}/artwork.svg">
-<meta property="og:type" content="article">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ slug|replace('-', ' ')|title }} weather art — {{ date }}">
-<meta name="twitter:image" content="/weather/{{ run_id }}/{{ slug }}/artwork.svg">
+{% block description %}{{ artwork.rationale|default('Generative weather art from atmospheric data at ' ~ slug|replace('-', ' ')|title)|truncate(155) }}{% endblock %}
+{% block canonical_path %}/weather/{{ run_id }}/{{ slug }}/{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ slug|replace('-', ' ')|title }} — Weather Art — {{ date }}{% endblock %}
+{% block og_description %}{{ artwork.rationale|default('Generative weather art')|truncate(200) }}{% endblock %}
+{% block og_url %}/weather/{{ run_id }}/{{ slug }}/{% endblock %}
+{% block og_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/artwork.svg{% endblock %}
+{% block twitter_title %}{{ slug|replace('-', ' ')|title }} — Weather Art{% endblock %}
+{% block twitter_description %}{{ artwork.rationale|default('Generative weather art')|truncate(200) }}{% endblock %}
+{% block twitter_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/artwork.svg{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VisualArtwork",
+  "name": "{{ slug|replace('-', ' ')|title }} — {{ date }}",
+  "description": "{{ artwork.rationale|default('')|replace('"', '\\"') }}",
+  "url": "https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/",
+  "image": "https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/artwork.svg",
+  "dateCreated": "{{ artwork.created_at|default(date) }}",
+  "artMedium": "Digital — generative SVG from atmospheric data",
+  "artform": "Generative Art",
+  "artworkSurface": "Digital",
+  "width": {"@type": "Distance", "name": "2048px"},
+  "height": {"@type": "Distance", "name": "2048px"},
+  "creator": {
+    "@type": "Person",
+    "name": "James Tannahill",
+    "url": "https://jamestannahill.com"
+  },
+  "license": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+  "copyrightHolder": {
+    "@type": "Person",
+    "name": "James Tannahill"
+  },
+  "copyrightYear": "2026",
+  "locationCreated": {
+    "@type": "Place",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "{{ artwork.lat|default('') }}",
+      "longitude": "{{ artwork.lng|default('') }}"
+    }
+  },
+  "about": [
+    {"@type": "Thing", "name": "Weather Art"},
+    {"@type": "Thing", "name": "{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }}"},
+    {"@type": "Thing", "name": "Abstract Expressionism"},
+    {"@type": "Thing", "name": "Generative Art"}
+  ]
+}
+</script>
 {% endblock %}
 
 {% block content %}

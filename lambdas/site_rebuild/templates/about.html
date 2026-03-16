@@ -1,6 +1,34 @@
 {% extends "base.html" %}
 
 {% block title %}About — art.jt{% endblock %}
+{% block description %}James Tannahill builds generative art from real atmospheric data — weather patterns translated into abstract expressionism through AI. About the artist, the system, and the vision.{% endblock %}
+{% block canonical_path %}/about/{% endblock %}
+{% block og_title %}About — art.jt{% endblock %}
+{% block og_description %}Generative art from real atmospheric data, inspired by abstract expressionism.{% endblock %}
+{% block og_url %}/about/{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About art.jt",
+  "url": "https://art.jamestannahill.com/about/",
+  "mainEntity": {
+    "@type": "Person",
+    "name": "James Tannahill",
+    "url": "https://jamestannahill.com",
+    "email": "james@plocamium.ventures",
+    "jobTitle": "Generative Artist & Technologist",
+    "knowsAbout": ["Generative Art", "Weather Data Visualization", "Abstract Expressionism", "AWS", "AI/ML"],
+    "sameAs": [
+      "https://jamestannahill.com",
+      "https://github.com/jtannahill"
+    ]
+  }
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div style="max-width:720px; margin:0 auto;">

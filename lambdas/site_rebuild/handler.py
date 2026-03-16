@@ -97,6 +97,53 @@ def handler(event, context):
     # Render about page
     pages["site/about/index.html"] = env.get_template("about.html").render()
 
+    # Generate robots.txt
+    pages["site/robots.txt"] = "User-agent: *\nAllow: /\nSitemap: https://art.jamestannahill.com/sitemap.xml\n"
+
+    # Generate sitemap.xml
+    sitemap_urls = [
+        ("https://art.jamestannahill.com/", "daily", "1.0"),
+        ("https://art.jamestannahill.com/weather/", "daily", "0.9"),
+        ("https://art.jamestannahill.com/artist/", "weekly", "0.8"),
+        ("https://art.jamestannahill.com/about/", "monthly", "0.7"),
+    ]
+    for artist_key in artist_info:
+        sitemap_urls.append((f"https://art.jamestannahill.com/artist/{artist_key}/", "daily", "0.7"))
+    for run_id, artworks in weather_by_run.items():
+        sitemap_urls.append((f"https://art.jamestannahill.com/weather/{run_id}/", "never", "0.6"))
+        for artwork in artworks:
+            slug = artwork.get("SK", artwork.get("slug", ""))
+            sitemap_urls.append((f"https://art.jamestannahill.com/weather/{run_id}/{slug}/", "never", "0.5"))
+
+    sitemap_lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for url, freq, priority in sitemap_urls:
+        sitemap_lines.append(f"  <url><loc>{url}</loc><changefreq>{freq}</changefreq><priority>{priority}</priority></url>")
+    sitemap_lines.append("</urlset>")
+    pages["site/sitemap.xml"] = "\n".join(sitemap_lines)
+
+    # Generate llms.txt for AI crawlers
+    pages["site/llms.txt"] = """# art.jamestannahill.com
+
+> Daily generative art from real atmospheric data, inspired by abstract expressionism.
+
+## About
+art.jt is a generative art project by James Tannahill. Every day, the system scans 50 global weather stations, identifies the 10 most visually dramatic atmospheric conditions, and generates original SVG artwork using Claude on Amazon Bedrock. The visual language draws from abstract expressionists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, and others.
+
+## Pages
+- [Homepage](https://art.jamestannahill.com/) — Today's weather art with generate button
+- [Archive](https://art.jamestannahill.com/weather/) — All past generations, browsable by run
+- [Artists](https://art.jamestannahill.com/artist/) — Browse by artist with infinite scroll
+- [About](https://art.jamestannahill.com/about/) — About the project and artist
+
+## How It Works
+Weather data from Open-Meteo API (GFS/NOAA model) → scored for visual interest → Claude on Bedrock generates SVG in selected artist's style → archived permanently in S3 → static HTML gallery on CloudFront.
+
+## Licensing
+Artwork: CC BY-NC-ND 4.0 (attribution required, no commercial use, no derivatives)
+Code: All Rights Reserved
+Contact: james@plocamium.ventures
+"""
+
     # Render palette archive
     pages["site/palettes/index.html"] = env.get_template(
         "palette_archive.html"
@@ -121,7 +168,7 @@ def handler(event, context):
             Bucket=BUCKET_NAME,
             Key=key,
             Body=html.encode("utf-8"),
-            ContentType="text/html",
+            ContentType=_content_type(key),
             CacheControl="public, max-age=300",
         )
 
@@ -225,6 +272,17 @@ def _parse_colors(colors):
         except (json.JSONDecodeError, TypeError):
             pass
     return []
+
+
+def _content_type(key):
+    """Return content type based on file extension."""
+    if key.endswith(".xml"):
+        return "application/xml"
+    if key.endswith(".txt"):
+        return "text/plain"
+    if key.endswith(".json"):
+        return "application/json"
+    return "text/html"
 
 
 def _latest_palettes(palettes_by_location):
