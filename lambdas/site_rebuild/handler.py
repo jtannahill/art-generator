@@ -109,7 +109,7 @@ def handler(event, context):
                     "Quantity": 3,
                     "Items": ["/index.html", "/weather/*", "/palettes/*"],
                 },
-                "CallerReference": f"rebuild-{today}",
+                "CallerReference": f"rebuild-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
             },
         )
 
