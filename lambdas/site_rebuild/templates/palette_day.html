@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ date }} Palettes — art.jt{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span><a href="/palettes/">Palettes</a></span>
+  <span>{{ date }}</span>
+</div>
+
+<h1>Palettes &mdash; {{ date }}</h1>
+
+<div class="grid">
+  {% for item in palettes %}
+  {% set slug = item.PK.replace('PALETTE#', '') if item.PK else '' %}
+  <a href="/palettes/{{ slug }}/" class="card">
+    {% if item.swatch_key %}
+    <img src="/{{ item.swatch_key }}" alt="{{ slug }} palette" loading="lazy">
+    {% endif %}
+    <div class="card-body">
+      <h3>{{ item.get('name', slug) }}</h3>
+      <div class="swatch-strip">
+        {% for color in item.colors_parsed %}
+        <div style="background:{{ color }}" data-hex="{{ color }}"></div>
+        {% endfor %}
+      </div>
+      {% if item.mood %}
+      <p>{{ item.mood }}</p>
+      {% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

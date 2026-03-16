@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ location }} Palettes — art.jt{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span><a href="/palettes/">Palettes</a></span>
+  <span>{{ location }}</span>
+</div>
+
+<h1>{{ location }}</h1>
+
+{% for item in palettes %}
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <h3>{{ item.SK }}</h3>
+
+    <div class="swatch-strip">
+      {% for color in item.colors_parsed %}
+      <div style="background:{{ color }}" data-hex="{{ color }}"></div>
+      {% endfor %}
+    </div>
+
+    <p style="margin: 0.5rem 0;">
+      {% for color in item.colors_parsed %}
+      <code style="color:{{ color }}; margin-right: 0.5rem;">{{ color }}</code>
+      {% endfor %}
+    </p>
+
+    {% if item.mood %}
+    <p style="font-style: italic; color: #999;">{{ item.mood }}</p>
+    {% endif %}
+
+    <div style="margin-top: 0.75rem;">
+      {% if item.swatch_key %}
+      <a href="/{{ item.swatch_key }}" class="download-btn" download>PNG</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

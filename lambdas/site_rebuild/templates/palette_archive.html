@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Palette Archive — art.jt{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span>Palettes</span>
+</div>
+
+<h1>Palette Archive</h1>
+
+<div class="grid">
+  {% for slug, palettes in palettes_by_location.items() %}
+  {% set latest = palettes[0] if palettes else none %}
+  <a href="/palettes/{{ slug }}/" class="card">
+    {% if latest and latest.swatch_key %}
+    <img src="/{{ latest.swatch_key }}" alt="{{ slug }} palette" loading="lazy">
+    {% endif %}
+    <div class="card-body">
+      <h3>{{ latest.get('name', slug) if latest else slug }}</h3>
+      {% if latest and latest.colors_parsed %}
+      <div class="swatch-strip">
+        {% for color in latest.colors_parsed %}
+        <div style="background:{{ color }}" data-hex="{{ color }}"></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <p>{{ palettes|length }} palette{{ 's' if palettes|length != 1 else '' }}</p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

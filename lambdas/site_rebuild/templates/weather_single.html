@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ slug }} — {{ date }} — art.jt{% endblock %}
+
+{% block meta %}
+<meta property="og:title" content="{{ slug }} weather art — {{ date }}">
+<meta property="og:image" content="/weather/{{ date }}/{{ slug }}/preview-2048.png">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ slug }} weather art — {{ date }}">
+<meta name="twitter:image" content="/weather/{{ date }}/{{ slug }}/preview-2048.png">
+{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span><a href="/weather/">Weather Art</a></span>
+  <span><a href="/weather/{{ date }}/">{{ date }}</a></span>
+  <span>{{ slug }}</span>
+</div>
+
+<h1>{{ slug }}</h1>
+
+<div class="svg-viewer">
+  <img src="/weather/{{ date }}/{{ slug }}/artwork.svg" alt="{{ slug }} SVG artwork">
+</div>
+
+<div>
+  <a href="/weather/{{ date }}/{{ slug }}/artwork.svg" class="download-btn" download>SVG</a>
+  <a href="/weather/{{ date }}/{{ slug }}/preview-2048.png" class="download-btn" download>PNG 2048</a>
+  <a href="/weather/{{ date }}/{{ slug }}/preview-4k.png" class="download-btn" download>PNG 4K</a>
+</div>
+
+<div class="metadata">
+  <h2>Metadata</h2>
+  <dl>
+    <dt>Date</dt>
+    <dd>{{ artwork.date|default(date) }}</dd>
+    <dt>Location</dt>
+    <dd>{{ artwork.slug|default(slug) }}</dd>
+    {% if artwork.pressure is defined and artwork.pressure %}
+    <dt>Pressure</dt>
+    <dd>{{ artwork.pressure }} Pa</dd>
+    {% endif %}
+    {% if artwork.wind_speed is defined and artwork.wind_speed %}
+    <dt>Wind</dt>
+    <dd>{{ artwork.wind_speed }} m/s from {{ artwork.wind_direction|default('—') }}&deg;</dd>
+    {% endif %}
+    {% if artwork.temp is defined and artwork.temp %}
+    <dt>Temperature</dt>
+    <dd>{{ artwork.temp }} K</dd>
+    {% endif %}
+    {% if artwork.score is defined and artwork.score %}
+    <dt>Visual Interest Score</dt>
+    <dd>{{ artwork.score }}</dd>
+    {% endif %}
+  </dl>
+</div>
+
+{% if artwork.rationale %}
+<div>
+  <h2>Creative Rationale</h2>
+  <p>{{ artwork.rationale }}</p>
+</div>
+{% endif %}
+{% endblock %}

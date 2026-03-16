@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Art Archive — art.jt{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span>Weather Art</span>
+</div>
+
+<h1>Weather Art Archive</h1>
+
+{% for date, artworks in weather_by_date.items() %}
+<h2><a href="/weather/{{ date }}/">{{ date }}</a></h2>
+<div class="grid">
+  {% for item in artworks %}
+  <a href="/weather/{{ date }}/{{ item.SK }}/" class="card">
+    <img src="/weather/{{ date }}/{{ item.SK }}/preview-2048.png" alt="{{ item.slug|default(item.SK) }}" loading="lazy">
+    <div class="card-body">
+      <h3>{{ item.slug|default(item.SK) }}</h3>
+      <p>Score: {{ item.score|default('—') }}</p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endfor %}
+{% endblock %}
