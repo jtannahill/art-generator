@@ -75,23 +75,26 @@ def handler(event, context):
     # Score and rank
     regions = score_regions(all_weather)
 
-    # Add date metadata
+    # Generate unique run ID for this generation
+    run_id = now.strftime("%Y-%m-%d-%H%M%S")
+
+    # Pass artist through from Step Function input
+    artist = event.get("artist", "sam_francis") if isinstance(event, dict) else "sam_francis"
+
+    # Add metadata to each region
     for r in regions:
         r["date"] = date_str
+        r["run_id"] = run_id
+        r["artist"] = artist
 
     # Archive raw data to S3
     s3 = boto3.client("s3")
     s3.put_object(
         Bucket=BUCKET_NAME,
-        Key=f"source/weather/{date_str}/scan_data.json",
+        Key=f"source/weather/{run_id}/scan_data.json",
         Body=json.dumps(all_weather).encode(),
         ContentType="application/json",
     )
-
-    # Pass artist through from Step Function input
-    artist = event.get("artist", "sam_francis") if isinstance(event, dict) else "sam_francis"
-    for r in regions:
-        r["artist"] = artist
 
     return {"regions": regions}
 

@@ -1,54 +1,69 @@
 {% extends "base.html" %}
 
-{% block title %}{{ slug }} — {{ date }} — art.jt{% endblock %}
+{% block title %}{{ slug|replace('-', ' ')|title }} — {{ date }} — art.jt{% endblock %}
+
+{% set run_id = artwork.run_id|default(date) %}
 
 {% block meta %}
-<meta property="og:title" content="{{ slug }} weather art — {{ date }}">
-<meta property="og:image" content="/weather/{{ date }}/{{ slug }}/artwork.svg">
+<meta property="og:title" content="{{ slug|replace('-', ' ')|title }} weather art — {{ date }}">
+<meta property="og:image" content="/weather/{{ run_id }}/{{ slug }}/artwork.svg">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ slug }} weather art — {{ date }}">
-<meta name="twitter:image" content="/weather/{{ date }}/{{ slug }}/artwork.svg">
+<meta name="twitter:title" content="{{ slug|replace('-', ' ')|title }} weather art — {{ date }}">
+<meta name="twitter:image" content="/weather/{{ run_id }}/{{ slug }}/artwork.svg">
 {% endblock %}
 
 {% block content %}
 <div class="breadcrumb">
   <a href="/">Home</a>
-  <span><a href="/weather/">Weather Art</a></span>
-  <span><a href="/weather/{{ date }}/">{{ date }}</a></span>
-  <span>{{ slug }}</span>
+  <span><a href="/weather/">Archive</a></span>
+  <span><a href="/weather/{{ run_id }}/">{{ run_id }}</a></span>
+  <span>{{ slug|replace('-', ' ')|title }}</span>
 </div>
 
-<h1>{{ slug }}</h1>
+<h1>{{ slug|replace('-', ' ')|title }}</h1>
 
 <div class="svg-viewer">
-  <img src="/weather/{{ date }}/{{ slug }}/artwork.svg" alt="{{ slug }} SVG artwork">
+  <img src="/weather/{{ run_id }}/{{ slug }}/artwork.svg" alt="{{ slug }} SVG artwork">
 </div>
 
 <div>
-  <a href="/weather/{{ date }}/{{ slug }}/artwork.svg" class="download-btn" download>SVG</a>
-  <a href="/weather/{{ date }}/{{ slug }}/artwork.svg" class="download-btn" download>PNG 2048</a>
-  <a href="/weather/{{ date }}/{{ slug }}/preview-4k.png" class="download-btn" download>PNG 4K</a>
+  <a href="/weather/{{ run_id }}/{{ slug }}/artwork.svg" class="download-btn" download>Download SVG</a>
 </div>
 
+{% if artwork.rationale %}
+<div style="margin:1.5rem 0; padding:1rem; background:#111; border:1px solid #2a2a2a; border-radius:8px;">
+  <h2 style="font-size:1.1rem; margin-bottom:0.5rem;">Creative Rationale</h2>
+  <p style="color:#bbb; line-height:1.7;">{{ artwork.rationale }}</p>
+</div>
+{% endif %}
+
 <div class="metadata">
-  <h2>Metadata</h2>
+  <h2>Atmospheric Data</h2>
   <dl>
     <dt>Date</dt>
     <dd>{{ artwork.date|default(date) }}</dd>
     <dt>Location</dt>
-    <dd>{{ artwork.slug|default(slug) }}</dd>
+    <dd>{{ artwork.lat|default('') }}, {{ artwork.lng|default('') }} ({{ slug|replace('-', ' ')|title }})</dd>
     {% if artwork.pressure is defined and artwork.pressure %}
     <dt>Pressure</dt>
-    <dd>{{ artwork.pressure }} Pa</dd>
+    <dd>{{ artwork.pressure }} hPa (gradient: {{ artwork.pressure_gradient|default('') }})</dd>
     {% endif %}
     {% if artwork.wind_speed is defined and artwork.wind_speed %}
     <dt>Wind</dt>
-    <dd>{{ artwork.wind_speed }} m/s from {{ artwork.wind_direction|default('—') }}&deg;</dd>
+    <dd>{{ artwork.wind_speed }} m/s from {{ artwork.wind_direction|default('') }}&deg;</dd>
     {% endif %}
     {% if artwork.temp is defined and artwork.temp %}
     <dt>Temperature</dt>
-    <dd>{{ artwork.temp }} K</dd>
+    <dd>{{ artwork.temp }}&deg;C (anomaly: {{ artwork.temp_anomaly|default('') }}&deg;C)</dd>
+    {% endif %}
+    {% if artwork.humidity is defined and artwork.humidity %}
+    <dt>Humidity</dt>
+    <dd>{{ artwork.humidity }}%</dd>
+    {% endif %}
+    {% if artwork.precipitation is defined and artwork.precipitation %}
+    <dt>Precipitation</dt>
+    <dd>{{ artwork.precipitation }} mm</dd>
     {% endif %}
     {% if artwork.score is defined and artwork.score %}
     <dt>Visual Interest Score</dt>
@@ -57,10 +72,23 @@
   </dl>
 </div>
 
-{% if artwork.rationale %}
-<div>
-  <h2>Creative Rationale</h2>
-  <p>{{ artwork.rationale }}</p>
+<div class="metadata">
+  <h2>Technical Details</h2>
+  <dl>
+    <dt>Model</dt>
+    <dd>Claude Sonnet 4 (us.anthropic.claude-sonnet-4-20250514-v1:0) via Amazon Bedrock</dd>
+    <dt>Artist Inspiration</dt>
+    <dd>{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }}</dd>
+    <dt>Weather Source</dt>
+    <dd>Open-Meteo API (GFS model)</dd>
+    <dt>Format</dt>
+    <dd>SVG (2048&times;2048 viewBox)</dd>
+    <dt>Generated</dt>
+    <dd>{{ artwork.created_at|default(run_id) }}</dd>
+    <dt>Compute</dt>
+    <dd>AWS Lambda (Python 3.12, 512 MB, us-east-1)</dd>
+    <dt>Run ID</dt>
+    <dd>{{ run_id }}</dd>
+  </dl>
 </div>
-{% endif %}
 {% endblock %}

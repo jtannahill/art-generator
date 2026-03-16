@@ -9,7 +9,8 @@
   <span>{{ date }}</span>
 </div>
 
-<h1>Weather Art &mdash; {{ date }}</h1>
+{% set artist_name = artworks[0].artist|default('sam_francis')|replace('_', ' ')|title if artworks else '' %}
+<h1>Weather Art &mdash; {{ date }} <span style="font-size:0.9rem; color:#888; font-weight:normal;">inspired by {{ artist_name }}</span></h1>
 
 <div class="grid">
   {% for item in artworks %}

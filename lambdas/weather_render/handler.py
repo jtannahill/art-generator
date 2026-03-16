@@ -24,7 +24,9 @@ def handler(event, context):
     renders PNG, saves to S3 + DynamoDB."""
     region = event
     date = region.get("date", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+    run_id = region.get("run_id", date)
     slug = region["slug"]
+    artist = region.get("artist", "sam_francis")
 
     prompt = build_art_prompt(region)
     svg_text = None
@@ -61,8 +63,8 @@ def handler(event, context):
     except Exception as e:
         print(f"PNG rendering skipped (Cairo not available): {e}")
 
-    # Build S3 paths
-    prefix = f"weather/{date}/{slug}"
+    # Build S3 paths — use run_id for unique storage per generation
+    prefix = f"weather/{run_id}/{slug}"
 
     # Save to S3
     s3 = boto3.client("s3")
@@ -89,7 +91,9 @@ def handler(event, context):
 
     metadata = {
         "date": date,
+        "run_id": run_id,
         "slug": slug,
+        "artist": artist,
         "lat": region["lat"],
         "lng": region["lng"],
         "score": region["score"],
@@ -116,7 +120,7 @@ def handler(event, context):
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(TABLE_NAME)
     item = {
-        "PK": f"WEATHER#{date}",
+        "PK": f"WEATHER#{run_id}",
         "SK": slug,
         **{k: _convert_dynamo(v) for k, v in metadata.items()},
     }
@@ -183,12 +187,27 @@ def extract_svg(text):
 
 
 def extract_rationale(text):
-    """Gets explanation text before the SVG."""
+    """Gets explanation text before the SVG, cleaned of markdown artifacts."""
     match = re.search(r"<svg", text, re.IGNORECASE)
     if match:
         before = text[: match.start()].strip()
-        return before if before else None
-    return text.strip() if text.strip() else None
+    else:
+        before = text.strip() if text.strip() else None
+
+    if not before:
+        return None
+
+    # Clean markdown artifacts
+    clean = before
+    clean = re.sub(r"\*\*Artistic Interpretation:\*\*\s*", "", clean)
+    clean = re.sub(r"\*\*[^*]+\*\*:?\s*", "", clean)  # Remove **bold** labels
+    clean = re.sub(r"```\w*", "", clean)  # Remove code fences
+    clean = re.sub(r"`", "", clean)  # Remove backticks
+    clean = re.sub(r"#{1,3}\s+", "", clean)  # Remove markdown headers
+    clean = re.sub(r"\n{2,}", " ", clean)  # Collapse multiple newlines
+    clean = clean.strip()
+
+    return clean if clean else None
 
 
 ARTIST_PROMPTS = {

@@ -30,8 +30,8 @@ def handler(event, context):
     for item in palette_items:
         item["colors_parsed"] = _parse_colors(item.get("colors", "[]"))
 
-    # Group data
-    weather_by_date = group_by_date(weather_items, prefix="WEATHER#")
+    # Group data — weather is keyed by run_id (WEATHER#2026-03-16-130500)
+    weather_by_run = group_by_date(weather_items, prefix="WEATHER#")
     palettes_by_location = group_by_location(palette_items)
     palettes_by_date = group_palette_by_date(palette_items)
 
@@ -40,23 +40,23 @@ def handler(event, context):
 
     pages = {}
 
-    # Render index
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    today_weather = weather_by_date.get(today, [])
+    # Get latest run for index page
+    latest_run = max(weather_by_run.keys()) if weather_by_run else None
+    today_weather = weather_by_run[latest_run] if latest_run else []
     latest_palettes = _latest_palettes(palettes_by_location)
     pages["site/index.html"] = env.get_template("index.html").render(
         today_weather=today_weather,
         latest_palettes=latest_palettes,
-        today=today,
+        latest_run=latest_run,
     )
 
-    # Render weather archive
+    # Render weather archive — all runs
     pages["site/weather/index.html"] = env.get_template("weather_archive.html").render(
-        weather_by_date=weather_by_date,
+        weather_by_run=weather_by_run,
     )
 
     # Render weather day pages
-    for date, artworks in weather_by_date.items():
+    for date, artworks in weather_by_run.items():
         pages[f"site/weather/{date}/index.html"] = env.get_template(
             "weather_day.html"
         ).render(date=date, artworks=artworks)
@@ -97,7 +97,7 @@ def handler(event, context):
         )
 
     # Copy artwork assets into site/ prefix so CloudFront can serve them
-    _copy_assets_to_site(s3, weather_by_date, palettes_by_date)
+    _copy_assets_to_site(s3, weather_by_run, palettes_by_date)
 
     # Invalidate CloudFront
     if DISTRIBUTION_ID:
@@ -115,7 +115,7 @@ def handler(event, context):
 
     return {
         "pages_rendered": len(pages),
-        "weather_dates": len(weather_by_date),
+        "weather_dates": len(weather_by_run),
         "palette_locations": len(palettes_by_location),
     }
 
@@ -209,9 +209,9 @@ def _latest_palettes(palettes_by_location):
     return latest
 
 
-def _copy_assets_to_site(s3, weather_by_date, palettes_by_date):
+def _copy_assets_to_site(s3, weather_by_run, palettes_by_date):
     """Copy artwork SVGs and palette assets into the site/ prefix for CloudFront."""
-    for date, artworks in weather_by_date.items():
+    for date, artworks in weather_by_run.items():
         for artwork in artworks:
             slug = artwork.get("SK", artwork.get("slug", ""))
             src_prefix = f"weather/{date}/{slug}/"

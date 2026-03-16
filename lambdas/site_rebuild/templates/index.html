@@ -22,13 +22,14 @@
       <span class="spinner"></span>
       Generate
     </button>
+    <a id="artist-link" href="https://www.guggenheim.org/artwork/artist/sam-francis" target="_blank" rel="noopener" style="font-size:0.75rem; color:#666;">about this artist</a>
   </div>
 </div>
 {% if today_weather %}
 <div class="grid">
   {% for item in today_weather %}
-  <a href="/weather/{{ today }}/{{ item.SK }}/" class="card">
-    <img src="/weather/{{ today }}/{{ item.SK }}/artwork.svg" alt="{{ item.slug|default(item.SK) }} weather art" loading="lazy">
+  <a href="/weather/{{ item.run_id|default(latest_run) }}/{{ item.SK }}/" class="card">
+    <img src="/weather/{{ item.run_id|default(latest_run) }}/{{ item.SK }}/artwork.svg" alt="{{ item.slug|default(item.SK) }} weather art" loading="lazy">
     <div class="card-body">
       <h3>{{ item.slug|default(item.SK)|replace('-', ' ')|title }}</h3>
       <p class="card-description">{{ item.rationale|default('') }}</p>
@@ -64,6 +65,23 @@
 {% endif %}
 
 <script>
+var artistLinks = {
+  sam_francis: 'https://www.guggenheim.org/artwork/artist/sam-francis',
+  gerhard_richter: 'https://www.guggenheim.org/artwork/artist/gerhard-richter',
+  hilma_af_klint: 'https://www.guggenheim.org/artwork/artist/hilma-af-klint',
+  wassily_kandinsky: 'https://www.guggenheim.org/artwork/artist/vasily-kandinsky',
+  helen_frankenthaler: 'https://www.guggenheim.org/artwork/artist/helen-frankenthaler',
+  piet_mondrian: 'https://www.guggenheim.org/artwork/artist/piet-mondrian',
+  yayoi_kusama: 'https://www.guggenheim.org/artwork/artist/yayoi-kusama',
+  mark_rothko: 'https://www.guggenheim.org/artwork/artist/mark-rothko',
+  bridget_riley: 'https://www.tate.org.uk/art/artists/bridget-riley-1845',
+  kazimir_malevich: 'https://www.guggenheim.org/artwork/artist/kazimir-malevich'
+};
+document.getElementById('artist-select').addEventListener('change', function() {
+  var link = document.getElementById('artist-link');
+  link.href = artistLinks[this.value] || '#';
+});
+
 function generateArt(btn) {
   btn.classList.add('loading');
   var toast = document.getElementById('toast');

@@ -10,12 +10,13 @@
 
 <h1>Weather Art Archive</h1>
 
-{% for date, artworks in weather_by_date.items() %}
-<h2><a href="/weather/{{ date }}/">{{ date }}</a></h2>
+{% for run_id, artworks in weather_by_date.items() %}
+{% set artist_name = artworks[0].artist|default('sam_francis')|replace('_', ' ')|title if artworks else '' %}
+<h2><a href="/weather/{{ run_id }}/">{{ run_id }}</a> <span style="font-size:0.8rem; color:#888; font-weight:normal;">{{ artist_name }}</span></h2>
 <div class="grid">
   {% for item in artworks %}
-  <a href="/weather/{{ date }}/{{ item.SK }}/" class="card">
-    <img src="/weather/{{ date }}/{{ item.SK }}/artwork.svg" alt="{{ item.slug|default(item.SK) }}" loading="lazy">
+  <a href="/weather/{{ run_id }}/{{ item.SK }}/" class="card">
+    <img src="/weather/{{ run_id }}/{{ item.SK }}/artwork.svg" alt="{{ item.slug|default(item.SK) }}" loading="lazy">
     <div class="card-body">
       <h3>{{ item.slug|default(item.SK)|replace('-', ' ')|title }}</h3>
       <p class="card-description">{{ item.rationale|default('') }}</p>
