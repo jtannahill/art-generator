@@ -12,7 +12,11 @@
 
 {% for run_id, artworks in weather_by_run.items() %}
 {% set artist_name = artworks[0].artist|default('sam_francis')|replace('_', ' ')|title if artworks else '' %}
-<h2><a href="/weather/{{ run_id }}/">{{ run_id }}</a> <span style="font-size:0.8rem; color:#888; font-weight:normal;">{{ artist_name }}</span></h2>
+{% set run_date = run_id[:10] if run_id|length > 10 else run_id %}
+<div style="display:flex; align-items:baseline; gap:1rem; margin:2.5rem 0 1rem; border-bottom:1px solid #222; padding-bottom:0.75rem;">
+  <h2 style="margin:0;"><a href="/weather/{{ run_id }}/" style="color:#fff;">{{ run_date }}</a></h2>
+  <span style="font-size:1rem; color:#c4b5fd; font-weight:500; letter-spacing:0.5px;">inspired by {{ artist_name }}</span>
+</div>
 <div class="grid">
   {% for item in artworks %}
   <a href="/weather/{{ run_id }}/{{ item.SK }}/" class="card">

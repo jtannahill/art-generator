@@ -223,7 +223,7 @@ ARTIST_PROMPTS = {
     "mark_rothko": "Mark Rothko — luminous color field paintings with soft-edged rectangular forms floating on the canvas. Two or three horizontal bands of deeply saturated color that seem to glow from within. Contemplative, immersive, emotional.",
     "bridget_riley": "Bridget Riley — op art with precise geometric patterns that create optical illusions of movement and vibration. Undulating lines, chevrons, and curves in carefully calibrated color relationships.",
     "kazimir_malevich": "Kazimir Malevich — suprematist compositions with basic geometric forms (squares, circles, crosses, rectangles) floating in white space. Bold, flat colors. Dynamic diagonal arrangements suggesting weightlessness and cosmic space.",
-    "lesley_tannahill": "Lesley Tannahill — contemporary mixed-media artist working across painting, drawing, and printmaking. Expressive mark-making with layered textures, intuitive color relationships, and gestural energy. Works that balance controlled composition with spontaneous, raw expression. Rich surface quality with visible process.",
+    "lesley_tannahill": "Lesley Tannahill — California conceptual painter working in large-scale acrylic on canvas (72x72 inches). Her practice explores cognition, memory, and the geometric structure of thought through layered, reworked compositions that evolve over years. Dense palimpsests of paint where earlier marks show through later layers — deconstructing and reconstructing visual information. Fragments of recognizable form emerge from and dissolve into abstract fields. The tension between chaotic input and structured output, between knowing and not-knowing, drives compositions that feel simultaneously precise and intuitive.",
 }
 
 
