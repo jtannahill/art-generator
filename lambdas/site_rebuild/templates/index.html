@@ -17,6 +17,7 @@
       <option value="mark_rothko">Mark Rothko</option>
       <option value="bridget_riley">Bridget Riley</option>
       <option value="kazimir_malevich">Kazimir Malevich</option>
+      <option value="lesley_tannahill">Lesley Tannahill</option>
     </select>
     <button class="generate-btn" onclick="generateArt(this)" style="margin-bottom:0">
       <span class="spinner"></span>
@@ -75,7 +76,8 @@ var artistLinks = {
   yayoi_kusama: 'https://www.guggenheim.org/artwork/artist/yayoi-kusama',
   mark_rothko: 'https://www.guggenheim.org/artwork/artist/mark-rothko',
   bridget_riley: 'https://www.tate.org.uk/art/artists/bridget-riley-1845',
-  kazimir_malevich: 'https://www.guggenheim.org/artwork/artist/kazimir-malevich'
+  kazimir_malevich: 'https://www.guggenheim.org/artwork/artist/kazimir-malevich',
+  lesley_tannahill: 'https://lesleytannahill.com'
 };
 document.getElementById('artist-select').addEventListener('change', function() {
   var link = document.getElementById('artist-link');

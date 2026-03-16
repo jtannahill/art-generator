@@ -199,13 +199,15 @@ def extract_rationale(text):
 
     # Clean markdown artifacts
     clean = before
-    clean = re.sub(r"\*\*Artistic Interpretation:\*\*\s*", "", clean)
-    clean = re.sub(r"\*\*[^*]+\*\*:?\s*", "", clean)  # Remove **bold** labels
-    clean = re.sub(r"```\w*", "", clean)  # Remove code fences
+    clean = re.sub(r"\*\*[^*]*\*\*:?\s*", "", clean)  # Remove **bold** labels
+    clean = re.sub(r"```\w*\s*", "", clean)  # Remove code fences
     clean = re.sub(r"`", "", clean)  # Remove backticks
     clean = re.sub(r"#{1,3}\s+", "", clean)  # Remove markdown headers
-    clean = re.sub(r"\n{2,}", " ", clean)  # Collapse multiple newlines
-    clean = clean.strip()
+    clean = re.sub(r"\*", "", clean)  # Remove remaining asterisks
+    clean = re.sub(r"\n+", " ", clean)  # Collapse all newlines to spaces
+    clean = re.sub(r"\s{2,}", " ", clean)  # Collapse multiple spaces
+    clean = clean.strip().rstrip("."  ) + "."  # Ensure ends with period
+    clean = clean.replace("..", ".")  # Fix double period
 
     return clean if clean else None
 
@@ -221,6 +223,7 @@ ARTIST_PROMPTS = {
     "mark_rothko": "Mark Rothko — luminous color field paintings with soft-edged rectangular forms floating on the canvas. Two or three horizontal bands of deeply saturated color that seem to glow from within. Contemplative, immersive, emotional.",
     "bridget_riley": "Bridget Riley — op art with precise geometric patterns that create optical illusions of movement and vibration. Undulating lines, chevrons, and curves in carefully calibrated color relationships.",
     "kazimir_malevich": "Kazimir Malevich — suprematist compositions with basic geometric forms (squares, circles, crosses, rectangles) floating in white space. Bold, flat colors. Dynamic diagonal arrangements suggesting weightlessness and cosmic space.",
+    "lesley_tannahill": "Lesley Tannahill — contemporary mixed-media artist working across painting, drawing, and printmaking. Expressive mark-making with layered textures, intuitive color relationships, and gestural energy. Works that balance controlled composition with spontaneous, raw expression. Rich surface quality with visible process.",
 }
 
 
@@ -256,8 +259,12 @@ Artistic direction:
 - Each piece should feel unique — vary your approach while staying true to the artist's aesthetic.
 
 Technical requirements:
-1. First, briefly explain your artistic interpretation (2-3 sentences)
-2. Then output the complete SVG
+1. First, write 2-3 sentences explaining your artistic interpretation. Begin by naming the
+   real-world geography of this location (e.g., "Over the North Atlantic south of Iceland..."
+   or "Above the Saharan coast near Mauritania..."). Then describe how the atmospheric
+   conditions shaped your visual choices. Write in plain prose — no markdown, no bold, no
+   headers, no code fences.
+2. Then output the complete SVG on its own line starting with <svg
 3. Use gradients, filters, organic shapes, and layered transparency — no text elements
 4. The SVG must be valid XML and self-contained (no external references)
 5. Use the viewBox="0 0 2048 2048" attribute on the root <svg> element
