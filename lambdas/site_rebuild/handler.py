@@ -94,8 +94,10 @@ def handler(event, context):
             api_url=api_url,
         )
 
-    # Render about page
+    # Render about, privacy, terms pages
     pages["site/about/index.html"] = env.get_template("about.html").render()
+    pages["site/privacy/index.html"] = env.get_template("privacy.html").render()
+    pages["site/terms/index.html"] = env.get_template("terms.html").render()
 
     # Generate robots.txt
     pages["site/robots.txt"] = "User-agent: *\nAllow: /\nSitemap: https://art.jamestannahill.com/sitemap.xml\n"
@@ -106,6 +108,8 @@ def handler(event, context):
         ("https://art.jamestannahill.com/weather/", "daily", "0.9"),
         ("https://art.jamestannahill.com/artist/", "weekly", "0.8"),
         ("https://art.jamestannahill.com/about/", "monthly", "0.7"),
+        ("https://art.jamestannahill.com/privacy/", "yearly", "0.3"),
+        ("https://art.jamestannahill.com/terms/", "yearly", "0.3"),
     ]
     for artist_key in artist_info:
         sitemap_urls.append((f"https://art.jamestannahill.com/artist/{artist_key}/", "daily", "0.7"))
@@ -141,7 +145,7 @@ Weather data from Open-Meteo API (GFS/NOAA model) → scored for visual interest
 ## Licensing
 Artwork: CC BY-NC-ND 4.0 (attribution required, no commercial use, no derivatives)
 Code: All Rights Reserved
-Contact: james@plocamium.ventures
+Contact: art@jamestannahill.com
 """
 
     # Render palette archive

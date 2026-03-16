@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy — art.jt{% endblock %}
+{% block description %}Privacy policy for art.jamestannahill.com — generative weather art by James Tannahill.{% endblock %}
+{% block canonical_path %}/privacy/{% endblock %}
+
+{% block content %}
+<div style="max-width:720px; margin:0 auto;">
+
+<h1>Privacy Policy</h1>
+<p style="color:#666; margin-bottom:1.5rem;">Last updated: March 16, 2026</p>
+
+<h2>Overview</h2>
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+art.jamestannahill.com is a generative art project by James Tannahill. This site is designed to be privacy-friendly. We do not collect personal information, require accounts, or use tracking cookies.
+</p>
+
+<h2>What We Don't Collect</h2>
+<ul style="color:#aaa; line-height:2; margin-bottom:1.5rem; padding-left:1.5rem;">
+  <li>No personal information (name, email, phone)</li>
+  <li>No user accounts or login credentials</li>
+  <li>No tracking cookies or advertising pixels</li>
+  <li>No analytics or behavioral tracking</li>
+  <li>No form submissions or user-generated content</li>
+</ul>
+
+<h2>Infrastructure</h2>
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+This site is served via Amazon CloudFront (CDN). CloudFront may set technical cookies for performance and security purposes (such as session affinity). These are not used for tracking or advertising. Standard web server logs (IP address, user agent, requested URL) may be retained by AWS infrastructure for security and operational purposes.
+</p>
+
+<h2>Third-Party Services</h2>
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+The "Generate New Art" feature makes requests to AWS Lambda endpoints. No personal data is transmitted — only the selected artist preference. Weather data is sourced from Open-Meteo (public API). Satellite imagery is sourced from Copernicus/ESA (public data).
+</p>
+
+<h2>Artwork Downloads</h2>
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+SVG artwork files are available for download. Downloaded files contain no tracking mechanisms, metadata, or personal information. Artwork is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>.
+</p>
+
+<h2>Contact</h2>
+<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
+For privacy-related inquiries: <a href="mailto:art@jamestannahill.com">art@jamestannahill.com</a>
+</p>
+
+</div>
+{% endblock %}

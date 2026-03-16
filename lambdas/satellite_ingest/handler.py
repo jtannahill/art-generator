@@ -90,14 +90,23 @@ def fetch_sentinel2_image(token: str, location: dict, date: str):
             cloud_cover = attr["Value"]
             break
 
-    # Download quicklook
-    quicklook_url = (
-        f"https://zipper.dataspace.copernicus.eu/odata/v1/Products({product_id})/Quicklook"
-    )
-    img_resp = requests.get(quicklook_url, headers=headers, timeout=120)
-    img_resp.raise_for_status()
+    # Download quicklook — try multiple endpoint patterns
+    quicklook_urls = [
+        f"https://catalogue.dataspace.copernicus.eu/odata/v1/Assets({product_id})/$value",
+        f"https://datahub.creodias.eu/odata/v1/Products({product_id})/Quicklook/$value",
+        f"https://zipper.dataspace.copernicus.eu/odata/v1/Products({product_id})/Quicklook",
+    ]
 
-    return img_resp.content, cloud_cover
+    for ql_url in quicklook_urls:
+        try:
+            img_resp = requests.get(ql_url, headers=headers, timeout=120)
+            if img_resp.status_code == 200 and len(img_resp.content) > 1000:
+                return img_resp.content, cloud_cover
+        except Exception:
+            continue
+
+    print(f"  No quicklook available for {product_id}")
+    return None, None
 
 
 def handler(event, context):
