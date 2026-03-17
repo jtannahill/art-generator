@@ -1,43 +1,96 @@
 {% extends "base.html" %}
 
-{% block title %}{{ location }} Palettes — art.jt{% endblock %}
+{% block title %}{{ palettes[0].name|default(location)|replace('-', ' ')|title }} — Satellite Palettes — art.jt{% endblock %}
+{% block description %}Color palettes extracted from Copernicus Sentinel-2 satellite imagery of {{ palettes[0].name|default(location)|replace('-', ' ')|title }}. Seasonal color archive from space.{% endblock %}
+{% block canonical_path %}/palettes/{{ location }}/{% endblock %}
 
 {% block content %}
 <div class="breadcrumb">
   <a href="/">Home</a>
   <span><a href="/palettes/">Palettes</a></span>
-  <span>{{ location }}</span>
+  <span>{{ palettes[0].name|default(location)|replace('-', ' ')|title }}</span>
 </div>
 
-<h1>{{ location }}</h1>
+<h1>{{ palettes[0].name|default(location)|replace('-', ' ')|title }}</h1>
+<p style="color:#888; margin-bottom:2rem;">{{ palettes|length }} palette{{ 's' if palettes|length != 1 else '' }} extracted from Sentinel-2 satellite imagery</p>
 
 {% for item in palettes %}
-<div class="card" style="margin-bottom: 1.5rem;">
+<div class="card" style="margin-bottom:1.5rem;">
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;" >
+    <img src="/palettes/{{ item.SK }}/{{ location }}/source-thumb.jpg" alt="{{ item.name|default(location) }} satellite" loading="lazy" style="width:100%; aspect-ratio:1; object-fit:cover;">
+    <div style="display:flex; flex-direction:column;">
+      <div class="swatch-strip" style="flex:1; border-radius:0; height:auto;">
+        {% for color in item.colors_parsed %}
+        <div style="background:{{ color.hex|default(color) }}; flex:1;" data-hex="{{ color.hex|default(color) }}"></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
   <div class="card-body">
-    <h3>{{ item.SK }}</h3>
+    <h3>{{ item.SK }} — {{ item.season|default('') | title }}</h3>
 
-    <div class="swatch-strip">
+    {% if item.mood %}
+    <p style="font-style:italic; color:#aaa; margin-bottom:1rem; line-height:1.7;">{{ item.mood }}</p>
+    {% endif %}
+
+    <div style="margin-bottom:1rem;">
       {% for color in item.colors_parsed %}
-      <div style="background:{{ color }}" data-hex="{{ color }}"></div>
+      <span style="display:inline-block; width:28px; height:28px; background:{{ color.hex|default(color) }}; border-radius:4px; margin:0 4px 4px 0; cursor:pointer; vertical-align:middle;" onclick="navigator.clipboard.writeText('{{ color.hex|default(color) }}'); document.getElementById('toast').textContent='Copied {{ color.hex|default(color) }}'; document.getElementById('toast').classList.add('show'); setTimeout(function(){document.getElementById('toast').classList.remove('show')},1500);"></span>
       {% endfor %}
     </div>
 
-    <p style="margin: 0.5rem 0;">
+    <div style="font-size:0.85rem; color:#888; margin-bottom:1rem;">
       {% for color in item.colors_parsed %}
-      <code style="color:{{ color }}; margin-right: 0.5rem;">{{ color }}</code>
+      <code style="color:{{ color.hex|default(color) }}; margin-right:0.75rem; cursor:pointer;" onclick="navigator.clipboard.writeText('{{ color.hex|default(color) }}')">{{ color.hex|default(color) }}</code>
       {% endfor %}
-    </p>
+    </div>
 
-    {% if item.mood %}
-    <p style="font-style: italic; color: #999;">{{ item.mood }}</p>
-    {% endif %}
+    <div class="metadata">
+      <h3 style="font-size:0.95rem; margin-bottom:0.5rem;">Satellite Data</h3>
+      <dl>
+        <dt>Location</dt>
+        <dd>{{ item.name|default(location)|replace('-', ' ')|title }}</dd>
+        <dt>Coordinates</dt>
+        <dd>{{ item.lat|default('') }}°, {{ item.lng|default('') }}°</dd>
+        <dt>Date</dt>
+        <dd>{{ item.SK }}</dd>
+        <dt>Season</dt>
+        <dd>{{ item.season|default('—')|title }}</dd>
+        {% if item.cloud_cover is defined and item.cloud_cover is not none %}
+        <dt>Cloud Cover</dt>
+        <dd>{{ item.cloud_cover }}%</dd>
+        {% endif %}
+        <dt>Colors Extracted</dt>
+        <dd>{{ item.colors_parsed|length }}</dd>
+      </dl>
+    </div>
 
-    <div style="margin-top: 0.75rem;">
-      {% if item.swatch_key %}
-      <a href="/{{ item.swatch_key }}" class="download-btn" download>PNG</a>
-      {% endif %}
+    <div class="metadata">
+      <h3 style="font-size:0.95rem; margin-bottom:0.5rem;">Technical Details</h3>
+      <dl>
+        <dt>Source</dt>
+        <dd>Copernicus Sentinel-2 L2A (European Space Agency)</dd>
+        <dt>Bands</dt>
+        <dd>B04 (Red), B03 (Green), B02 (Blue) — true color composite</dd>
+        <dt>Resolution</dt>
+        <dd>10m ground resolution, rendered at 512×512px</dd>
+        <dt>Extraction</dt>
+        <dd>Median cut color quantization (Pillow)</dd>
+        <dt>Mood</dt>
+        <dd>Claude Sonnet 4 via Amazon Bedrock</dd>
+      </dl>
+    </div>
+
+    <div style="margin-top:0.75rem;">
+      <a href="/palettes/{{ item.SK }}/{{ location }}/swatch.png" class="download-btn" download>Download Swatch PNG</a>
+      <a href="/palettes/{{ item.SK }}/{{ location }}/metadata.json" class="download-btn" download>Download JSON</a>
+      <a href="/palettes/{{ item.SK }}/{{ location }}/source-thumb.jpg" class="download-btn" download>Download Satellite Image</a>
     </div>
   </div>
 </div>
 {% endfor %}
+
+<div style="margin:1.5rem 0; padding:1rem; background:#0d0d0d; border:1px solid #1a1a1a; border-radius:6px; font-size:0.8rem; color:#666;">
+  <strong style="color:#888;">License:</strong> Satellite imagery: <a href="https://dataspace.copernicus.eu/" target="_blank" rel="noopener">Copernicus Sentinel-2</a> (ESA). Color palettes and mood descriptions licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>.
+</div>
 {% endblock %}
