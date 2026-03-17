@@ -48,9 +48,9 @@
 <div class="grid">
   {% for item in latest_palettes %}
   <a href="/palettes/{{ item.location_slug }}/" class="card">
-    <img src="/{{ item.swatch_key }}" alt="{{ item.location_slug }} palette" loading="lazy">
+    <img src="/palettes/{{ item.SK|default(item.date) }}/{{ item.location_slug }}/source-thumb.jpg" alt="{{ item.location_slug }} satellite" loading="lazy">
     <div class="card-body">
-      <h3>{{ item.get('name', item.location_slug) }}</h3>
+      <h3>{{ item.name|default(item.location_slug)|replace('-', ' ')|title }}</h3>
       <div class="swatch-strip">
         {% for color in item.colors_parsed %}
         <div style="background:{{ color }}" data-hex="{{ color }}"></div>
