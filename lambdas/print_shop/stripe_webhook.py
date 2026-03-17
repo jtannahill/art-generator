@@ -7,8 +7,14 @@ from decimal import Decimal
 import stripe
 from botocore.exceptions import ClientError
 
-from .notifications import send_confirmation, send_fulfillment_alert
-from .tps_client import TpsClient
+try:
+    from notifications import send_confirmation, send_fulfillment_alert
+except ImportError:
+    from .notifications import send_confirmation, send_fulfillment_alert
+try:
+    from tps_client import TpsClient
+except ImportError:
+    from .tps_client import TpsClient
 
 
 def handle_checkout_completed(table, session: dict, tps_api_key: str) -> dict:

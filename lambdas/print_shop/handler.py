@@ -43,7 +43,7 @@ def handler(event, context):
 
 
 def _handle_editions(qs):
-    from .editions import get_editions
+    from editions import get_editions
     run_id = qs.get("run_id", "")
     slug = qs.get("slug", "")
     if not run_id or not slug:
@@ -55,8 +55,8 @@ def _handle_editions(qs):
 
 
 def _handle_checkout(event, qs):
-    from .checkout import create_checkout_session
-    from .secrets import get_secrets
+    from checkout import create_checkout_session
+    from secrets_loader import get_secrets
 
     body = json.loads(event.get("body", "{}"))
     run_id = body.get("run_id", qs.get("run_id", ""))
@@ -78,8 +78,8 @@ def _handle_checkout(event, qs):
 
 
 def _handle_stripe_webhook(event):
-    from .stripe_webhook import handle_checkout_completed
-    from .secrets import get_secrets
+    from stripe_webhook import handle_checkout_completed
+    from secrets_loader import get_secrets
 
     secrets = get_secrets()
     body = event.get("body", "")
@@ -98,8 +98,8 @@ def _handle_stripe_webhook(event):
 
 
 def _handle_tps_webhook(event):
-    from .tps_webhook import handle_tps_webhook
-    from .secrets import get_secrets
+    from tps_webhook import handle_tps_webhook
+    from secrets_loader import get_secrets
 
     secrets = get_secrets()
     body = event.get("body", "")

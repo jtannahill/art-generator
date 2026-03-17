@@ -6,7 +6,10 @@ from decimal import Decimal
 
 import boto3
 
-from .tiers import get_tiers_for_format
+try:
+    from tiers import get_tiers_for_format
+except ImportError:
+    from .tiers import get_tiers_for_format
 
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "art-generator-216890068001")
 
