@@ -1,6 +1,32 @@
 {% extends "base.html" %}
 
 {% block title %}{{ artist_display }} — art.jt{% endblock %}
+{% block description %}Generative weather art inspired by {{ artist_display }}. Each piece interprets real atmospheric data through this artist's visual language.{% endblock %}
+{% block canonical_path %}/artist/{{ artist_key }}/{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "{{ artist_display }} — Generative Weather Art",
+  "url": "https://art.jamestannahill.com/artist/{{ artist_key }}/",
+  "description": "Generative weather art inspired by {{ artist_display }}. Each piece interprets real atmospheric data through this artist's visual language.",
+  "isPartOf": {"@type": "WebSite", "url": "https://art.jamestannahill.com"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://art.jamestannahill.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Artists", "item": "https://art.jamestannahill.com/artist/"},
+    {"@type": "ListItem", "position": 3, "name": "{{ artist_display }}"}
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="breadcrumb">

@@ -324,6 +324,13 @@ def handler(event, context):
             slug = artwork.get("SK", artwork.get("slug", ""))
             sitemap_urls.append((f"https://art.jamestannahill.com/weather/{run_id}/{slug}/", "never", "0.5"))
 
+    # Palette pages
+    sitemap_urls.append(("https://art.jamestannahill.com/palettes/", "daily", "0.7"))
+    for location_slug in palettes_by_location:
+        sitemap_urls.append((f"https://art.jamestannahill.com/palettes/{location_slug}/", "weekly", "0.6"))
+    for date in palettes_by_date:
+        sitemap_urls.append((f"https://art.jamestannahill.com/palettes/{date}/", "never", "0.5"))
+
     sitemap_lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for url, freq, priority in sitemap_urls:
         sitemap_lines.append(f"  <url><loc>{url}</loc><changefreq>{freq}</changefreq><priority>{priority}</priority></url>")
@@ -333,19 +340,26 @@ def handler(event, context):
     # Generate llms.txt for AI crawlers
     pages["site/llms.txt"] = """# art.jamestannahill.com
 
-> Daily generative art from real atmospheric data, inspired by abstract expressionism.
+> Daily generative art from real atmospheric data, inspired by abstract expressionism. Limited edition prints available.
 
 ## About
-art.jt is a generative art project by James Tannahill. Every day, the system scans 50 global weather stations, identifies the 10 most visually dramatic atmospheric conditions, and generates original SVG artwork using Claude on Amazon Bedrock. The visual language draws from abstract expressionists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, and others.
+art.jt is a generative art project by James Tannahill. Every day, the system scans 50 global weather stations, identifies the 10 most visually dramatic atmospheric conditions, and generates original SVG artwork using Claude on Amazon Bedrock. A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery. The visual language draws from abstract expressionists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, Bridget Riley, Yayoi Kusama, and others.
 
 ## Pages
 - [Homepage](https://art.jamestannahill.com/) — Today's weather art with generate button
 - [Archive](https://art.jamestannahill.com/weather/) — All past generations, browsable by run
-- [Artists](https://art.jamestannahill.com/artist/) — Browse by artist with infinite scroll
-- [About](https://art.jamestannahill.com/about/) — About the project and artist
+- [Artists](https://art.jamestannahill.com/artist/) — Browse by artist inspiration (11 artists, infinite scroll)
+- [Duets](https://art.jamestannahill.com/duets/) — Same atmospheric data, two artistic lenses side by side
+- [Studies](https://art.jamestannahill.com/studies/) — Multi-day weather event tracking with day-by-day artwork
+- [World Map](https://art.jamestannahill.com/map/) — Interactive Mapbox globe with artwork and palette markers
+- [Satellite Palettes](https://art.jamestannahill.com/palettes/) — Color palettes from Sentinel-2 orbital imagery
+- [About](https://art.jamestannahill.com/about/) — About the project, the system, and the artist
+
+## Print Shop
+Limited edition giclée prints available on every artwork page. Printed on Hahnemühle German Etching 310gsm with Certificate of Authenticity. Edition of 5 per size. Ships worldwide via theprintspace.
 
 ## How It Works
-Weather data from Open-Meteo API (GFS/NOAA model) → scored for visual interest → Claude on Bedrock generates SVG in selected artist's style → archived permanently in S3 → static HTML gallery on CloudFront.
+Weather data from Open-Meteo API (GFS/NOAA model) → scored for visual interest (pressure 30%, wind 25%, temperature 20%, precipitation 15%, humidity 10%) → Claude on Bedrock generates SVG in selected artist's style → archived permanently in S3 → static HTML gallery on CloudFront. Satellite imagery from Copernicus Sentinel-2 → color quantization → mood briefs via Bedrock.
 
 ## Licensing
 Artwork: CC BY-NC-ND 4.0 (attribution required, no commercial use, no derivatives)

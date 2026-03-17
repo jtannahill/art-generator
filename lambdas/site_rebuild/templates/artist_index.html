@@ -13,7 +13,7 @@
     {% if works %}
     <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; aspect-ratio:1; overflow:hidden;">
       {% for w in works[:4] %}
-      <img src="/weather/{{ w.run_id }}/{{ w.slug }}/artwork.svg" alt="" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
+      <img src="/weather/{{ w.run_id }}/{{ w.slug }}/artwork.svg" alt="{{ name }} artwork" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
       {% endfor %}
       {% if works|length < 4 %}
         {% for _ in range(4 - works|length) %}

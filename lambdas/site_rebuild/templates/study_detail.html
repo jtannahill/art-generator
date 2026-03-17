@@ -4,6 +4,20 @@
 {% block description %}{{ study.name }} — tracking atmospheric conditions across {{ study.day_count|default(0) }} days and {{ study.coordinates|length }} locations through generative weather art.{% endblock %}
 {% block canonical_path %}/studies/{{ study.study_id }}/{% endblock %}
 
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://art.jamestannahill.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Studies", "item": "https://art.jamestannahill.com/studies/"},
+    {"@type": "ListItem", "position": 3, "name": "{{ study.name|default(study.study_id) }}"}
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="breadcrumb">
   <a href="/">Home</a>
@@ -209,7 +223,7 @@ function togglePlay() {
       {% if match %}
       <td style="padding:0.5rem; text-align:center;">
         <a href="/weather/{{ match.run_id }}/{{ match.slug }}/">
-          <img src="/weather/{{ match.run_id }}/{{ match.slug }}/artwork.svg" alt="" style="width:80px; height:80px; object-fit:contain; background:#111; border-radius:4px;" loading="lazy">
+          <img src="/weather/{{ match.run_id }}/{{ match.slug }}/artwork.svg" alt="Weather artwork" style="width:80px; height:80px; object-fit:contain; background:#111; border-radius:4px;" loading="lazy">
         </a>
       </td>
       {% else %}
