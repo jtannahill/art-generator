@@ -124,7 +124,7 @@
     <dt>Model</dt>
     <dd>Claude Sonnet 4 (us.anthropic.claude-sonnet-4-20250514-v1:0) via Amazon Bedrock</dd>
     <dt>Artist Inspiration</dt>
-    <dd>{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }}</dd>
+    <dd><a href="/artist/{{ artwork.artist|default('sam_francis') }}/">{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }}</a></dd>
     <dt>Weather Source</dt>
     <dd>Open-Meteo API (GFS model)</dd>
     <dt>Format</dt>

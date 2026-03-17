@@ -141,10 +141,37 @@ def handler(event, context):
                 "url": f"/weather/{a.get('run_id', run_id)}/{slug}/",
             })
 
+    # Build palette markers for map
+    map_palettes = []
+    for slug, pals in palettes_by_location.items():
+        if pals:
+            p = pals[0]  # latest
+            lat = float(p.get("lat", 0))
+            lng = float(p.get("lng", 0))
+            lat_str = f"{abs(lat):.0f}\u00b0{'N' if lat >= 0 else 'S'}"
+            lng_str = f"{abs(lng):.0f}\u00b0{'E' if lng >= 0 else 'W'}"
+            colors = []
+            for c in p.get("colors_parsed", []):
+                if isinstance(c, dict):
+                    colors.append(c.get("hex", ""))
+                elif isinstance(c, str):
+                    colors.append(c)
+            map_palettes.append({
+                "lat": lat,
+                "lng": lng,
+                "name": p.get("name", slug).replace("-", " ").title(),
+                "coords": f"{lat_str}, {lng_str}",
+                "mood": p.get("mood", ""),
+                "colors": colors,
+                "thumb_url": f"/palettes/{p.get('SK', '')}/{slug}/source-thumb.jpg",
+                "url": f"/palettes/{slug}/",
+            })
+
     import json as _json
     mapbox_token = os.environ.get("MAPBOX_TOKEN", "")
     pages["site/map/index.html"] = env.get_template("map.html").render(
         artworks_json=_json.dumps(map_artworks),
+        palettes_json=_json.dumps(map_palettes),
         mapbox_token=mapbox_token,
     )
 
