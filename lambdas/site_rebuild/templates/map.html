@@ -36,7 +36,7 @@ map.on('style.load', function() {
   });
 });
 
-var artworks = {{ artworks_json }};
+var artworks = {{ artworks_json|safe }};
 
 map.on('load', function() {
   artworks.forEach(function(a) {
