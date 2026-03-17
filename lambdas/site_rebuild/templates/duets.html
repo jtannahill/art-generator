@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Duets — art.jt{% endblock %}
+{% block description %}Same weather, two artists. See how different aesthetic frameworks interpret identical atmospheric conditions.{% endblock %}
+{% block canonical_path %}/duets/{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span>Duets</span>
+</div>
+
+<h1>Duets</h1>
+<p style="color:#888; margin-bottom:2rem; max-width:720px;">
+  Same atmospheric data, two artistic lenses. Each pair shows how different aesthetic frameworks —
+  Rothko's luminous fields vs Kusama's obsessive dots, Francis's explosive splatters vs Mondrian's rigid geometry —
+  produce radically different interpretations of identical weather conditions.
+</p>
+
+{% if duets %}
+{% for duet in duets %}
+<div style="margin-bottom:3rem; border:1px solid #222; border-radius:8px; overflow:hidden; background:#111;">
+  <div style="padding:1rem 1.5rem; border-bottom:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h3 style="margin:0; color:#fff;">{{ duet.location }}</h3>
+      <p style="color:#888; font-size:0.85rem; margin:0;">{{ duet.coords }} · {{ duet.temp }}°C · {{ duet.wind }} m/s · {{ duet.pressure }} hPa</p>
+    </div>
+    <span style="color:#555; font-size:0.8rem;">{{ duet.date }}</span>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; min-height:300px;">
+    <div style="border-right:1px solid #1a1a1a;">
+      <a href="{{ duet.left.url }}">
+        <img src="{{ duet.left.svg_url }}" alt="{{ duet.left.artist_name }}" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
+      </a>
+      <div style="padding:0.75rem 1rem; border-top:1px solid #1a1a1a;">
+        <a href="/artist/{{ duet.left.artist }}/" style="color:#c4b5fd; font-size:0.9rem; font-weight:500;">{{ duet.left.artist_name }}</a>
+      </div>
+    </div>
+    <div>
+      <a href="{{ duet.right.url }}">
+        <img src="{{ duet.right.svg_url }}" alt="{{ duet.right.artist_name }}" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
+      </a>
+      <div style="padding:0.75rem 1rem; border-top:1px solid #1a1a1a;">
+        <a href="/artist/{{ duet.right.artist }}/" style="color:#c4b5fd; font-size:0.9rem; font-weight:500;">{{ duet.right.artist_name }}</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div style="padding:3rem; text-align:center; background:#111; border:1px solid #222; border-radius:8px;">
+  <p style="color:#888; font-size:1.1rem; margin-bottom:0.5rem;">Duets will appear as more artist variations are generated.</p>
+  <p style="color:#555;">Generate art in different artist styles from the homepage — when two artists share the same weather location, they'll be paired here automatically.</p>
+</div>
+{% endif %}
+{% endblock %}

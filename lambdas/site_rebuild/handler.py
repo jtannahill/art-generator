@@ -270,6 +270,10 @@ def handler(event, context):
             mapbox_token=mapbox_token,
         )
 
+    # Render duets page — find artworks at same location by different artists
+    duets = _find_duets(weather_items)
+    pages["site/duets/index.html"] = env.get_template("duets.html").render(duets=duets)
+
     # Render about, privacy, terms pages
     pages["site/about/index.html"] = env.get_template("about.html").render()
     pages["site/privacy/index.html"] = env.get_template("privacy.html").render()
@@ -295,6 +299,7 @@ def handler(event, context):
         ("https://art.jamestannahill.com/artist/", "weekly", "0.8"),
         ("https://art.jamestannahill.com/about/", "monthly", "0.7"),
         ("https://art.jamestannahill.com/map/", "daily", "0.8"),
+        ("https://art.jamestannahill.com/duets/", "daily", "0.8"),
         ("https://art.jamestannahill.com/studies/", "daily", "0.8"),
         ("https://art.jamestannahill.com/privacy/", "yearly", "0.3"),
         ("https://art.jamestannahill.com/terms/", "yearly", "0.3"),
@@ -478,6 +483,69 @@ def _content_type(key):
     if key.endswith(".json"):
         return "application/json"
     return "text/html"
+
+
+def _find_duets(weather_items):
+    """Find pairs of artworks at the same location by different artists."""
+    # Group by approximate location (5-degree grid)
+    from collections import defaultdict
+    by_location = defaultdict(list)
+    for item in weather_items:
+        lat = int(float(item.get("lat", 0)) // 5) * 5
+        lng = int(float(item.get("lng", 0)) // 5) * 5
+        artist = item.get("artist", "unknown")
+        by_location[(lat, lng)].append(item)
+
+    duets = []
+    for (lat, lng), items in by_location.items():
+        # Find pairs with different artists
+        artists_seen = {}
+        for item in sorted(items, key=lambda x: x.get("run_id", ""), reverse=True):
+            artist = item.get("artist", "unknown")
+            if artist not in artists_seen:
+                artists_seen[artist] = item
+
+        # Create duets from pairs
+        artist_list = list(artists_seen.items())
+        for i in range(len(artist_list)):
+            for j in range(i + 1, len(artist_list)):
+                a1_key, a1 = artist_list[i]
+                a2_key, a2 = artist_list[j]
+                a1_run = a1.get("run_id", a1.get("PK", "").replace("WEATHER#", ""))
+                a2_run = a2.get("run_id", a2.get("PK", "").replace("WEATHER#", ""))
+                a1_slug = a1.get("SK", a1.get("slug", ""))
+                a2_slug = a2.get("SK", a2.get("slug", ""))
+
+                lat_val = float(a1.get("lat", 0))
+                lng_val = float(a1.get("lng", 0))
+                lat_str = f"{abs(lat_val):.0f}°{'N' if lat_val >= 0 else 'S'}"
+                lng_str = f"{abs(lng_val):.0f}°{'E' if lng_val >= 0 else 'W'}"
+
+                duets.append({
+                    "location": a1_slug.replace("-", " ").title(),
+                    "coords": f"{lat_str}, {lng_str}",
+                    "temp": str(a1.get("temp", "")),
+                    "wind": str(a1.get("wind_speed", "")),
+                    "pressure": str(a1.get("pressure", "")),
+                    "date": a1.get("date", ""),
+                    "left": {
+                        "artist": a1_key,
+                        "artist_name": a1_key.replace("_", " ").title(),
+                        "svg_url": f"/weather/{a1_run}/{a1_slug}/artwork.svg",
+                        "url": f"/weather/{a1_run}/{a1_slug}/",
+                    },
+                    "right": {
+                        "artist": a2_key,
+                        "artist_name": a2_key.replace("_", " ").title(),
+                        "svg_url": f"/weather/{a2_run}/{a2_slug}/artwork.svg",
+                        "url": f"/weather/{a2_run}/{a2_slug}/",
+                    },
+                })
+
+                if len(duets) >= 20:
+                    return duets
+
+    return duets
 
 
 def _latest_palettes(palettes_by_location):
