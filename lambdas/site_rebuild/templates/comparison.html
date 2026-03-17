@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Style Comparison — art.jt{% endblock %}
+{% block description %}See how 11 different artists interpret the same atmospheric conditions. Same weather data, 11 radically different compositions.{% endblock %}
+{% block canonical_path %}/comparison/{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Artist Style Comparison",
+  "url": "https://art.jamestannahill.com/comparison/",
+  "description": "Same atmospheric data interpreted through 11 different artistic lenses."
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span>Style Comparison</span>
+</div>
+
+<h1>Style Comparison</h1>
+<p style="color:#888; margin-bottom:2rem; max-width:720px;">
+  Same atmospheric conditions, eleven artistic lenses. Each row shows one location's weather data
+  interpreted through every artist in the system — from Francis's explosive splatters to Mondrian's
+  rigid geometry. The data is identical. The vision is not.
+</p>
+
+{% if comparisons %}
+{% for comp in comparisons %}
+<div style="margin-bottom:3rem; border:1px solid #222; border-radius:8px; overflow:hidden; background:#111;">
+  <div style="padding:1rem 1.5rem; border-bottom:1px solid #1a1a1a;">
+    <h3 style="margin:0; color:#fff;">{{ comp.location }}</h3>
+    <p style="color:#888; font-size:0.85rem; margin:0;">{{ comp.coords }} · <span class="tip-inline" data-tip="Drives color palette">{{ comp.temp }}°C</span> · <span class="tip-inline" data-tip="Drives kinetic energy">{{ comp.wind }} m/s</span> · <span class="tip-inline" data-tip="Compositional weight">{{ comp.pressure }} hPa</span> · {{ comp.date }}</p>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:0;">
+    {% for piece in comp.pieces %}
+    <a href="{{ piece.url }}" style="border-right:1px solid #1a1a1a; border-bottom:1px solid #1a1a1a;">
+      <img src="{{ piece.svg_url }}" alt="{{ piece.artist_name }} interpretation" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
+      <div style="padding:0.5rem 0.75rem;">
+        <span style="color:#c4b5fd; font-size:0.8rem;">{{ piece.artist_name }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div style="padding:3rem; text-align:center; background:#111; border:1px solid #222; border-radius:8px;">
+  <p style="color:#888;">Comparisons will appear as more artists generate work at the same locations.</p>
+</div>
+{% endif %}
+{% endblock %}

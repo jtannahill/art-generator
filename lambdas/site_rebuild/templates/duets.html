@@ -30,7 +30,7 @@
   <div style="display:grid; grid-template-columns:1fr 1fr; min-height:300px;">
     <div style="border-right:1px solid #1a1a1a;">
       <a href="{{ duet.left.url }}">
-        <img src="{{ duet.left.svg_url }}" alt="{{ duet.left.artist_name }}" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
+        <img src="{{ duet.left.svg_url|replace('artwork.svg', 'preview-2048.png') }}" alt="{{ duet.left.artist_name }}" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
       </a>
       <div style="padding:0.75rem 1rem; border-top:1px solid #1a1a1a;">
         <a href="/artist/{{ duet.left.artist }}/" style="color:#c4b5fd; font-size:0.9rem; font-weight:500;">{{ duet.left.artist_name }}</a>
@@ -38,7 +38,7 @@
     </div>
     <div>
       <a href="{{ duet.right.url }}">
-        <img src="{{ duet.right.svg_url }}" alt="{{ duet.right.artist_name }}" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
+        <img src="{{ duet.right.svg_url|replace('artwork.svg', 'preview-2048.png') }}" alt="{{ duet.right.artist_name }}" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
       </a>
       <div style="padding:0.75rem 1rem; border-top:1px solid #1a1a1a;">
         <a href="/artist/{{ duet.right.artist }}/" style="color:#c4b5fd; font-size:0.9rem; font-weight:500;">{{ duet.right.artist_name }}</a>

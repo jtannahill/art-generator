@@ -53,6 +53,7 @@ def handler(event, context):
     env.filters["coords"] = lambda item: format_coords(item.get("lat", 0), item.get("lng", 0))
 
     pages = {}
+    api_url = os.environ.get("API_URL", "")
 
     # Get latest run for index page
     latest_run = max(weather_by_run.keys()) if weather_by_run else None
@@ -62,6 +63,7 @@ def handler(event, context):
         today_weather=today_weather,
         latest_palettes=latest_palettes,
         latest_run=latest_run,
+        api_url=api_url,
     )
 
     # Render weather archive — all runs
@@ -88,7 +90,6 @@ def handler(event, context):
             )
 
     # Render artist gallery pages with infinite scroll
-    api_url = os.environ.get("API_URL", "")
     artist_info = {
         "sam_francis": ("Sam Francis", "https://www.guggenheim.org/artwork/artist/sam-francis"),
         "gerhard_richter": ("Gerhard Richter", "https://www.guggenheim.org/artwork/artist/gerhard-richter"),
@@ -279,6 +280,10 @@ def handler(event, context):
     duets = _find_duets(weather_items)
     pages["site/duets/index.html"] = env.get_template("duets.html").render(duets=duets)
 
+    # Render comparison page
+    comparisons = _find_comparisons(weather_items)
+    pages["site/comparison/index.html"] = env.get_template("comparison.html").render(comparisons=comparisons)
+
     # Render about, privacy, terms pages
     pages["site/about/index.html"] = env.get_template("about.html").render()
     pages["site/privacy/index.html"] = env.get_template("privacy.html").render()
@@ -309,6 +314,7 @@ def handler(event, context):
         ("https://art.jamestannahill.com/about/", "monthly", "0.7"),
         ("https://art.jamestannahill.com/map/", "daily", "0.8"),
         ("https://art.jamestannahill.com/duets/", "daily", "0.8"),
+        ("https://art.jamestannahill.com/comparison/", "daily", "0.8"),
         ("https://art.jamestannahill.com/studies/", "daily", "0.8"),
         ("https://art.jamestannahill.com/privacy/", "yearly", "0.3"),
         ("https://art.jamestannahill.com/terms/", "yearly", "0.3"),
@@ -366,6 +372,36 @@ Artwork: CC BY-NC-ND 4.0 (attribution required, no commercial use, no derivative
 Code: All Rights Reserved
 Contact: art@jamestannahill.com
 """
+
+    # Generate RSS feed
+    rss_items = []
+    for run_id, artworks in list(weather_by_run.items())[:10]:  # Last 10 runs
+        for artwork in artworks:
+            slug = artwork.get("SK", artwork.get("slug", ""))
+            title = slug.replace("-", " ").title()
+            artist = artwork.get("artist", "sam_francis").replace("_", " ").title()
+            rationale = artwork.get("rationale", "Generative weather art from atmospheric data.")
+            created = artwork.get("created_at", run_id)
+            rss_items.append(f"""    <item>
+      <title>{title} — {artist}</title>
+      <link>https://art.jamestannahill.com/weather/{run_id}/{slug}/</link>
+      <description>{rationale}</description>
+      <pubDate>{created}</pubDate>
+      <guid>https://art.jamestannahill.com/weather/{run_id}/{slug}/</guid>
+      <enclosure url="https://art.jamestannahill.com/weather/{run_id}/{slug}/preview-2048.png" type="image/png"/>
+    </item>""")
+
+    pages["site/feed.xml"] = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/1999/xhtml">
+  <channel>
+    <title>art.jt — Generative Weather Art</title>
+    <link>https://art.jamestannahill.com</link>
+    <description>Daily generative art from real atmospheric data, inspired by abstract expressionism.</description>
+    <language>en-us</language>
+    <atom:link href="https://art.jamestannahill.com/feed.xml" rel="self" type="application/rss+xml"/>
+{"".join(rss_items)}
+  </channel>
+</rss>"""
 
     # Render palette archive
     pages["site/palettes/index.html"] = env.get_template(
@@ -499,6 +535,8 @@ def _parse_colors(colors):
 
 def _content_type(key):
     """Return content type based on file extension."""
+    if key.endswith(".xml") and "feed" in key:
+        return "application/rss+xml"
     if key.endswith(".xml"):
         return "application/xml"
     if key.endswith(".txt"):
@@ -506,6 +544,62 @@ def _content_type(key):
     if key.endswith(".json"):
         return "application/json"
     return "text/html"
+
+
+def _find_comparisons(weather_items):
+    """Find locations where 3+ artists have generated work, for style comparison."""
+    from collections import defaultdict
+    by_location = defaultdict(list)
+    for item in weather_items:
+        lat = int(float(item.get("lat", 0)) // 5) * 5
+        lng = int(float(item.get("lng", 0)) // 5) * 5
+        by_location[(lat, lng)].append(item)
+
+    comparisons = []
+    for (lat, lng), items in by_location.items():
+        # Get one artwork per artist (latest)
+        artists_seen = {}
+        for item in sorted(items, key=lambda x: x.get("run_id", ""), reverse=True):
+            artist = item.get("artist", "unknown")
+            if artist not in artists_seen:
+                artists_seen[artist] = item
+
+        if len(artists_seen) < 3:
+            continue
+
+        # Use first item for location info
+        first = list(artists_seen.values())[0]
+        slug = first.get("SK", first.get("slug", ""))
+        lat_val = float(first.get("lat", 0))
+        lng_val = float(first.get("lng", 0))
+        lat_str = f"{abs(lat_val):.0f}\u00b0{'N' if lat_val >= 0 else 'S'}"
+        lng_str = f"{abs(lng_val):.0f}\u00b0{'E' if lng_val >= 0 else 'W'}"
+
+        pieces = []
+        for artist_key, item in sorted(artists_seen.items()):
+            item_run = item.get("run_id", item.get("PK", "").replace("WEATHER#", ""))
+            item_slug = item.get("SK", item.get("slug", ""))
+            pieces.append({
+                "artist": artist_key,
+                "artist_name": artist_key.replace("_", " ").title(),
+                "svg_url": f"/weather/{item_run}/{item_slug}/artwork.svg",
+                "url": f"/weather/{item_run}/{item_slug}/",
+            })
+
+        comparisons.append({
+            "location": slug.replace("-", " ").title(),
+            "coords": f"{lat_str}, {lng_str}",
+            "temp": str(first.get("temp", "")),
+            "wind": str(first.get("wind_speed", "")),
+            "pressure": str(first.get("pressure", "")),
+            "date": first.get("date", ""),
+            "artist_count": len(pieces),
+            "pieces": pieces,
+        })
+
+    # Sort by most artists first
+    comparisons.sort(key=lambda x: x["artist_count"], reverse=True)
+    return comparisons[:10]
 
 
 def _find_duets(weather_items):
