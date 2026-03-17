@@ -30,7 +30,7 @@
 <div class="grid">
   {% for item in today_weather %}
   <a href="/weather/{{ item.run_id|default(latest_run) }}/{{ item.SK }}/" class="card">
-    <img src="/weather/{{ item.run_id|default(latest_run) }}/{{ item.SK }}/preview-2048.png" alt="{{ item.slug|default(item.SK) }} weather art" loading="lazy">
+    <img src="/weather/{{ item.run_id|default(latest_run) }}/{{ item.SK }}/artwork.svg" alt="{{ item.slug|default(item.SK) }} weather art" loading="lazy">
     <div class="card-body">
       <h3>{{ item.slug|default(item.SK)|replace('-', ' ')|title }}</h3>
       <p class="card-meta" style="color:#c4b5fd; margin-bottom:0.3rem;">{{ item|coords }}</p>
@@ -106,7 +106,7 @@ function createCard(item) {
   card.href = item.page_url;
   card.className = 'card';
   card.innerHTML =
-    '<img src="' + item.svg_url.replace('artwork.svg', 'preview-2048.png') + '" alt="' + item.slug + ' weather art" loading="lazy">' +
+    '<img src="' + item.svg_url + '" alt="' + item.slug + ' weather art" loading="lazy">' +
     '<div class="card-body">' +
       '<h3>' + item.slug.replace(/-/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); }) + '</h3>' +
       '<p class="card-description">' + (item.rationale || '') + '</p>' +
