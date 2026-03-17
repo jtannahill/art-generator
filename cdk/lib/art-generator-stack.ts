@@ -170,7 +170,8 @@ export class ArtGeneratorStack extends cdk.Stack {
       handler: 'handler.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../../lambdas/site_rebuild')),
       timeout: cdk.Duration.minutes(5),
-      memorySize: 256,
+      memorySize: 512,
+      layers: [cairoLayer],
       environment: {
         BUCKET_NAME: bucket.bucketName,
         TABLE_NAME: table.tableName,

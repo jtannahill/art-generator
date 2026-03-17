@@ -10,10 +10,10 @@
 {% block og_title %}{{ slug|replace('-', ' ')|title }} — Weather Art — {{ date }}{% endblock %}
 {% block og_description %}{{ artwork.rationale|default('Generative weather art')|truncate(200) }}{% endblock %}
 {% block og_url %}/weather/{{ run_id }}/{{ slug }}/{% endblock %}
-{% block og_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/artwork.svg{% endblock %}
+{% block og_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/preview-2048.png{% endblock %}
 {% block twitter_title %}{{ slug|replace('-', ' ')|title }} — Weather Art{% endblock %}
 {% block twitter_description %}{{ artwork.rationale|default('Generative weather art')|truncate(200) }}{% endblock %}
-{% block twitter_image %}https://art.jamestannahill.com/og-default.png{% endblock %}
+{% block twitter_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/preview-2048.png{% endblock %}
 
 {% block schema %}
 <script type="application/ld+json">

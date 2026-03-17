@@ -582,8 +582,47 @@ def _latest_palettes(palettes_by_location):
     return latest
 
 
+def _render_png_if_missing(s3, src_prefix, dst_prefix):
+    """Render preview-2048.png from artwork.svg if it doesn't exist yet."""
+    try:
+        import cairosvg
+    except (ImportError, OSError):
+        return  # CairoSVG not available
+
+    png_key = f"{dst_prefix}preview-2048.png"
+    # Check if PNG already exists
+    try:
+        s3.head_object(Bucket=BUCKET_NAME, Key=png_key)
+        return  # Already exists
+    except s3.exceptions.ClientError:
+        pass  # Doesn't exist, render it
+
+    # Read SVG
+    svg_key = f"{src_prefix}artwork.svg"
+    try:
+        obj = s3.get_object(Bucket=BUCKET_NAME, Key=svg_key)
+        svg_bytes = obj["Body"].read()
+        png_bytes = cairosvg.svg2png(bytestring=svg_bytes, output_width=2048)
+        s3.put_object(
+            Bucket=BUCKET_NAME,
+            Key=png_key,
+            Body=png_bytes,
+            ContentType="image/png",
+        )
+        # Also write to source prefix so weather_render doesn't redo it
+        s3.put_object(
+            Bucket=BUCKET_NAME,
+            Key=f"{src_prefix}preview-2048.png",
+            Body=png_bytes,
+            ContentType="image/png",
+        )
+    except Exception as e:
+        print(f"PNG render failed for {svg_key}: {e}")
+
+
 def _copy_assets_to_site(s3, weather_by_run, palettes_by_date):
-    """Copy artwork SVGs and palette assets into the site/ prefix for CloudFront."""
+    """Copy artwork SVGs and palette assets into the site/ prefix for CloudFront.
+    Also renders preview PNGs from SVGs if they don't exist (for OG/Twitter cards)."""
     for date, artworks in weather_by_run.items():
         for artwork in artworks:
             slug = artwork.get("SK", artwork.get("slug", ""))
@@ -603,6 +642,9 @@ def _copy_assets_to_site(s3, weather_by_run, palettes_by_date):
                     )
             except Exception as e:
                 print(f"Failed to copy assets for {slug}: {e}")
+
+            # Render preview PNG if missing (for OG/Twitter cards)
+            _render_png_if_missing(s3, src_prefix, dst_prefix)
 
     for date, palettes in palettes_by_date.items():
         for palette in palettes:
