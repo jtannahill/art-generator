@@ -38,6 +38,18 @@ def handler(event, context):
     # Set up Jinja2
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
 
+    def format_coords(lat, lng):
+        """Format lat/lng as '15°S, 70°W'."""
+        try:
+            lat, lng = float(lat), float(lng)
+            lat_str = f"{abs(lat):.0f}°{'N' if lat >= 0 else 'S'}"
+            lng_str = f"{abs(lng):.0f}°{'E' if lng >= 0 else 'W'}"
+            return f"{lat_str}, {lng_str}"
+        except (ValueError, TypeError):
+            return ""
+
+    env.filters["coords"] = lambda item: format_coords(item.get("lat", 0), item.get("lng", 0))
+
     pages = {}
 
     # Get latest run for index page

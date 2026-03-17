@@ -18,6 +18,7 @@
     <img src="/weather/{{ date }}/{{ item.SK }}/artwork.svg" alt="{{ item.slug|default(item.SK) }}" loading="lazy">
     <div class="card-body">
       <h3>{{ item.slug|default(item.SK)|replace('-', ' ')|title }}</h3>
+      <p class="card-meta" style="color:#c4b5fd; margin-bottom:0.3rem;">{{ item|coords }}</p>
       <p class="card-description">{{ item.rationale|default('') }}</p>
       <p class="card-meta">{{ item.temp|default('') }}°C · {{ item.wind_speed|default('') }} m/s</p>
     </div>

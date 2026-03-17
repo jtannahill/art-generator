@@ -90,7 +90,7 @@
     <dt>Date</dt>
     <dd>{{ artwork.date|default(date) }}</dd>
     <dt>Location</dt>
-    <dd>{{ artwork.lat|default('') }}, {{ artwork.lng|default('') }} ({{ slug|replace('-', ' ')|title }})</dd>
+    <dd>{{ artwork|coords }} ({{ slug|replace('-', ' ')|title }})</dd>
     {% if artwork.pressure is defined and artwork.pressure %}
     <dt>Pressure</dt>
     <dd>{{ artwork.pressure }} hPa (gradient: {{ artwork.pressure_gradient|default('') }})</dd>
