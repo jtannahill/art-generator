@@ -90,34 +90,59 @@ def fetch_sentinel2_image(token: str, location: dict, date: str):
             cloud_cover = attr["Value"]
             break
 
-    # Download true-color image via Copernicus WMS rendering
-    # This renders a 512x512 tile of the location directly — no product file navigation needed
-    wms_url = "https://sh.dataspace.copernicus.eu/ogc/wms/" + COPERNICUS_CLIENT_ID
-    delta = location.get("delta", 0.25)
+    # Use Sentinel Hub Process API to render true-color image directly
+    # This returns a small JPEG — no need to download the full 800MB product
+    process_url = "https://sh.dataspace.copernicus.eu/api/v1/process"
     lat, lng = location["lat"], location["lng"]
-    wms_params = {
-        "SERVICE": "WMS",
-        "VERSION": "1.3.0",
-        "REQUEST": "GetMap",
-        "FORMAT": "image/jpeg",
-        "TRANSPARENT": "false",
-        "LAYERS": "TRUE-COLOR-S2L2A",
-        "CRS": "EPSG:4326",
-        "BBOX": f"{lat-delta},{lng-delta},{lat+delta},{lng+delta}",
-        "WIDTH": "512",
-        "HEIGHT": "512",
-        "TIME": f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}",
-        "MAXCC": "10",
+    delta = 0.25
+
+    process_body = {
+        "input": {
+            "bounds": {
+                "bbox": [lng - delta, lat - delta, lng + delta, lat + delta],
+                "properties": {"crs": "http://www.opengis.net/def/crs/EPSG/0/4326"},
+            },
+            "data": [{
+                "type": "sentinel-2-l2a",
+                "dataFilter": {
+                    "timeRange": {
+                        "from": start_date.strftime("%Y-%m-%dT00:00:00Z"),
+                        "to": end_date.strftime("%Y-%m-%dT23:59:59Z"),
+                    },
+                    "maxCloudCoverage": 10,
+                    "mosaickingOrder": "leastCC",
+                },
+            }],
+        },
+        "output": {
+            "width": 512,
+            "height": 512,
+            "responses": [{"identifier": "default", "format": {"type": "image/jpeg", "quality": 90}}],
+        },
+        "evalscript": """
+//VERSION=3
+function setup() {
+  return { input: ["B04", "B03", "B02"], output: { bands: 3 } };
+}
+function evaluatePixel(sample) {
+  return [2.5 * sample.B04, 2.5 * sample.B03, 2.5 * sample.B02];
+}
+""",
     }
 
     try:
-        img_resp = requests.get(wms_url, params=wms_params, headers=headers, timeout=120)
+        img_resp = requests.post(
+            process_url,
+            json=process_body,
+            headers={**headers, "Content-Type": "application/json"},
+            timeout=120,
+        )
         if img_resp.status_code == 200 and len(img_resp.content) > 5000:
             return img_resp.content, cloud_cover
         else:
-            print(f"  WMS returned {img_resp.status_code}, {len(img_resp.content)} bytes")
+            print(f"  Process API returned {img_resp.status_code}: {img_resp.text[:200]}")
     except Exception as e:
-        print(f"  WMS failed: {e}")
+        print(f"  Process API failed: {e}")
 
     print(f"  No imagery available for {location['slug']}")
     return None, None
