@@ -82,6 +82,13 @@
       padding: 1rem 2rem;
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
       gap: 2rem;
     }
 
@@ -92,9 +99,23 @@
       letter-spacing: -0.5px;
     }
 
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .menu-toggle:hover { color: #fff; }
+
     nav { display: flex; gap: 1.5rem; }
     nav a { color: #aaa; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
     nav a:hover { color: #fff; text-decoration: none; }
+    nav a.active { color: #fff; }
 
     main { flex: 1; padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
 
@@ -235,10 +256,29 @@
 
     /* Mobile responsive */
     @media (max-width: 768px) {
-      header { padding: 0.75rem 1rem; gap: 1rem; flex-wrap: wrap; }
+      header { padding: 0.75rem 1rem; }
       .logo { font-size: 1.2rem; }
-      nav { gap: 1rem; }
-      nav a { font-size: 0.8rem; }
+      .menu-toggle { display: block; }
+      nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #0a0a0a;
+        border-bottom: 1px solid #222;
+        flex-direction: column;
+        padding: 0.5rem 0;
+        z-index: 50;
+      }
+      nav.open { display: flex; }
+      nav a {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #1a1a1a;
+      }
+      nav a:last-child { border-bottom: none; }
+      nav a:hover, nav a:active { background: #141414; color: #fff; }
       main { padding: 1rem; }
       h1 { font-size: 1.4rem; }
       h2 { font-size: 1.1rem; }
@@ -258,8 +298,6 @@
 
     @media (max-width: 480px) {
       .grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-      header { justify-content: center; text-align: center; }
-      nav { justify-content: center; }
     }
 
     /* Atmospheric tooltips */
@@ -296,8 +334,11 @@
 </head>
 <body>
   <header>
-    <a href="/" class="logo">art.jt</a>
-    <nav>
+    <div class="header-left">
+      <a href="/" class="logo">art.jt</a>
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <nav id="mainNav">
       <a href="/artist/">Artists</a>
       <a href="/weather/">Archive</a>
       <a href="/palettes/">Palettes</a>
@@ -381,6 +422,27 @@
       if (!el) return;
       hideTimer = setTimeout(function() { bubble.classList.remove('visible'); }, 100);
     }, true);
+  })();
+  </script>
+
+  <script>
+  (function() {
+    var toggle = document.getElementById('menuToggle');
+    var nav = document.getElementById('mainNav');
+    if (!toggle || !nav) return;
+    toggle.addEventListener('click', function() {
+      var open = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
+      toggle.innerHTML = open ? '&#10005;' : '&#9776;';
+    });
+    // Close menu when a link is tapped
+    nav.addEventListener('click', function(e) {
+      if (e.target.tagName === 'A') {
+        nav.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.innerHTML = '&#9776;';
+      }
+    });
   })();
   </script>
 
