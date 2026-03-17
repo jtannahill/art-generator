@@ -175,6 +175,7 @@ export class ArtGeneratorStack extends cdk.Stack {
         BUCKET_NAME: bucket.bucketName,
         TABLE_NAME: table.tableName,
         DISTRIBUTION_ID: distribution.distributionId,
+        MAPBOX_TOKEN: 'pk.eyJ1IjoiamFtZXN0YW5uYWhpbGwiLCJhIjoiY21tb3Y1cm96MGNpcDJxcHFmZTdkam0wcyJ9.0nI0daKUj042FAsus87gXQ',
       },
     });
     bucket.grantReadWrite(siteRebuild);
