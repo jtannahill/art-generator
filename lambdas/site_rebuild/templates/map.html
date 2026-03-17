@@ -82,9 +82,8 @@ function addMarkers() {
   // Weather art markers (purple)
   artworks.forEach(function(a) {
     var el = document.createElement('div');
-    el.style.cssText = 'width:12px; height:12px; border-radius:50%; background:#c4b5fd; border:2px solid rgba(255,255,255,0.8); cursor:pointer; box-shadow:0 0 8px rgba(196,181,253,0.4); transition:transform 0.2s;';
-    el.onmouseenter = function() { el.style.transform = 'scale(1.5)'; };
-    el.onmouseleave = function() { el.style.transform = 'scale(1)'; };
+    el.className = 'art-marker';
+    el.style.cssText = 'width:14px; height:14px; border-radius:50%; background:#c4b5fd; border:2px solid rgba(255,255,255,0.8); cursor:pointer; box-shadow:0 0 8px rgba(196,181,253,0.4);';
 
     var popup = new mapboxgl.Popup({ offset: 12, maxWidth: '280px' })
       .setHTML(
@@ -108,9 +107,8 @@ function addMarkers() {
   // Palette markers (blue)
   palettes.forEach(function(p) {
     var el = document.createElement('div');
-    el.style.cssText = 'width:12px; height:12px; border-radius:50%; background:#38bdf8; border:2px solid rgba(255,255,255,0.8); cursor:pointer; box-shadow:0 0 8px rgba(56,189,248,0.4); transition:transform 0.2s;';
-    el.onmouseenter = function() { el.style.transform = 'scale(1.5)'; };
-    el.onmouseleave = function() { el.style.transform = 'scale(1)'; };
+    el.className = 'palette-marker';
+    el.style.cssText = 'width:14px; height:14px; border-radius:50%; background:#38bdf8; border:2px solid rgba(255,255,255,0.8); cursor:pointer; box-shadow:0 0 8px rgba(56,189,248,0.4);';
 
     var swatchHtml = '';
     if (p.colors && p.colors.length) {
@@ -145,5 +143,9 @@ function addMarkers() {
   .mapboxgl-popup-content { background: #1a1a1a !important; padding: 0 !important; border-radius: 6px !important; }
   .mapboxgl-popup-tip { border-top-color: #1a1a1a !important; }
   .mapboxgl-popup-close-button { color: #888 !important; font-size: 18px !important; padding: 4px 8px !important; }
+  .art-marker, .palette-marker { pointer-events: auto !important; }
+  .art-marker:hover { transform: scale(1.3); }
+  .palette-marker:hover { transform: scale(1.3); }
+  .mapboxgl-marker { overflow: visible !important; }
 </style>
 {% endblock %}
