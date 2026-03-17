@@ -345,7 +345,13 @@ def _copy_assets_to_site(s3, weather_by_run, palettes_by_date):
 
     for date, palettes in palettes_by_date.items():
         for palette in palettes:
-            slug = palette.get("slug", palette.get("SK", ""))
+            # slug is in PK (PALETTE#slug) or the slug field
+            slug = palette.get("slug", "")
+            if not slug:
+                pk = palette.get("PK", "")
+                slug = pk.replace("PALETTE#", "") if pk.startswith("PALETTE#") else ""
+            if not slug:
+                continue
             src_prefix = f"palettes/{date}/{slug}/"
             dst_prefix = f"site/palettes/{date}/{slug}/"
             try:
