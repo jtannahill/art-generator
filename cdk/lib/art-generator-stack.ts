@@ -191,7 +191,7 @@ export class ArtGeneratorStack extends cdk.Stack {
     });
 
     const weatherRenderMap = new sfn.Map(this, 'WeatherRenderMap', {
-      maxConcurrency: 5,
+      maxConcurrency: 2,
       itemsPath: '$.regions',
     });
     weatherRenderMap.itemProcessor(
@@ -207,7 +207,7 @@ export class ArtGeneratorStack extends cdk.Stack {
     });
 
     const paletteExtractMap = new sfn.Map(this, 'PaletteExtractMap', {
-      maxConcurrency: 5,
+      maxConcurrency: 2,
       itemsPath: '$.locations',
     });
     paletteExtractMap.itemProcessor(
