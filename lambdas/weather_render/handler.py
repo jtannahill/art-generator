@@ -28,7 +28,7 @@ def handler(event, context):
     slug = region["slug"]
     artist = region.get("artist", "sam_francis")
 
-    prompt = build_art_prompt(region)
+    prompt, canvas_format = build_art_prompt(region)
     svg_text = None
     rationale = None
     last_error = None
@@ -107,6 +107,7 @@ def handler(event, context):
         "precipitation": region.get("precipitation"),
         "rationale": rationale,
         "s3_prefix": prefix,
+        "canvas_format": canvas_format,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     s3.put_object(
@@ -253,6 +254,7 @@ def build_art_prompt(region):
         ("2400", "1600"),   # golden landscape
     ]
     width, height = random.choice(formats)
+    canvas_format = f"{width}x{height}"
 
     return f"""You are a generative artist creating abstract SVG artwork inspired by real-time
 atmospheric data. Create a single, self-contained SVG artwork that visually interprets
@@ -285,7 +287,7 @@ Technical requirements:
 2. Then output the complete SVG on its own line starting with <svg
 3. Use gradients, filters, organic shapes, and layered transparency — no text elements
 4. The SVG must be valid XML and self-contained (no external references)
-5. Use viewBox="0 0 {width} {height}" on the root <svg> element"""
+5. Use viewBox="0 0 {width} {height}" on the root <svg> element""", canvas_format
 
 
 def build_retry_prompt(original_prompt, bad_svg, error):
@@ -306,9 +308,9 @@ Please output a corrected, valid SVG. Make sure it is well-formed XML with <svg>
 
 
 def render_png(svg_text, width):
-    """Uses cairosvg.svg2png to render SVG to PNG bytes at the given width."""
+    """Uses cairosvg.svg2png to render SVG to PNG bytes at the given width.
+    Height is derived from the SVG viewBox aspect ratio automatically."""
     return cairosvg.svg2png(
         bytestring=svg_text.encode("utf-8"),
         output_width=width,
-        output_height=width,
     )
