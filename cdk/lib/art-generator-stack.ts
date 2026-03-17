@@ -10,6 +10,7 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
@@ -347,5 +348,48 @@ export class ArtGeneratorStack extends cdk.Stack {
       value: apiUrl.url,
       description: 'URL for the artwork API (infinite scroll)',
     });
+
+    // === Print Shop Lambda ===
+    const printShopSecret = secretsmanager.Secret.fromSecretNameV2(
+      this, 'PrintShopSecret', 'art-generator/print-shop'
+    );
+
+    const printShopFn = new lambda.Function(this, 'PrintShopFn', {
+      functionName: 'art-print-shop',
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambdas/print_shop')),
+      timeout: cdk.Duration.seconds(60),
+      memorySize: 256,
+      environment: {
+        TABLE_NAME: table.tableName,
+        BUCKET_NAME: bucket.bucketName,
+        SECRET_ID: 'art-generator/print-shop',
+      },
+    });
+    table.grantReadWriteData(printShopFn);
+    bucket.grantRead(printShopFn);
+    printShopSecret.grantRead(printShopFn);
+    printShopFn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ses:SendEmail'],
+      resources: ['*'],
+    }));
+
+    const printShopUrl = printShopFn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['https://art.jamestannahill.com'],
+        allowedMethods: [lambda.HttpMethod.GET, lambda.HttpMethod.POST],
+        allowedHeaders: ['Content-Type'],
+      },
+    });
+
+    new cdk.CfnOutput(this, 'PrintShopUrl', {
+      value: printShopUrl.url,
+      description: 'URL for the print shop Lambda',
+    });
+
+    // Pass print shop URL to site-rebuild Lambda
+    siteRebuild.addEnvironment('PRINT_SHOP_URL', printShopUrl.url);
   }
 }

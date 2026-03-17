@@ -382,8 +382,8 @@ Contact: art@jamestannahill.com
             DistributionId=DISTRIBUTION_ID,
             InvalidationBatch={
                 "Paths": {
-                    "Quantity": 3,
-                    "Items": ["/index.html", "/weather/*", "/palettes/*"],
+                    "Quantity": 4,
+                    "Items": ["/index.html", "/weather/*", "/palettes/*", "/shop/*"],
                 },
                 "CallerReference": f"rebuild-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
             },
