@@ -19,7 +19,7 @@ def test_creates_edition_lazily_from_weather_item(mock_table, sample_weather_ite
     ]
     result = get_editions(mock_table, "2026-03-16-130500", "arctic-70n-20w")
     assert result["aspect_ratio"] == "1:1"
-    assert result["sizes"]["S"]["limit"] == 100
+    assert result["sizes"]["S"]["limit"] == 5
     mock_table.put_item.assert_called_once()
     written = mock_table.put_item.call_args[1]["Item"]
     assert written["PK"] == "EDITION#2026-03-16-130500#arctic-70n-20w"

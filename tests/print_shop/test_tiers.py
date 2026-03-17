@@ -118,35 +118,35 @@ class TestAspectRatiosSpotCheck:
 
     def test_1_1_s(self):
         t = ASPECT_RATIOS["1:1"]["S"]
-        assert t == {"dims": "12x12", "limit": 100, "price_cents": 9500}
+        assert t == {"dims": "12x12", "limit": 5, "price_cents": 9500}
 
     def test_1_1_xxl(self):
         t = ASPECT_RATIOS["1:1"]["XXL"]
-        assert t == {"dims": "60x60", "limit": 10, "price_cents": 120000}
+        assert t == {"dims": "60x60", "limit": 5, "price_cents": 120000}
 
     def test_16_9_m(self):
         t = ASPECT_RATIOS["16:9"]["M"]
-        assert t == {"dims": "24x14", "limit": 75, "price_cents": 17500}
+        assert t == {"dims": "24x14", "limit": 5, "price_cents": 17500}
 
     def test_16_9_xl(self):
         t = ASPECT_RATIOS["16:9"]["XL"]
-        assert t == {"dims": "48x27", "limit": 25, "price_cents": 55000}
+        assert t == {"dims": "48x27", "limit": 5, "price_cents": 55000}
 
     def test_3_2_l(self):
         t = ASPECT_RATIOS["3:2"]["L"]
-        assert t == {"dims": "24x16", "limit": 50, "price_cents": 32500}
+        assert t == {"dims": "24x16", "limit": 5, "price_cents": 32500}
 
     def test_2_1_xxl(self):
         t = ASPECT_RATIOS["2:1"]["XXL"]
-        assert t == {"dims": "60x30", "limit": 10, "price_cents": 110000}
+        assert t == {"dims": "60x30", "limit": 5, "price_cents": 110000}
 
     def test_9_16_s(self):
         t = ASPECT_RATIOS["9:16"]["S"]
-        assert t == {"dims": "9x16", "limit": 100, "price_cents": 8500}
+        assert t == {"dims": "9x16", "limit": 5, "price_cents": 8500}
 
     def test_1_2_m(self):
         t = ASPECT_RATIOS["1:2"]["M"]
-        assert t == {"dims": "15x30", "limit": 75, "price_cents": 19500}
+        assert t == {"dims": "15x30", "limit": 5, "price_cents": 19500}
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ class TestGetTiersForFormat:
         s = result["sizes"]["S"]
         assert s["dims"] == "12x12"
         assert s["price_cents"] == 9500
-        assert s["limit"] == 100
+        assert s["limit"] == 5
 
     def test_unknown_format_raises_value_error(self):
         with pytest.raises(ValueError):
