@@ -35,43 +35,53 @@
 
 <h1>About</h1>
 
-<p style="font-size:1.1rem; color:#ccc; line-height:1.8; margin-bottom:1.5rem;">
-I've always been drawn to the places where science becomes visual — where a pressure gradient reads like a brushstroke, where a temperature anomaly carries the same emotional weight as a Rothko field. This project lives at that intersection.
+<p style="font-size:1.15rem; color:#ddd; line-height:1.9; margin-bottom:2rem; font-style:italic;">
+The atmosphere is the oldest artist on Earth. It has been painting since before there were eyes to see it — sculpting light through ice crystals, dragging color across horizons, compressing entire landscapes into a single hour of sky. This project is an attempt to listen to what it's making.
 </p>
 
-<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
-Every day, this system scans fifty points across the globe, measuring what the atmosphere is doing in real time — pressure systems building and collapsing, winds accelerating across open ocean, temperature anomalies pushing against their zonal means. The ten most visually dramatic conditions become the raw material for original artwork, generated through a collaboration between atmospheric data and AI.
+<h2 style="margin-top:2.5rem;">The Work</h2>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+Every day, fifty points across the planet are sampled for what the atmosphere is actually doing — not what it looks like on a forecast, but its raw physical state. Pressure gradients steep enough to bend trees. Winds crossing open water with nothing to slow them down. Temperature anomalies where the air is ten degrees warmer or colder than it should be. The ten most extreme conditions become source material for original artwork.
 </p>
 
-<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
-The visual language draws from the abstract expressionists and color field painters who understood that color, form, and energy could communicate something words can't — Sam Francis's luminous splatters, Rothko's glowing horizons, Frankenthaler's stained washes, Hilma af Klint's sacred geometries, and the expressive mark-making of <a href="https://lesleytannahill.com" target="_blank" rel="noopener">Lesley Tannahill</a>, whose layered, gestural work across painting, drawing, and printmaking is a personal touchstone. Each artist's aesthetic becomes a lens through which the same atmospheric data produces radically different work.
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+The data passes through the aesthetic lens of eleven artists who understood that abstraction is not the absence of meaning but its distillation. Sam Francis knew that empty space is as charged as color. Rothko proved that two rectangles can hold grief. Frankenthaler showed that letting paint find its own path is an act of trust. Hilma af Klint painted what she believed was invisible. <a href="https://lesleytannahill.com" target="_blank" rel="noopener">Lesley Tannahill</a> builds palimpsests where every mark remembers the marks beneath it. These sensibilities are not styles to imitate — they are ways of seeing that transform the same pressure reading into radically different compositions.
 </p>
 
-<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
-What fascinates me is the feedback loop: weather is the most dynamic visual system on Earth, constantly painting and repainting the sky in ways no human artist could anticipate. By feeding that data through the sensibility of great abstract painters, each piece becomes a collaboration between the atmosphere, art history, and computation — a daily record of what the planet looked like, translated into color and form.
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+The result is a growing archive of the planet's most volatile moments, translated into color and form. No two pieces share the same atmospheric conditions. None can be repeated. Each one is a fossil of weather that no longer exists.
 </p>
 
-<h2 style="margin-top:2.5rem;">How It Works</h2>
+<h2 style="margin-top:2.5rem;">The System</h2>
 
-<p style="color:#aaa; line-height:1.8; margin-bottom:1rem;">
-The generative system runs as a daily pipeline on AWS. Weather data flows in from the <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a> (powered by NOAA's GFS model), gets scored for visual interest, and the most dramatic conditions are sent to Claude on Amazon Bedrock, which interprets the atmospheric data as SVG artwork in the style of the selected artist. The results are archived permanently — every piece ever generated is preserved and browsable.
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+The pipeline runs at dawn UTC. Weather flows in from the <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a> (NOAA's GFS model) and is scored on a composite index — pressure anomaly weighted heaviest, then wind, temperature deviation, precipitation, humidity. The highest-scoring conditions are sent to Claude on Amazon Bedrock, which interprets the atmospheric data as SVG artwork. Every piece is rendered in seven possible canvas formats, from square to panoramic, chosen by the conditions themselves. Everything is archived permanently.
 </p>
 
-<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
-The satellite color palette system (coming soon) extracts dominant colors from Copernicus Sentinel-2 satellite imagery of visually striking locations worldwide, building a seasonal archive of Earth's real color palette as seen from space.
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery — the actual colors of Earth as seen from orbit. Deserts, glaciers, river deltas, volcanic islands. A seasonal record of what the planet looks like from 786 kilometers up.
 </p>
 
-<h2 style="margin-top:2.5rem;">About Me</h2>
+<h2 style="margin-top:2.5rem;">The Artist</h2>
 
-<p style="color:#aaa; line-height:1.8; margin-bottom:1rem;">
-I'm <a href="https://jamestannahill.com" target="_blank" rel="noopener">James Tannahill</a> — I build things at the intersection of data, design, and infrastructure. This project grows out of a lifelong love of cartography, abstract expressionism, and the way spatial awareness can reshape how we see the world. I've always been drawn to maps — not just as tools for navigation, but as representations of systems too large to experience directly. Weather is the ultimate example: a planetary-scale phenomenon that we only ever see in fragments.
-
-By combining that spatial curiosity with an open mind about what art can be, this project treats the entire atmosphere as a collaborator. The data is real. The locations are real. The aesthetic interpretation is where the human impulse meets the machine's capacity — and the result, every time, is something neither could have made alone.
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+I'm <a href="https://jamestannahill.com" target="_blank" rel="noopener">James Tannahill</a>. I grew up staring at maps the way other people stared at posters — tracing coastlines, memorizing the shapes of countries I'd never visit, trying to understand how a flat sheet of paper could contain an ocean. That impulse never went away. It just found new material.
 </p>
 
-<p style="color:#aaa; line-height:1.8; margin-bottom:1.5rem;">
-For commercial licensing, print editions, or collaboration inquiries: <a href="mailto:art@jamestannahill.com">art@jamestannahill.com</a>
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+Weather is the map I can't finish reading. It is planetary-scale, constantly rewriting itself, and fundamentally invisible at any useful resolution. You can stand in a storm and still only experience a pinhole of what the system is doing. This project is my way of seeing more of it — using the language of the painters who taught me that seeing is not passive, that abstraction is a form of attention, and that the most honest response to something overwhelming is to let it move through you and onto the canvas.
 </p>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+The data is real. The locations are real. The weather happened. What the machine makes of it — and what you make of that — is where the art lives.
+</p>
+
+<div style="margin-top:2.5rem; padding:1.2rem; background:#111; border:1px solid #2a2a2a; border-radius:8px;">
+  <p style="color:#888; font-size:0.9rem; margin:0;">
+    Limited edition prints on Hahnemühle German Etching available on every artwork page. For commercial licensing, commissions, or collaboration: <a href="mailto:art@jamestannahill.com">art@jamestannahill.com</a>
+  </p>
+</div>
 
 </div>
 {% endblock %}
