@@ -13,7 +13,7 @@
 {% block og_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/artwork.svg{% endblock %}
 {% block twitter_title %}{{ slug|replace('-', ' ')|title }} — Weather Art{% endblock %}
 {% block twitter_description %}{{ artwork.rationale|default('Generative weather art')|truncate(200) }}{% endblock %}
-{% block twitter_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/artwork.svg{% endblock %}
+{% block twitter_image %}https://art.jamestannahill.com/og-default.png{% endblock %}
 
 {% block schema %}
 <script type="application/ld+json">
