@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}{{ study.name }} — Studies — art.jt{% endblock %}
+{% block description %}{{ study.name }} — tracking atmospheric conditions across {{ study.day_count|default(0) }} days and {{ study.coordinates|length }} locations through generative weather art.{% endblock %}
+{% block canonical_path %}/studies/{{ study.study_id }}/{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span><a href="/studies/">Studies</a></span>
+  <span>{{ study.name }}</span>
+</div>
+
+<div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.5rem;">
+  <h1 style="margin:0;">{{ study.name }}</h1>
+  {% if study.status == 'active' %}
+  <span style="font-size:0.75rem; padding:0.2rem 0.6rem; background:#064e3b; color:#34d399; border-radius:4px;">Active</span>
+  {% else %}
+  <span style="font-size:0.75rem; padding:0.2rem 0.6rem; background:#1a1a2e; color:#888; border-radius:4px;">Complete</span>
+  {% endif %}
+</div>
+<p style="color:#888; margin-bottom:1.5rem;">{{ study.start_date }} → {{ study.end_date }} · {{ study.detection_type|title }} detection · {{ study.day_count|default(0) }} days tracked</p>
+
+<!-- Animated Mapbox -->
+<div style="position:relative;">
+  <div id="study-map" style="width:100%; height:50vh; border-radius:8px; border:1px solid #222;"></div>
+  <div id="day-controls" style="position:absolute; bottom:1rem; left:1rem; right:1rem; display:flex; align-items:center; gap:0.75rem; background:rgba(10,10,10,0.85); padding:0.5rem 1rem; border-radius:6px;">
+    <button id="play-btn" onclick="togglePlay()" style="background:none; border:1px solid #444; color:#c4b5fd; padding:0.3rem 0.6rem; border-radius:4px; cursor:pointer; font-size:0.85rem;">Play</button>
+    <input id="day-slider" type="range" min="0" max="0" value="0" style="flex:1; accent-color:#c4b5fd;" oninput="goToDay(this.value)">
+    <span id="day-label" style="color:#aaa; font-size:0.8rem; min-width:120px; text-align:right;"></span>
+  </div>
+</div>
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+
+<script>
+mapboxgl.accessToken = '{{ mapbox_token }}';
+
+var studyDays = {{ study_days_json|safe }};
+var studyCoords = {{ study_coords_json|safe }};
+var currentDay = 0;
+var playing = false;
+var playInterval = null;
+var markers = [];
+
+// Compute bounds
+var allLats = studyCoords.map(function(c) { return c.lat; });
+var allLngs = studyCoords.map(function(c) { return c.lng; });
+var centerLat = (Math.min.apply(null, allLats) + Math.max.apply(null, allLats)) / 2;
+var centerLng = (Math.min.apply(null, allLngs) + Math.max.apply(null, allLngs)) / 2;
+
+var map = new mapboxgl.Map({
+  container: 'study-map',
+  style: 'mapbox://styles/mapbox/dark-v11',
+  center: [centerLng, centerLat],
+  zoom: 3,
+  projection: 'globe'
+});
+
+map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+map.on('style.load', function() {
+  map.setFog({
+    color: '#0a0a0a',
+    'high-color': '#0f0f1a',
+    'horizon-blend': 0.04,
+    'space-color': '#050510',
+    'star-intensity': 0.4
+  });
+});
+
+// Set up slider
+var slider = document.getElementById('day-slider');
+slider.max = Math.max(0, studyDays.length - 1);
+
+map.on('load', function() {
+  // Add path line source
+  map.addSource('path', {
+    type: 'geojson',
+    data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } }
+  });
+  map.addLayer({
+    id: 'path-line',
+    type: 'line',
+    source: 'path',
+    paint: {
+      'line-color': '#c4b5fd',
+      'line-width': 2,
+      'line-opacity': 0.6,
+      'line-dasharray': [2, 2]
+    }
+  });
+
+  if (studyDays.length > 0) {
+    showDay(0);
+  }
+});
+
+function showDay(idx) {
+  currentDay = idx;
+  slider.value = idx;
+
+  // Clear markers
+  markers.forEach(function(m) { m.remove(); });
+  markers = [];
+
+  if (idx >= studyDays.length) return;
+
+  var day = studyDays[idx];
+  document.getElementById('day-label').textContent = 'Day ' + (idx + 1) + ' — ' + day.date;
+
+  // Add markers for this day's artworks
+  (day.artworks || []).forEach(function(a) {
+    var el = document.createElement('div');
+    el.style.cssText = 'width:16px; height:16px; border-radius:50%; background:#c4b5fd; border:2px solid #fff; cursor:pointer; box-shadow:0 0 10px rgba(196,181,253,0.5);';
+
+    var popup = new mapboxgl.Popup({ offset: 12, maxWidth: '260px' })
+      .setHTML(
+        '<div style="background:#1a1a1a; padding:0; border-radius:6px; overflow:hidden;">' +
+          '<img src="' + a.svg_url + '" style="width:100%; height:120px; object-fit:contain; background:#111;" loading="lazy">' +
+          '<div style="padding:0.5rem;">' +
+            '<strong style="color:#fff; font-size:0.85rem;">' + a.title + '</strong>' +
+            '<a href="' + a.url + '" style="display:block; margin-top:0.3rem; color:#c4b5fd; font-size:0.75rem;">View →</a>' +
+          '</div>' +
+        '</div>'
+      );
+
+    var marker = new mapboxgl.Marker(el)
+      .setLngLat([a.lng, a.lat])
+      .setPopup(popup)
+      .addTo(map);
+    markers.push(marker);
+  });
+
+  // Update path line (all days up to current)
+  var pathCoords = [];
+  for (var i = 0; i <= idx; i++) {
+    var d = studyDays[i];
+    if (d.artworks && d.artworks.length > 0) {
+      var avgLat = d.artworks.reduce(function(s, a) { return s + a.lat; }, 0) / d.artworks.length;
+      var avgLng = d.artworks.reduce(function(s, a) { return s + a.lng; }, 0) / d.artworks.length;
+      pathCoords.push([avgLng, avgLat]);
+    }
+  }
+  if (map.getSource('path')) {
+    map.getSource('path').setData({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: pathCoords }
+    });
+  }
+}
+
+function goToDay(idx) {
+  showDay(parseInt(idx));
+}
+
+function togglePlay() {
+  var btn = document.getElementById('play-btn');
+  if (playing) {
+    clearInterval(playInterval);
+    playing = false;
+    btn.textContent = 'Play';
+  } else {
+    playing = true;
+    btn.textContent = 'Pause';
+    if (currentDay >= studyDays.length - 1) currentDay = -1;
+    playInterval = setInterval(function() {
+      currentDay++;
+      if (currentDay >= studyDays.length) {
+        clearInterval(playInterval);
+        playing = false;
+        btn.textContent = 'Play';
+        return;
+      }
+      showDay(currentDay);
+    }, 2000);
+  }
+}
+</script>
+
+<style>
+  .mapboxgl-popup-content { background: #1a1a1a !important; padding: 0 !important; border-radius: 6px !important; }
+  .mapboxgl-popup-tip { border-top-color: #1a1a1a !important; }
+  .mapboxgl-popup-close-button { color: #888 !important; font-size: 18px !important; padding: 4px 8px !important; }
+</style>
+
+<!-- Artwork Grid -->
+<h2 style="margin-top:2rem;">Artwork Timeline</h2>
+
+{% if days %}
+<div style="overflow-x:auto;">
+<table style="width:100%; border-collapse:collapse; margin-bottom:2rem;">
+  <thead>
+    <tr style="border-bottom:1px solid #222;">
+      <th style="padding:0.75rem; text-align:left; color:#888; font-size:0.85rem;">Day</th>
+      {% for coord in study.coordinates %}
+      <th style="padding:0.75rem; text-align:center; color:#888; font-size:0.85rem;">{{ coord.lat }}°{{ 'N' if coord.lat >= 0 else 'S' }}, {{ coord.lng|abs }}°{{ 'E' if coord.lng >= 0 else 'W' }}</th>
+      {% endfor %}
+      <th style="padding:0.75rem; text-align:right; color:#888; font-size:0.85rem;">Weather</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for day in days %}
+    <tr style="border-bottom:1px solid #1a1a1a;">
+      <td style="padding:0.75rem; color:#c4b5fd; font-size:0.85rem; white-space:nowrap;">{{ day.date }}</td>
+      {% for coord in study.coordinates %}
+      {% set match = day.artwork_map.get((coord.lat, coord.lng)) %}
+      {% if match %}
+      <td style="padding:0.5rem; text-align:center;">
+        <a href="/weather/{{ match.run_id }}/{{ match.slug }}/">
+          <img src="/weather/{{ match.run_id }}/{{ match.slug }}/artwork.svg" alt="" style="width:80px; height:80px; object-fit:contain; background:#111; border-radius:4px;" loading="lazy">
+        </a>
+      </td>
+      {% else %}
+      <td style="padding:0.75rem; text-align:center; color:#333;">—</td>
+      {% endif %}
+      {% endfor %}
+      <td style="padding:0.75rem; text-align:right; font-size:0.8rem; color:#888;">
+        {% if day.weather_summary %}
+        {{ day.weather_summary.get('max_wind', '—') }} m/s · {{ day.weather_summary.get('min_temp', '—') }}–{{ day.weather_summary.get('max_temp', '—') }}°C
+        {% else %}—{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p style="color:#555;">No daily data collected yet.</p>
+{% endif %}
+
+<!-- Metadata -->
+<div class="metadata">
+  <h2>Study Details</h2>
+  <dl>
+    <dt>Name</dt>
+    <dd>{{ study.name }}</dd>
+    <dt>Period</dt>
+    <dd>{{ study.start_date }} → {{ study.end_date }}</dd>
+    <dt>Detection</dt>
+    <dd>{{ study.detection_type|title }}</dd>
+    <dt>Locations</dt>
+    <dd>{{ study.coordinates|length }} tracked point{{ 's' if study.coordinates|length != 1 else '' }}</dd>
+    {% if study.artist %}
+    <dt>Artist</dt>
+    <dd><a href="/artist/{{ study.artist }}/">{{ study.artist|replace('_', ' ')|title }}</a></dd>
+    {% endif %}
+    <dt>Total Artworks</dt>
+    <dd>{{ study.artwork_count|default(0) }}</dd>
+  </dl>
+</div>
+{% endblock %}

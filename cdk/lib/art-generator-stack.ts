@@ -217,8 +217,55 @@ export class ArtGeneratorStack extends cdk.Stack {
       })
     );
 
+    // Study Detector
+    const studyDetector = new lambda.Function(this, 'StudyDetector', {
+      functionName: 'art-study-detector',
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambdas/study_detector')),
+      timeout: cdk.Duration.minutes(2),
+      memorySize: 256,
+      environment: {
+        TABLE_NAME: table.tableName,
+      },
+    });
+    table.grantReadWriteData(studyDetector);
+
+    // Study Admin
+    const studyAdmin = new lambda.Function(this, 'StudyAdmin', {
+      functionName: 'art-study-admin',
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambdas/study_admin')),
+      timeout: cdk.Duration.seconds(10),
+      memorySize: 128,
+      environment: {
+        TABLE_NAME: table.tableName,
+        ADMIN_API_KEY: '',
+      },
+    });
+    table.grantReadWriteData(studyAdmin);
+
+    const studyAdminUrl = studyAdmin.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+        allowedMethods: [lambda.HttpMethod.GET, lambda.HttpMethod.POST],
+      },
+    });
+
+    new cdk.CfnOutput(this, 'StudyAdminUrl', {
+      value: studyAdminUrl.url,
+      description: 'URL for study admin endpoint',
+    });
+
     const siteRebuildTask = new tasks.LambdaInvoke(this, 'SiteRebuildTask', {
       lambdaFunction: siteRebuild,
+      outputPath: '$.Payload',
+    });
+
+    const studyDetectorTask = new tasks.LambdaInvoke(this, 'StudyDetectorTask', {
+      lambdaFunction: studyDetector,
       outputPath: '$.Payload',
     });
 
@@ -229,7 +276,8 @@ export class ArtGeneratorStack extends cdk.Stack {
     parallel.branch(weatherBranch);
     parallel.branch(satelliteBranch);
 
-    const definition = parallel.next(siteRebuildTask);
+    // Study detector runs BEFORE site rebuild so studies appear same-day
+    const definition = parallel.next(studyDetectorTask).next(siteRebuildTask);
 
     const stateMachine = new sfn.StateMachine(this, 'DailyPipeline', {
       stateMachineName: 'art-daily-pipeline',

@@ -25,6 +25,8 @@ def handler(event, context):
     # Separate weather and palette items
     weather_items = [i for i in items if i.get("PK", "").startswith("WEATHER#")]
     palette_items = [i for i in items if i.get("PK", "").startswith("PALETTE#")]
+    study_metas = [i for i in items if i.get("PK", "").startswith("STUDY#") and i.get("SK") == "META"]
+    study_day_items = [i for i in items if i.get("PK", "").startswith("STUDY#") and i.get("SK", "").startswith("DAY#")]
 
     # Parse colors for palette items
     for item in palette_items:
@@ -175,6 +177,99 @@ def handler(event, context):
         mapbox_token=mapbox_token,
     )
 
+    # Render study pages
+
+    # Group study days by study_id
+    study_days_by_id = defaultdict(list)
+    for sd in study_day_items:
+        sid = sd.get("PK", "").replace("STUDY#", "")
+        study_days_by_id[sid].append(sd)
+    for sid in study_days_by_id:
+        study_days_by_id[sid].sort(key=lambda x: x.get("SK", ""))
+
+    # Build study data for templates
+    visible_studies = [s for s in study_metas if s.get("status") in ("active", "complete")]
+    for study in visible_studies:
+        sid = study.get("study_id", study.get("PK", "").replace("STUDY#", ""))
+        days = study_days_by_id.get(sid, [])
+        # Count artworks
+        all_refs = []
+        for d in days:
+            refs = d.get("artwork_refs", [])
+            if isinstance(refs, str):
+                refs = _json.loads(refs)
+            all_refs.extend(refs)
+        study["day_count"] = len(days)
+        study["artwork_count"] = len(all_refs)
+        study["artworks"] = all_refs[:4]  # for mosaic thumbnail
+
+    pages["site/studies/index.html"] = env.get_template("studies_index.html").render(
+        studies=visible_studies,
+    )
+
+    # Individual study detail pages
+    for study in visible_studies:
+        sid = study.get("study_id", study.get("PK", "").replace("STUDY#", ""))
+        days = study_days_by_id.get(sid, [])
+        coords = study.get("coordinates", [])
+        if isinstance(coords, str):
+            coords = _json.loads(coords)
+
+        # Build days data for template
+        template_days = []
+        map_days = []
+        for d in days:
+            refs = d.get("artwork_refs", [])
+            if isinstance(refs, str):
+                refs = _json.loads(refs)
+            ws = d.get("weather_summary", {})
+            if isinstance(ws, str):
+                ws = _json.loads(ws)
+
+            # Build artwork map keyed by (lat, lng) for grid lookup
+            artwork_map = {}
+            map_artworks = []
+            for ref in refs:
+                lat = float(ref.get("lat", 0))
+                lng = float(ref.get("lng", 0))
+                run_id = ref.get("run_id", "")
+                slug = ref.get("slug", "")
+                # Match to nearest coordinate
+                for c in coords:
+                    if abs(lat - float(c.get("lat", 0))) <= 5 and abs(lng - float(c.get("lng", 0))) <= 5:
+                        artwork_map[(int(c["lat"]), int(c["lng"]))] = ref
+                        break
+                map_artworks.append({
+                    "lat": lat, "lng": lng,
+                    "title": slug.replace("-", " ").title(),
+                    "svg_url": f"/weather/{run_id}/{slug}/artwork.svg",
+                    "url": f"/weather/{run_id}/{slug}/",
+                })
+
+            template_days.append({
+                "date": d.get("SK", "").replace("DAY#", ""),
+                "artwork_map": artwork_map,
+                "weather_summary": {k: str(v) for k, v in ws.items()} if ws else {},
+            })
+            map_days.append({
+                "date": d.get("SK", "").replace("DAY#", ""),
+                "artworks": map_artworks,
+            })
+
+        # Ensure coordinates are dicts
+        template_coords = []
+        for c in coords:
+            if isinstance(c, dict):
+                template_coords.append({"lat": int(float(c.get("lat", 0))), "lng": int(float(c.get("lng", 0)))})
+
+        pages[f"site/studies/{sid}/index.html"] = env.get_template("study_detail.html").render(
+            study={**study, "coordinates": template_coords, "study_id": sid},
+            days=template_days,
+            study_days_json=_json.dumps(map_days),
+            study_coords_json=_json.dumps(template_coords),
+            mapbox_token=mapbox_token,
+        )
+
     # Render about, privacy, terms pages
     pages["site/about/index.html"] = env.get_template("about.html").render()
     pages["site/privacy/index.html"] = env.get_template("privacy.html").render()
@@ -200,11 +295,15 @@ def handler(event, context):
         ("https://art.jamestannahill.com/artist/", "weekly", "0.8"),
         ("https://art.jamestannahill.com/about/", "monthly", "0.7"),
         ("https://art.jamestannahill.com/map/", "daily", "0.8"),
+        ("https://art.jamestannahill.com/studies/", "daily", "0.8"),
         ("https://art.jamestannahill.com/privacy/", "yearly", "0.3"),
         ("https://art.jamestannahill.com/terms/", "yearly", "0.3"),
     ]
     for artist_key in artist_info:
         sitemap_urls.append((f"https://art.jamestannahill.com/artist/{artist_key}/", "daily", "0.7"))
+    for study in visible_studies:
+        sid = study.get("study_id", study.get("PK", "").replace("STUDY#", ""))
+        sitemap_urls.append((f"https://art.jamestannahill.com/studies/{sid}/", "daily", "0.6"))
     for run_id, artworks in weather_by_run.items():
         sitemap_urls.append((f"https://art.jamestannahill.com/weather/{run_id}/", "never", "0.6"))
         for artwork in artworks:

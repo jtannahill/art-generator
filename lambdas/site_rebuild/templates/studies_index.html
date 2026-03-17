@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Studies — art.jt{% endblock %}
+{% block description %}Weather event studies — tracking atmospheric phenomena across days and geographies through generative art.{% endblock %}
+{% block canonical_path %}/studies/{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span>Studies</span>
+</div>
+
+<h1>Studies</h1>
+<p style="color:#888; margin-bottom:2rem; max-width:720px;">
+  Studies track weather events across multiple days and geographies — following a storm system as it moves,
+  sampling atmospheric conditions at different points, and comparing how the same event produces different art
+  over time. The system auto-detects persistent and clustered weather patterns; studies can also be created manually.
+</p>
+
+{% if studies %}
+<div class="grid">
+  {% for study in studies %}
+  <a href="/studies/{{ study.study_id }}/" class="card" style="text-decoration:none;">
+    {% if study.artworks %}
+    <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; aspect-ratio:16/9; overflow:hidden;">
+      {% for art in study.artworks[:4] %}
+      <img src="/weather/{{ art.run_id }}/{{ art.slug }}/artwork.svg" alt="" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
+      {% endfor %}
+      {% for _ in range(4 - study.artworks|length) %}
+      <div style="background:#1a1a1a;"></div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="aspect-ratio:16/9; background:#1a1a1a; display:flex; align-items:center; justify-content:center; color:#444;">Collecting data...</div>
+    {% endif %}
+    <div class="card-body">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+        <h3 style="margin:0;">{{ study.name }}</h3>
+        {% if study.status == 'active' %}
+        <span style="font-size:0.7rem; padding:0.2rem 0.5rem; background:#064e3b; color:#34d399; border-radius:3px;">Active</span>
+        {% else %}
+        <span style="font-size:0.7rem; padding:0.2rem 0.5rem; background:#1a1a2e; color:#888; border-radius:3px;">Complete</span>
+        {% endif %}
+      </div>
+      <p class="card-meta">{{ study.start_date }} → {{ study.end_date }} · {{ study.detection_type|title }}</p>
+      <p class="card-meta">{{ study.day_count|default(0) }} day{{ 's' if study.day_count|default(0) != 1 else '' }} · {{ study.artwork_count|default(0) }} artwork{{ 's' if study.artwork_count|default(0) != 1 else '' }}</p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div style="padding:3rem; text-align:center; background:#111; border:1px solid #222; border-radius:8px;">
+  <p style="color:#888; font-size:1.1rem; margin-bottom:0.5rem;">No studies yet.</p>
+  <p style="color:#555;">The system is watching for interesting weather patterns — persistent events and regional clusters will appear here automatically.</p>
+</div>
+{% endif %}
+{% endblock %}
