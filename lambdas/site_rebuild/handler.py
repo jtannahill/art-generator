@@ -586,15 +586,16 @@ def _render_png_if_missing(s3, src_prefix, dst_prefix):
     """Render preview-2048.png from artwork.svg if it doesn't exist yet."""
     try:
         import cairosvg
-    except (ImportError, OSError):
-        return  # CairoSVG not available
+    except (ImportError, OSError) as e:
+        print(f"CairoSVG not available: {e}")
+        return
 
     png_key = f"{dst_prefix}preview-2048.png"
     # Check if PNG already exists
     try:
         s3.head_object(Bucket=BUCKET_NAME, Key=png_key)
         return  # Already exists
-    except s3.exceptions.ClientError:
+    except Exception:
         pass  # Doesn't exist, render it
 
     # Read SVG

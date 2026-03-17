@@ -36,10 +36,10 @@ def sample_edition_item():
         "aspect_ratio": "1:1",
         "featured": False,
         "sizes": {
-            "S":   {"dims": "12x12", "limit": 5, "sold": 0, "price_cents": 9500},
-            "M":   {"dims": "20x20", "limit": 5,  "sold": 0, "price_cents": 19500},
-            "L":   {"dims": "30x30", "limit": 5,  "sold": 0, "price_cents": 35000},
-            "XL":  {"dims": "40x40", "limit": 5,  "sold": 0, "price_cents": 59500},
-            "XXL": {"dims": "60x60", "limit": 5,  "sold": 0, "price_cents": 120000},
+            "S":   {"dims": "12x12", "limit": 5, "sold": 0, "price_cents": 15500},
+            "M":   {"dims": "20x20", "limit": 5,  "sold": 0, "price_cents": 59500},
+            "L":   {"dims": "30x30", "limit": 5,  "sold": 0, "price_cents": 69500},
+            "XL":  {"dims": "40x40", "limit": 5,  "sold": 0, "price_cents": 115000},
+            "XXL": {"dims": "60x60", "limit": 5,  "sold": 0, "price_cents": 260000},
         },
     }

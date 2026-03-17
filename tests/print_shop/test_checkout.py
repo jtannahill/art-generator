@@ -17,7 +17,7 @@ def test_creates_stripe_session(mock_stripe, mock_table, sample_edition_item):
     call_kwargs = mock_stripe.checkout.Session.create.call_args[1]
     assert call_kwargs["metadata"]["run_id"] == "2026-03-16-130500"
     assert call_kwargs["metadata"]["size_key"] == "L"
-    assert call_kwargs["line_items"][0]["price_data"]["unit_amount"] == 35000
+    assert call_kwargs["line_items"][0]["price_data"]["unit_amount"] == 69500
 
 
 @patch("lambdas.print_shop.checkout.stripe")
