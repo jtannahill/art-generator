@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmed — art.jt{% endblock %}
+{% block canonical_path %}/shop/success/{% endblock %}
+{% block meta %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+<div style="max-width:600px; margin:3rem auto; text-align:center;">
+  <h1 style="margin-bottom:1rem;">Your Print is Being Prepared</h1>
+  <div id="order-details" style="background:#111; border:1px solid #2a2a2a; border-radius:8px; padding:1.5rem; margin:1.5rem 0; text-align:left;">
+    <p style="color:#888; margin-bottom:0.5rem;">Loading order details...</p>
+  </div>
+  <p style="color:#888; line-height:1.8;">
+    Production typically takes 5-7 business days.<br>
+    You will receive a confirmation email with tracking information.<br>
+    Printed on Hahnemühle German Etching 310gsm with Certificate of Authenticity.
+  </p>
+  <a href="/" class="download-btn" style="margin-top:1.5rem;">Back to Gallery</a>
+</div>
+
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var title = (params.get('title') || '').replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+  var size = params.get('size') || '';
+  var el = document.getElementById('order-details');
+  if (title) {
+    el.innerHTML =
+      '<p style="color:#fff; font-size:1.1rem; margin-bottom:0.5rem;">' + title + '</p>' +
+      '<p style="color:#c4b5fd;">Size: ' + size + ' — Limited Edition</p>';
+  }
+})();
+</script>
+{% endblock %}

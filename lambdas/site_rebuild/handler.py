@@ -284,6 +284,10 @@ def handler(event, context):
     pages["site/privacy/index.html"] = env.get_template("privacy.html").render()
     pages["site/terms/index.html"] = env.get_template("terms.html").render()
 
+    # Render shop pages
+    pages["site/shop/success/index.html"] = env.get_template("shop_success.html").render()
+    pages["site/shop/cancel/index.html"] = env.get_template("shop_cancel.html").render()
+
     # Upload favicon
     # Upload static assets
     static_dir = os.path.join(os.path.dirname(__file__), "static")
