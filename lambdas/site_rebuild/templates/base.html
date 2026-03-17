@@ -263,7 +263,7 @@
 
     /* Atmospheric tooltips */
     .tip, .tip-inline { cursor:help; border-bottom:1px dotted #555; }
-    .tip-bubble { position:fixed; background:#1a1a2e; color:#c4b5fd; border:1px solid #333; border-radius:6px; padding:0.5rem 0.75rem; font-size:0.75rem; line-height:1.5; max-width:280px; z-index:1000; pointer-events:none; opacity:0; transition:opacity 0.15s; }
+    .tip-bubble { position:fixed; background:#1a1a2e; color:#c4b5fd; border:1px solid #333; border-radius:6px; padding:0.6rem 0.85rem; font-size:0.78rem; line-height:1.6; width:300px; z-index:9999; pointer-events:none; opacity:0; transition:opacity 0.15s; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
     .tip-bubble.visible { opacity:1; }
 
     /* Print shop drawer */
@@ -345,19 +345,32 @@
       if (!el) return;
       clearTimeout(hideTimer);
       bubble.textContent = el.getAttribute('data-tip');
-      bubble.classList.add('visible');
-      var r = el.getBoundingClientRect();
+      // Position off-screen first to measure
+      bubble.style.top = '-9999px';
+      bubble.style.left = '-9999px';
+      bubble.style.display = 'block';
+      // Force layout so we get accurate dimensions
       var bw = bubble.offsetWidth;
       var bh = bubble.offsetHeight;
-      var gap = 8;
-      // Prefer above, fall back to below if not enough space
-      var top = r.top - bh - gap;
-      if (top < 4) top = r.bottom + gap;
-      // Center horizontally, clamp to viewport
-      var left = r.left + r.width / 2 - bw / 2;
-      left = Math.max(8, Math.min(left, window.innerWidth - bw - 8));
+      var r = el.getBoundingClientRect();
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      var pad = 12;
+      var gap = 10;
+      // Vertical: prefer below the element so it doesn't cover content above
+      var top = r.bottom + gap;
+      if (top + bh > vh - pad) {
+        // Not enough room below, try above
+        top = r.top - bh - gap;
+      }
+      if (top < pad) top = pad;
+      // Horizontal: align left edge with element, clamp to viewport
+      var left = r.left;
+      if (left + bw > vw - pad) left = vw - bw - pad;
+      if (left < pad) left = pad;
       bubble.style.top = top + 'px';
       bubble.style.left = left + 'px';
+      bubble.classList.add('visible');
     }, true);
 
     document.addEventListener('mouseleave', function(e) {
