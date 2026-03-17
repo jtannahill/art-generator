@@ -93,27 +93,27 @@
     <dt>Location</dt>
     <dd>{{ artwork|coords }} ({{ slug|replace('-', ' ')|title }})</dd>
     {% if artwork.pressure is defined and artwork.pressure %}
-    <dt>Pressure</dt>
-    <dd>{{ artwork.pressure }} hPa (gradient: {{ artwork.pressure_gradient|default('') }})</dd>
+    <dt><span class="tip" data-tip="Sea-level atmospheric pressure. Deep lows create density, weight, and compressed energy in the composition. High pressure opens up the canvas with space and calm.">Pressure</span></dt>
+    <dd>{{ artwork.pressure }} hPa (<span class="tip" data-tip="Rate of pressure change across the region. Steep gradients drive dramatic, turbulent compositions. Flat gradients produce quieter, more meditative work.">gradient: {{ artwork.pressure_gradient|default('') }}</span>)</dd>
     {% endif %}
     {% if artwork.wind_speed is defined and artwork.wind_speed %}
-    <dt>Wind</dt>
+    <dt><span class="tip" data-tip="Wind speed drives the kinetic energy of each piece. Strong winds produce sweeping, directional strokes and dynamic movement. Calm air yields stillness and restraint.">Wind</span></dt>
     <dd>{{ artwork.wind_speed }} m/s from {{ artwork.wind_direction|default('') }}&deg;</dd>
     {% endif %}
     {% if artwork.temp is defined and artwork.temp %}
-    <dt>Temperature</dt>
-    <dd>{{ artwork.temp }}&deg;C (anomaly: {{ artwork.temp_anomaly|default('') }}&deg;C)</dd>
+    <dt><span class="tip" data-tip="Surface temperature shapes the color palette. Extreme heat pushes toward vivid, saturated hues. Deep cold pulls toward stark contrasts and crystalline forms.">Temperature</span></dt>
+    <dd>{{ artwork.temp }}&deg;C (<span class="tip" data-tip="Deviation from the average temperature at this latitude. Large anomalies — unusual heat or cold — intensify the visual drama and color saturation.">anomaly: {{ artwork.temp_anomaly|default('') }}&deg;C</span>)</dd>
     {% endif %}
     {% if artwork.humidity is defined and artwork.humidity %}
-    <dt>Humidity</dt>
+    <dt><span class="tip" data-tip="Atmospheric moisture content. High humidity softens edges, blends colors, and creates diffuse, atmospheric layering. Dry air sharpens boundaries and adds clarity.">Humidity</span></dt>
     <dd>{{ artwork.humidity }}%</dd>
     {% endif %}
     {% if artwork.precipitation is defined and artwork.precipitation %}
-    <dt>Precipitation</dt>
+    <dt><span class="tip" data-tip="Active rainfall or snowfall. Precipitation adds textural density — dripping, pooling, and layered opacity effects that echo water moving through the atmosphere.">Precipitation</span></dt>
     <dd>{{ artwork.precipitation }} mm</dd>
     {% endif %}
     {% if artwork.score is defined and artwork.score %}
-    <dt>Visual Interest Score</dt>
+    <dt><span class="tip" data-tip="A composite score weighting pressure anomaly (30%), wind (25%), temperature anomaly (20%), precipitation (15%), and humidity (10%). Higher scores mean more dramatic atmospheric conditions and more visually intense artwork.">Visual Interest Score</span></dt>
     <dd>{{ artwork.score }}</dd>
     {% endif %}
   </dl>

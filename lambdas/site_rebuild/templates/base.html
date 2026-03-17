@@ -261,6 +261,14 @@
       nav { justify-content: center; }
     }
 
+    /* Atmospheric tooltips */
+    .tip { position:relative; cursor:help; border-bottom:1px dotted #555; }
+    .tip::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#1a1a2e; color:#c4b5fd; border:1px solid #333; border-radius:6px; padding:0.5rem 0.75rem; font-size:0.75rem; line-height:1.5; white-space:normal; width:max-content; max-width:280px; opacity:0; pointer-events:none; transition:opacity 0.2s; z-index:10; }
+    .tip:hover::after { opacity:1; }
+    .tip-inline { border-bottom:1px dotted #555; cursor:help; position:relative; }
+    .tip-inline::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#1a1a2e; color:#c4b5fd; border:1px solid #333; border-radius:6px; padding:0.4rem 0.6rem; font-size:0.7rem; line-height:1.4; white-space:normal; width:max-content; max-width:240px; opacity:0; pointer-events:none; transition:opacity 0.2s; z-index:10; }
+    .tip-inline:hover::after { opacity:1; }
+
     /* Print shop drawer */
     .drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100; opacity:0; pointer-events:none; transition:opacity 0.3s; }
     .drawer-overlay.open { opacity:1; pointer-events:auto; }

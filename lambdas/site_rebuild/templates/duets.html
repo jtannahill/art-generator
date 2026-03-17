@@ -23,7 +23,7 @@
   <div style="padding:1rem 1.5rem; border-bottom:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
     <div>
       <h3 style="margin:0; color:#fff;">{{ duet.location }}</h3>
-      <p style="color:#888; font-size:0.85rem; margin:0;">{{ duet.coords }} · {{ duet.temp }}°C · {{ duet.wind }} m/s · {{ duet.pressure }} hPa</p>
+      <p style="color:#888; font-size:0.85rem; margin:0;">{{ duet.coords }} · <span class="tip-inline" data-tip="Drives color palette — extremes intensify hues">{{ duet.temp }}°C</span> · <span class="tip-inline" data-tip="Drives kinetic energy — strong wind = dynamic movement">{{ duet.wind }} m/s</span> · <span class="tip-inline" data-tip="Atmospheric weight — deep lows compress the composition">{{ duet.pressure }} hPa</span></p>
     </div>
     <span style="color:#555; font-size:0.8rem;">{{ duet.date }}</span>
   </div>
