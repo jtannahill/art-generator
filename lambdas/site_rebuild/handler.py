@@ -181,10 +181,14 @@ def handler(event, context):
     pages["site/terms/index.html"] = env.get_template("terms.html").render()
 
     # Upload favicon
-    favicon_path = os.path.join(os.path.dirname(__file__), "static", "favicon.svg")
-    if os.path.exists(favicon_path):
-        with open(favicon_path, "r") as f:
-            pages["site/favicon.svg"] = f.read()
+    # Upload static assets
+    static_dir = os.path.join(os.path.dirname(__file__), "static")
+    if os.path.isdir(static_dir):
+        for fname in os.listdir(static_dir):
+            fpath = os.path.join(static_dir, fname)
+            if os.path.isfile(fpath):
+                with open(fpath, "r") as f:
+                    pages[f"site/{fname}"] = f.read()
 
     # Generate robots.txt
     pages["site/robots.txt"] = "User-agent: *\nAllow: /\nSitemap: https://art.jamestannahill.com/sitemap.xml\n"
