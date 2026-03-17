@@ -7,7 +7,7 @@ from decimal import Decimal
 import stripe
 from botocore.exceptions import ClientError
 
-from .email import send_confirmation, send_fulfillment_alert
+from .notifications import send_confirmation, send_fulfillment_alert
 from .tps_client import TpsClient
 
 
