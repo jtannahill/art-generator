@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}World Map — art.jt{% endblock %}
+{% block description %}Interactive world map of generative weather art. Click any location to view the artwork inspired by its atmospheric conditions.{% endblock %}
+{% block canonical_path %}/map/{% endblock %}
+
+{% block content %}
+<h1>World Map</h1>
+<p style="color:#888; margin-bottom:1rem;">Each marker represents a location where atmospheric data was translated into art. Click to explore.</p>
+
+<div id="map" style="width:100%; height:70vh; border-radius:8px; border:1px solid #222;"></div>
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+
+<script>
+mapboxgl.accessToken = '{{ mapbox_token }}';
+
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/dark-v11',
+  center: [0, 20],
+  zoom: 1.5,
+  projection: 'globe'
+});
+
+map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+map.on('style.load', function() {
+  map.setFog({
+    color: '#0a0a0a',
+    'high-color': '#111',
+    'horizon-blend': 0.05,
+    'space-color': '#0a0a0a',
+    'star-intensity': 0.3
+  });
+});
+
+var artworks = {{ artworks_json }};
+
+map.on('load', function() {
+  artworks.forEach(function(a) {
+    var el = document.createElement('div');
+    el.style.width = '14px';
+    el.style.height = '14px';
+    el.style.borderRadius = '50%';
+    el.style.background = '#c4b5fd';
+    el.style.border = '2px solid #fff';
+    el.style.cursor = 'pointer';
+    el.style.boxShadow = '0 0 8px rgba(196,181,253,0.5)';
+
+    var popup = new mapboxgl.Popup({ offset: 15, maxWidth: '280px' })
+      .setHTML(
+        '<div style="background:#1a1a1a; padding:0; border-radius:6px; overflow:hidden;">' +
+          '<img src="' + a.svg_url + '" style="width:100%; height:140px; object-fit:contain; background:#111;">' +
+          '<div style="padding:0.75rem;">' +
+            '<strong style="color:#fff; font-size:0.9rem;">' + a.title + '</strong>' +
+            '<div style="color:#c4b5fd; font-size:0.8rem; margin:0.25rem 0;">' + a.coords + '</div>' +
+            '<div style="color:#888; font-size:0.75rem;">' + a.temp + '°C · ' + a.wind + ' m/s</div>' +
+            '<a href="' + a.url + '" style="display:inline-block; margin-top:0.5rem; padding:0.3rem 0.6rem; background:#2a2a4e; border-radius:4px; color:#c4b5fd; font-size:0.75rem; text-decoration:none;">View Artwork</a>' +
+          '</div>' +
+        '</div>'
+      );
+
+    new mapboxgl.Marker(el)
+      .setLngLat([a.lng, a.lat])
+      .setPopup(popup)
+      .addTo(map);
+  });
+});
+</script>
+
+<style>
+  .mapboxgl-popup-content { background: #1a1a1a !important; padding: 0 !important; border-radius: 6px !important; }
+  .mapboxgl-popup-tip { border-top-color: #1a1a1a !important; }
+  .mapboxgl-popup-close-button { color: #888 !important; font-size: 18px !important; padding: 4px 8px !important; }
+</style>
+{% endblock %}

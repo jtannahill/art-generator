@@ -121,6 +121,33 @@ def handler(event, context):
             api_url=api_url,
         )
 
+    # Render world map page
+    map_artworks = []
+    for run_id, artworks_list in weather_by_run.items():
+        for a in artworks_list:
+            slug = a.get("SK", a.get("slug", ""))
+            lat = float(a.get("lat", 0))
+            lng = float(a.get("lng", 0))
+            lat_str = f"{abs(lat):.0f}\u00b0{'N' if lat >= 0 else 'S'}"
+            lng_str = f"{abs(lng):.0f}\u00b0{'E' if lng >= 0 else 'W'}"
+            map_artworks.append({
+                "lat": lat,
+                "lng": lng,
+                "title": slug.replace("-", " ").title(),
+                "coords": f"{lat_str}, {lng_str}",
+                "temp": str(a.get("temp", "")),
+                "wind": str(a.get("wind_speed", "")),
+                "svg_url": f"/weather/{a.get('run_id', run_id)}/{slug}/artwork.svg",
+                "url": f"/weather/{a.get('run_id', run_id)}/{slug}/",
+            })
+
+    import json as _json
+    mapbox_token = os.environ.get("MAPBOX_TOKEN", "")
+    pages["site/map/index.html"] = env.get_template("map.html").render(
+        artworks_json=_json.dumps(map_artworks),
+        mapbox_token=mapbox_token,
+    )
+
     # Render about, privacy, terms pages
     pages["site/about/index.html"] = env.get_template("about.html").render()
     pages["site/privacy/index.html"] = env.get_template("privacy.html").render()
@@ -141,6 +168,7 @@ def handler(event, context):
         ("https://art.jamestannahill.com/weather/", "daily", "0.9"),
         ("https://art.jamestannahill.com/artist/", "weekly", "0.8"),
         ("https://art.jamestannahill.com/about/", "monthly", "0.7"),
+        ("https://art.jamestannahill.com/map/", "daily", "0.8"),
         ("https://art.jamestannahill.com/privacy/", "yearly", "0.3"),
         ("https://art.jamestannahill.com/terms/", "yearly", "0.3"),
     ]
