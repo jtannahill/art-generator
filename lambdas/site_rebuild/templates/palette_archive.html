@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Palette Archive — art.jt{% endblock %}
+{% block title %}Satellite Color Palettes — art.jt{% endblock %}
+{% block description %}Color palettes extracted from Copernicus Sentinel-2 satellite imagery of visually striking locations worldwide. Earth's real colors as seen from space.{% endblock %}
+{% block canonical_path %}/palettes/{% endblock %}
 
 {% block content %}
 <div class="breadcrumb">
@@ -8,14 +10,24 @@
   <span>Palettes</span>
 </div>
 
-<h1>Palette Archive</h1>
+<h1>Satellite Color Palettes</h1>
 
+<div style="max-width:720px; margin-bottom:2rem;">
+  <p style="color:#aaa; line-height:1.8; margin-bottom:1rem;">
+    Every day, the system downloads true-color satellite imagery from <a href="https://dataspace.copernicus.eu/" target="_blank" rel="noopener">Copernicus Sentinel-2</a> — the European Space Agency's Earth observation satellite constellation orbiting 786 km above the surface. From a rotating set of 30 visually striking locations — the Sahara's orange dunes, Patagonia's glacial blues, the Okavango Delta's green waterways — the dominant colors are extracted using median cut quantization, building a seasonal archive of Earth's real palette as seen from space.
+  </p>
+  <p style="color:#888; line-height:1.8; font-size:0.9rem;">
+    Each palette includes 5–7 dominant colors sorted by visual prominence, a satellite source thumbnail, and an AI-generated mood description that captures the aesthetic character of the landscape. Locations rotate by season to track how the planet's colors shift throughout the year.
+  </p>
+</div>
+
+{% if palettes_by_location %}
 <div class="grid">
   {% for slug, palettes in palettes_by_location.items() %}
   {% set latest = palettes[0] if palettes else none %}
   <a href="/palettes/{{ slug }}/" class="card">
     {% if latest and latest.swatch_key %}
-    <img src="/{{ latest.swatch_key }}" alt="{{ slug }} palette" loading="lazy">
+    <img src="/{{ latest.swatch_key }}" alt="{{ slug }} satellite imagery" loading="lazy">
     {% endif %}
     <div class="card-body">
       <h3>{{ latest.get('name', slug) if latest else slug }}</h3>
@@ -26,9 +38,18 @@
         {% endfor %}
       </div>
       {% endif %}
-      <p>{{ palettes|length }} palette{{ 's' if palettes|length != 1 else '' }}</p>
+      {% if latest and latest.mood %}
+      <p class="card-description">{{ latest.mood }}</p>
+      {% endif %}
+      <p class="card-meta">{{ palettes|length }} palette{{ 's' if palettes|length != 1 else '' }}</p>
     </div>
   </a>
   {% endfor %}
 </div>
+{% else %}
+<div style="padding:3rem; text-align:center; background:#111; border:1px solid #222; border-radius:8px;">
+  <p style="color:#888; font-size:1.1rem; margin-bottom:0.5rem;">Satellite palettes are being collected.</p>
+  <p style="color:#555;">As Sentinel-2 imagery becomes available for each location, palettes will appear here automatically. Cloud-free imagery with less than 10% cloud cover is required.</p>
+</div>
+{% endif %}
 {% endblock %}
