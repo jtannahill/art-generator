@@ -390,7 +390,8 @@ export class ArtGeneratorStack extends cdk.Stack {
       description: 'URL for the print shop Lambda',
     });
 
-    // Pass print shop URL to site-rebuild Lambda
+    // Pass dynamic URLs to site-rebuild Lambda
     siteRebuild.addEnvironment('PRINT_SHOP_URL', printShopUrl.url);
+    siteRebuild.addEnvironment('API_URL', apiUrl.url);
   }
 }
