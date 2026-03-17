@@ -28,8 +28,9 @@
   "artMedium": "Digital — generative SVG from atmospheric data",
   "artform": "Generative Art",
   "artworkSurface": "Digital",
-  "width": {"@type": "Distance", "name": "2048px"},
-  "height": {"@type": "Distance", "name": "2048px"},
+  {% set dims = (artwork.canvas_format|default('2048x2048')).split('x') %}
+  "width": {"@type": "Distance", "name": "{{ dims[0] }}px"},
+  "height": {"@type": "Distance", "name": "{{ dims[1] }}px"},
   "creator": {
     "@type": "Person",
     "name": "James Tannahill",
@@ -128,7 +129,8 @@
     <dt>Weather Source</dt>
     <dd>Open-Meteo API (GFS model)</dd>
     <dt>Format</dt>
-    <dd>SVG (2048&times;2048 viewBox)</dd>
+    {% set cf = artwork.canvas_format|default('2048x2048') %}
+    <dd>SVG ({{ cf.replace('x', '&times;') }} viewBox)</dd>
     <dt>Generated</dt>
     <dd>{{ artwork.created_at|default(run_id) }}</dd>
     <dt>Compute</dt>
@@ -138,14 +140,118 @@
   </dl>
 </div>
 
-<div style="margin:1.5rem 0; padding:1.2rem; background:linear-gradient(135deg, #0d0d1a, #0d0d0d); border:1px solid #2a2a3a; border-radius:8px;">
-  <p style="color:#c4b5fd; font-size:0.95rem; margin-bottom:0.5rem;">Interested in a giclée print or lithograph of this piece?</p>
-  <p style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">Limited edition prints and custom commissions are available. Each piece can be produced as an archival giclée print or fine art lithograph.</p>
-  <a href="mailto:art@jamestannahill.com?subject=Print%20Inquiry%20-%20{{ slug }}&body=I'm%20interested%20in%20a%20print%20of%20{{ slug|replace('-', '%20') }}%20({{ date }})." style="display:inline-block; padding:0.5rem 1rem; background:#1a1a3e; border:1px solid #444; border-radius:6px; color:#c4b5fd; font-size:0.85rem; text-decoration:none; margin-top:0.3rem;">Inquire About Prints</a>
+<div style="margin:1.5rem 0;">
+  <button class="generate-btn" id="buy-print-btn" onclick="openPrintDrawer()">Buy Print</button>
 </div>
 
 <div style="margin:1rem 0; padding:0.8rem; background:#0d0d0d; border:1px solid #1a1a1a; border-radius:6px; font-size:0.8rem; color:#666;">
   <strong style="color:#888;">License:</strong> This artwork is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>.
   Attribution: James Tannahill / art.jamestannahill.com. No commercial use or derivatives without permission.
 </div>
+
+<!-- Print drawer -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closePrintDrawer()"></div>
+<div class="drawer" id="print-drawer">
+  <button class="drawer-close" onclick="closePrintDrawer()">&times;</button>
+  <img class="drawer-thumb" src="/weather/{{ run_id }}/{{ slug }}/artwork.svg" alt="{{ slug }}">
+  <h3>{{ slug|replace('-', ' ')|title }}</h3>
+  <p class="subtitle">{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }} — {{ date }}</p>
+  <div class="size-options" id="size-options">
+    <p style="color:#666;">Loading sizes...</p>
+  </div>
+  <button class="checkout-btn" id="checkout-btn" disabled onclick="checkout()">Select a size</button>
+  <div class="trust-signals">
+    <span>Ships worldwide via theprintspace</span>
+    <span>Hahnemühle German Etching 310gsm</span>
+    <span>Certificate of Authenticity included</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+var PRINT_SHOP_URL = '{{ print_shop_url }}';
+var RUN_ID = '{{ run_id }}';
+var SLUG = '{{ slug }}';
+var selectedSize = null;
+
+function openPrintDrawer() {
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('print-drawer').classList.add('open');
+  loadEditions();
+}
+
+function closePrintDrawer() {
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('print-drawer').classList.remove('open');
+}
+
+function loadEditions() {
+  fetch(PRINT_SHOP_URL + '?action=editions&run_id=' + RUN_ID + '&slug=' + SLUG)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var container = document.getElementById('size-options');
+      container.innerHTML = '';
+      var order = ['S','M','L','XL','XXL'];
+      order.forEach(function(key) {
+        var s = data.sizes[key];
+        if (!s) return;
+        var soldOut = s.sold >= s.limit;
+        var div = document.createElement('div');
+        div.className = 'size-option' + (soldOut ? ' sold-out' : '');
+        div.setAttribute('data-size', key);
+        div.setAttribute('data-price', s.price_cents);
+        div.onclick = function() { selectSize(key, s.price_cents); };
+        div.innerHTML =
+          '<div>' +
+            '<div class="size-label">' + key + ' — ' + s.dims + '"</div>' +
+            '<div class="size-edition">' + s.sold + ' of ' + s.limit + ' sold</div>' +
+          '</div>' +
+          '<div>' +
+            (soldOut ? '<span class="sold-out-badge">Sold Out</span>' :
+            '<span class="size-price">$' + (s.price_cents / 100).toFixed(0) + '</span>') +
+          '</div>';
+        container.appendChild(div);
+      });
+    })
+    .catch(function(e) {
+      document.getElementById('size-options').innerHTML = '<p style="color:#ff6b6b;">Failed to load sizes</p>';
+    });
+}
+
+function selectSize(key, priceCents) {
+  selectedSize = key;
+  document.querySelectorAll('.size-option').forEach(function(el) {
+    el.classList.toggle('selected', el.getAttribute('data-size') === key);
+  });
+  var btn = document.getElementById('checkout-btn');
+  btn.disabled = false;
+  btn.textContent = 'Checkout — $' + (priceCents / 100).toFixed(0);
+}
+
+function checkout() {
+  if (!selectedSize) return;
+  var btn = document.getElementById('checkout-btn');
+  btn.disabled = true;
+  btn.textContent = 'Redirecting...';
+  fetch(PRINT_SHOP_URL + '?action=checkout', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({run_id: RUN_ID, slug: SLUG, size_key: selectedSize}),
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      btn.textContent = data.error === 'sold_out' ? 'Sold Out' : 'Error — try again';
+      setTimeout(function() { btn.disabled = false; btn.textContent = 'Checkout'; }, 3000);
+    }
+  })
+  .catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Error — try again';
+  });
+}
+</script>
 {% endblock %}

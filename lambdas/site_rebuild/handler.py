@@ -80,7 +80,12 @@ def handler(event, context):
             slug = artwork.get("SK", artwork.get("slug", ""))
             pages[f"site/weather/{date}/{slug}/index.html"] = env.get_template(
                 "weather_single.html"
-            ).render(artwork=artwork, date=date, slug=slug)
+            ).render(
+                artwork=artwork,
+                date=date,
+                slug=slug,
+                print_shop_url=os.environ.get("PRINT_SHOP_URL", ""),
+            )
 
     # Render artist gallery pages with infinite scroll
     api_url = os.environ.get("API_URL", "")
