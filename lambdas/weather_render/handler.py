@@ -240,9 +240,25 @@ def build_art_prompt(region):
     artist_key = region.get("artist", "sam_francis")
     artist_desc = ARTIST_PROMPTS.get(artist_key, ARTIST_PROMPTS["sam_francis"])
 
+    # Vary canvas dimensions based on atmospheric data for visual variety
+    import random
+    random.seed(hash(f"{region['slug']}{region.get('date', '')}{artist_key}"))
+    formats = [
+        ("2048", "2048"),   # square
+        ("2560", "1440"),   # wide landscape
+        ("1440", "2560"),   # tall portrait
+        ("2048", "1024"),   # cinematic wide
+        ("1024", "2048"),   # tall narrow
+        ("1920", "1920"),   # large square
+        ("2400", "1600"),   # golden landscape
+    ]
+    width, height = random.choice(formats)
+
     return f"""You are a generative artist creating abstract SVG artwork inspired by real-time
-atmospheric data. Create a single, self-contained SVG artwork (viewBox="0 0 2048 2048")
-that visually interprets the following weather conditions.
+atmospheric data. Create a single, self-contained SVG artwork that visually interprets
+the following weather conditions.
+
+Canvas: viewBox="0 0 {width} {height}" — use the full canvas. This is a {'landscape' if int(width) > int(height) else 'portrait' if int(height) > int(width) else 'square'} composition.
 
 Location: {region['slug']} ({region['lat']}, {region['lng']})
 Atmospheric conditions:
@@ -257,6 +273,8 @@ Artistic direction:
   deep low pressure = density and weight; temperature extremes = vivid, saturated hues;
   calm conditions = open space and restraint.
 - Each piece should feel unique — vary your approach while staying true to the artist's aesthetic.
+- Create a substantial, richly detailed work — use 30-60+ shape elements, layered gradients,
+  and complex compositions. This should feel like a museum-quality digital piece.
 
 Technical requirements:
 1. First, write 2-3 sentences explaining your artistic interpretation. Begin by naming the
@@ -267,8 +285,7 @@ Technical requirements:
 2. Then output the complete SVG on its own line starting with <svg
 3. Use gradients, filters, organic shapes, and layered transparency — no text elements
 4. The SVG must be valid XML and self-contained (no external references)
-5. Use the viewBox="0 0 2048 2048" attribute on the root <svg> element
-6. Use at least 20-30 shape elements for visual richness"""
+5. Use viewBox="0 0 {width} {height}" on the root <svg> element"""
 
 
 def build_retry_prompt(original_prompt, bad_svg, error):
