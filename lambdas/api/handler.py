@@ -17,11 +17,7 @@ class DecimalEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "https://art.jamestannahill.com",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-}
+CORS_HEADERS = {}  # CORS handled by Lambda Function URL config
 
 
 def handler(event, context):

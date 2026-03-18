@@ -521,7 +521,7 @@
         var btn = form.querySelector('button');
         btn.disabled = true;
         btn.textContent = '...';
-        fetch('{{ api_url|default("") }}/subscribe', {
+        fetch('{{ api_url|default("")|trim("/") }}/subscribe', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({email: email, source: 'website'})
