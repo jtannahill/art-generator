@@ -7,6 +7,7 @@ import boto3
 
 TABLE_NAME = os.environ.get("TABLE_NAME", "art-generator")
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "art-generator-216890068001")
+ADMIN_KEY = os.environ.get("ADMIN_KEY", "")
 PAGE_SIZE = 10
 
 
@@ -30,6 +31,9 @@ def handler(event, context):
 
     if method == "POST" and path == "/subscribe":
         return handle_subscribe(event)
+
+    if method == "GET" and path == "/subscribers":
+        return handle_list_subscribers(event)
 
     query = event.get("queryStringParameters") or {}
     artist = query.get("artist", "")
@@ -102,6 +106,35 @@ def handler(event, context):
             "artist": artist,
             "count": len(results),
         }, cls=DecimalEncoder),
+    }
+
+
+def handle_list_subscribers(event):
+    """Admin endpoint — list all subscribers. Requires ?key= param."""
+    query = event.get("queryStringParameters") or {}
+    if not ADMIN_KEY or query.get("key") != ADMIN_KEY:
+        return {"statusCode": 401, "headers": {"Content-Type": "application/json"}, "body": json.dumps({"error": "Unauthorized"})}
+
+    from datetime import datetime, timezone
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table(TABLE_NAME)
+    result = table.query(
+        KeyConditionExpression="PK = :pk",
+        ExpressionAttributeValues={":pk": "SUBSCRIBER"},
+    )
+    subscribers = []
+    for item in result.get("Items", []):
+        ts = int(item.get("subscribed_at", 0))
+        subscribers.append({
+            "email": item["SK"],
+            "source": item.get("source", ""),
+            "subscribed_at": datetime.fromtimestamp(ts, tz=timezone.utc).isoformat() if ts else "",
+        })
+
+    return {
+        "statusCode": 200,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps({"subscribers": subscribers, "count": len(subscribers)}),
     }
 
 
