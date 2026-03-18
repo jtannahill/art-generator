@@ -17,8 +17,24 @@ class DecimalEncoder(json.JSONEncoder):
         return super().default(o)
 
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "https://art.jamestannahill.com",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+}
+
+
 def handler(event, context):
-    """Lambda function URL handler — returns paginated artworks."""
+    """Lambda function URL handler — artworks API + newsletter subscribe."""
+    method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
+    path = event.get("rawPath", "/")
+
+    if method == "OPTIONS":
+        return {"statusCode": 200, "headers": CORS_HEADERS}
+
+    if method == "POST" and path == "/subscribe":
+        return handle_subscribe(event)
+
     query = event.get("queryStringParameters") or {}
     artist = query.get("artist", "")
     cursor = query.get("cursor", "")
@@ -83,11 +99,48 @@ def handler(event, context):
 
     return {
         "statusCode": 200,
-        "headers": {"Content-Type": "application/json"},
+        "headers": {**CORS_HEADERS, "Content-Type": "application/json"},
         "body": json.dumps({
             "items": results,
             "next_cursor": next_cursor,
             "artist": artist,
             "count": len(results),
         }, cls=DecimalEncoder),
+    }
+
+
+def handle_subscribe(event):
+    """Store newsletter subscriber in DynamoDB."""
+    import re
+    import time
+
+    try:
+        body = json.loads(event.get("body", "{}"))
+    except (json.JSONDecodeError, TypeError):
+        body = {}
+
+    email = (body.get("email") or "").strip().lower()
+    if not email or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+        return {
+            "statusCode": 400,
+            "headers": {**CORS_HEADERS, "Content-Type": "application/json"},
+            "body": json.dumps({"error": "Valid email required"}),
+        }
+
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table(TABLE_NAME)
+    table.put_item(
+        Item={
+            "PK": "SUBSCRIBER",
+            "SK": email,
+            "subscribed_at": int(time.time()),
+            "source": body.get("source", "website"),
+        },
+        ConditionExpression="attribute_not_exists(SK)",
+    )
+
+    return {
+        "statusCode": 200,
+        "headers": {**CORS_HEADERS, "Content-Type": "application/json"},
+        "body": json.dumps({"ok": True}),
     }
