@@ -40,6 +40,7 @@
     {"@type": "Question", "name": "Can I buy a print?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every artwork page has a print shop — just click any artwork and look for the print option. Limited edition giclée prints on Hahnemühle German Etching 310gsm, edition of 5 per size, with Certificate of Authenticity. Ships worldwide via theprintspace. <a href="/weather/" style="color:#8ab4f8;">Browse the archive</a> to find your piece."}},
     {"@type": "Question", "name": "Can I suggest a new artist?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Visit the Artists page and use the suggestion form at the bottom, or email art@jamestannahill.com."}},
     {"@type": "Question", "name": "What are the satellite palettes?", "acceptedAnswer": {"@type": "Answer", "text": "A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes — the actual colors of Earth as seen from orbit."}},
+    {"@type": "Question", "name": "Why do print prices vary between artworks?", "acceptedAnswer": {"@type": "Answer", "text": "Prices reflect three signals: the AI critic's quality score, the rarity of the weather conditions, and how many editions have sold. Exceptional pieces from extreme weather can be priced up to 2x the base price."}},
     {"@type": "Question", "name": "Can I use the artwork commercially?", "acceptedAnswer": {"@type": "Answer", "text": "Artwork is licensed under CC BY-NC-ND 4.0 — free for personal use with attribution, no commercial use or derivatives. For commercial licensing, contact art@jamestannahill.com."}}
   ]
 }
@@ -144,6 +145,24 @@ The composite visual interest score weights these: pressure anomaly (30%), wind 
 The weather data comes from NOAA's <a href="https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast" target="_blank" rel="noopener" style="color:#8ab4f8">Global Forecast System (GFS)</a>, a 0.25° resolution atmospheric model updated every six hours. GFS was chosen over alternatives like ECMWF IFS (higher accuracy but rate-limited), ICON (better European resolution), or HRRR (3km US-only) because it offers the best tradeoff for this project: free global coverage at resolution sufficient for macro-scale weather drama, with reliable hourly data across all 54 scan points simultaneously. The art interprets continental-scale atmospheric patterns — pressure systems spanning oceans, temperature fronts crossing mountain ranges — where GFS excels. The <code style="color:#c4b5fd; background:#1a1a2e; padding:0.15rem 0.4rem; border-radius:3px; font-size:0.85rem;">gfs_seamless</code> variant blends forecast and analysis data for best-available current conditions.
 </p>
 
+<h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Quality Scoring</h3>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+After each artwork is generated and rendered to PNG, an AI art critic evaluates it on four dimensions: composition, color harmony, complexity, and emotional impact. Each piece receives a quality score from 1 to 10. This score feeds into the archive, influences print pricing, and helps surface the strongest work. The critic sees only the final image — it has no access to the weather data or artist prompt that produced it.
+</p>
+
+<h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Weather Forecasting</h3>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+Every evening at 20:00 UTC, a separate system scans the 24-hour GFS forecast for all 54 scan points, scoring each for predicted visual drama using the same composite formula. This produces a ranked list of tomorrow's most promising atmospheric conditions — a weather drama forecast that anticipates where the most striking art will come from before the pipeline runs.
+</p>
+
+<h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Dynamic Pricing</h3>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+Print prices are not static. Each artwork's price reflects three signals: the quality score from the AI critic (higher-rated work commands a premium), the rarity of the weather conditions that produced it (extreme atmospheric events are scarcer), and scarcity (as editions sell, remaining prints increase in value). The base price can increase up to 2× for exceptional pieces born from rare weather.
+</p>
+
 <h2 id="artist" style="margin-top:2.5rem;">The Artist</h2>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
@@ -194,6 +213,11 @@ The data is real. The locations are real. The weather happened. What the machine
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">What are the satellite palettes?</summary>
     <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes. Deserts, glaciers, river deltas — the actual colors of Earth as seen from orbit. Browse them at <a href="/palettes/" style="color:#8ab4f8;">Palettes</a>.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Why do print prices vary between artworks?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Prices reflect three signals: the AI critic's quality score (composition, color, complexity, emotional impact), the rarity of the weather conditions that produced the piece, and how many editions have already sold. Exceptional pieces from extreme weather events are priced higher — up to 2× the base price.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">

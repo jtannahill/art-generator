@@ -367,7 +367,12 @@ art.jt is a generative art project by James Tannahill. Every day, the system sca
 Limited edition giclée prints available on every artwork page. Printed on Hahnemühle German Etching 310gsm with Certificate of Authenticity. Edition of 5 per size. Ships worldwide via theprintspace.
 
 ## How It Works
-Weather data from Open-Meteo API (GFS/NOAA model, 54 scan points, 6 variables per point) → scored for visual interest (pressure anomaly 30%, wind 25%, temperature deviation 20%, precipitation 15%, humidity 10%) → top 10 with 15° geographic separation → AI on Amazon Bedrock generates SVG in selected artist's style → PNG preview rendered via CairoSVG → archived permanently in S3 → static HTML gallery on CloudFront. Satellite imagery from Copernicus Sentinel-2 → color quantization → mood briefs via Bedrock.
+Weather data from Open-Meteo API (GFS/NOAA model, 54 scan points, 6 variables per point) → scored for visual interest (pressure anomaly 30%, wind 25%, temperature deviation 20%, precipitation 15%, humidity 10%) → top 10 with 15° geographic separation → AI on Amazon Bedrock generates SVG in selected artist's style → PNG preview rendered via CairoSVG → AI art critic scores quality 1-10 (composition, color, complexity, impact) → archived permanently in S3 → static HTML gallery on CloudFront. Satellite imagery from Copernicus Sentinel-2 → color quantization → mood briefs via Bedrock.
+
+## ML Models
+- **Art Critic**: Bedrock Haiku vision evaluates each artwork on composition, color harmony, complexity, and emotional impact (1-10 scale). Scores influence print pricing and archive curation.
+- **Weather Drama Forecaster**: Runs daily at 20:00 UTC, fetches 24h GFS forecast for all 54 points, predicts tomorrow's most visually dramatic locations.
+- **Dynamic Pricing**: Print prices reflect quality score + weather rarity + edition scarcity. Base price can increase up to 2× for exceptional pieces from rare atmospheric events.
 
 ## Subscribe
 - [RSS Feed](https://art.jamestannahill.com/feed.xml) — Latest artworks in RSS 2.0 format
