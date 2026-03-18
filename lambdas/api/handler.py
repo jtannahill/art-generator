@@ -35,6 +35,9 @@ def handler(event, context):
     if method == "GET" and path == "/subscribers":
         return handle_list_subscribers(event)
 
+    if method == "GET" and path == "/unsubscribe":
+        return handle_unsubscribe(event)
+
     query = event.get("queryStringParameters") or {}
     artist = query.get("artist", "")
     cursor = query.get("cursor", "")
@@ -135,6 +138,40 @@ def handle_list_subscribers(event):
         "statusCode": 200,
         "headers": {"Content-Type": "application/json"},
         "body": json.dumps({"subscribers": subscribers, "count": len(subscribers)}),
+    }
+
+
+def handle_unsubscribe(event):
+    """Remove a subscriber from DynamoDB. No auth — email is the token."""
+    query = event.get("queryStringParameters") or {}
+    email = (query.get("email") or "").strip().lower()
+
+    if not email:
+        return {
+            "statusCode": 400,
+            "headers": {"Content-Type": "text/html"},
+            "body": "<html><body style='background:#0a0a0a;color:#e0e0e0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;'><div style='text-align:center;'><h1 style='color:#fff;'>Missing email</h1><p>No email address provided.</p></div></body></html>",
+        }
+
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table(TABLE_NAME)
+    table.delete_item(Key={"PK": "SUBSCRIBER", "SK": email})
+
+    return {
+        "statusCode": 200,
+        "headers": {"Content-Type": "text/html"},
+        "body": (
+            "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1.0'>"
+            "<title>Unsubscribed — art.jt</title></head>"
+            "<body style='background:#0a0a0a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;"
+            "display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;'>"
+            "<div style='text-align:center;max-width:480px;padding:2rem;'>"
+            "<h1 style='color:#fff;font-size:1.8rem;margin-bottom:1rem;'>You've been unsubscribed from art.jt</h1>"
+            "<p style='color:#888;line-height:1.6;margin-bottom:2rem;'>You won't receive any more daily art digests. "
+            "If this was a mistake, you can always re-subscribe on the site.</p>"
+            "<a href='https://art.jamestannahill.com' style='color:#c4b5fd;font-size:1rem;'>Back to art.jt</a>"
+            "</div></body></html>"
+        ),
     }
 
 

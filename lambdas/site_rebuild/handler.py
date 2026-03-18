@@ -293,6 +293,9 @@ def handler(event, context):
     pages["site/shop/success/index.html"] = env.get_template("shop_success.html").render()
     pages["site/shop/cancel/index.html"] = env.get_template("shop_cancel.html").render()
 
+    # 404 error page
+    pages["site/404.html"] = env.get_template("404.html").render()
+
     # Upload favicon
     # Upload static assets
     static_dir = os.path.join(os.path.dirname(__file__), "static")

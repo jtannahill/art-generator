@@ -4,6 +4,7 @@ Triggered after site-rebuild in the daily pipeline."""
 import json
 import os
 import xml.etree.ElementTree as ET
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
@@ -13,6 +14,7 @@ TABLE_NAME = os.environ.get("TABLE_NAME", "art-generator")
 SENDER = os.environ.get("SENDER_EMAIL", "art@jamestannahill.com")
 FEED_URL = os.environ.get("FEED_URL", "https://art.jamestannahill.com/feed.xml")
 SITE_URL = "https://art.jamestannahill.com"
+UNSUBSCRIBE_BASE = "https://kvorpfc3nbj6h7otsc2634duxm0xtqis.lambda-url.us-east-1.on.aws/unsubscribe"
 MAX_ITEMS = int(os.environ.get("MAX_ITEMS", "6"))
 
 dynamodb = boto3.resource("dynamodb")
@@ -53,6 +55,9 @@ def handler(event, context):
     sent = 0
     failed = 0
     for email in subscribers:
+        unsub_url = f"{UNSUBSCRIBE_BASE}?email={urllib.parse.quote(email, safe='')}"
+        per_html = html_body.replace("{{UNSUBSCRIBE_URL}}", unsub_url)
+        per_text = text_body.replace("{{UNSUBSCRIBE_URL}}", unsub_url)
         try:
             ses.send_email(
                 Source=f"art.jt <{SENDER}>",
@@ -60,10 +65,11 @@ def handler(event, context):
                 Message={
                     "Subject": {"Data": subject, "Charset": "UTF-8"},
                     "Body": {
-                        "Html": {"Data": html_body, "Charset": "UTF-8"},
-                        "Text": {"Data": text_body, "Charset": "UTF-8"},
+                        "Html": {"Data": per_html, "Charset": "UTF-8"},
+                        "Text": {"Data": per_text, "Charset": "UTF-8"},
                     },
                 },
+                Tags=[],
             )
             sent += 1
         except Exception as e:
@@ -142,6 +148,7 @@ def build_email_html(items, today):
     <div>Generative weather art by <a href="https://jamestannahill.com" style="color:#8ab4f8; text-decoration:none;">James Tannahill</a></div>
     <div style="margin-top:8px;">Artwork: <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#666;">CC BY-NC-ND 4.0</a> &middot; Data: <a href="https://open-meteo.com/" style="color:#666;">Open-Meteo</a></div>
     <div style="margin-top:12px; color:#444;">You received this because you subscribed at art.jamestannahill.com</div>
+    <div style="margin-top:8px;"><a href="{{UNSUBSCRIBE_URL}}" style="color:#666; text-decoration:underline;">Unsubscribe</a></div>
   </td></tr>
 
 </table>
@@ -168,4 +175,6 @@ def build_email_text(items, today):
     lines.append("---")
     lines.append("Generative weather art by James Tannahill")
     lines.append("You received this because you subscribed at art.jamestannahill.com")
+    lines.append("")
+    lines.append("Unsubscribe: {{UNSUBSCRIBE_URL}}")
     return "\n".join(lines)

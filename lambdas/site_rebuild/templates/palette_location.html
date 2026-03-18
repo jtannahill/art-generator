@@ -19,7 +19,7 @@
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;" >
     <img src="/palettes/{{ item.SK }}/{{ location }}/source-thumb.jpg" alt="{{ item.name|default(location) }} satellite" loading="lazy" style="width:100%; aspect-ratio:1; object-fit:cover;">
     <div style="display:flex; flex-direction:column;">
-      <div class="swatch-strip" style="flex:1; border-radius:0; height:auto;">
+      <div class="swatch-strip" style="flex:1; border-radius:0; height:auto;" data-tip="Dominant colors extracted from Sentinel-2 true-color imagery (B04/B03/B02 bands) via median cut quantization. Colors are sorted by visual prominence in the satellite tile.">
         {% for color in item.colors_parsed %}
         <div style="background:{{ color.hex|default(color) }}; flex:1;" data-hex="{{ color.hex|default(color) }}"></div>
         {% endfor %}
@@ -30,7 +30,7 @@
     <h3>{{ item.SK }} — {{ item.season|default('') | title }}</h3>
 
     {% if item.mood %}
-    <p style="font-style:italic; color:#aaa; margin-bottom:1rem; line-height:1.7;">{{ item.mood }}</p>
+    <p style="font-style:italic; color:#aaa; margin-bottom:1rem; line-height:1.7;" class="tip" data-tip="Mood descriptions are AI-generated from the extracted palette colors using Claude on Amazon Bedrock. They interpret the aesthetic character of the landscape based on its dominant colors.">{{ item.mood }}</p>
     {% endif %}
 
     <div style="margin-bottom:1rem;">
@@ -51,7 +51,7 @@
         <dt>Location</dt>
         <dd>{{ item.name|default(location)|replace('-', ' ')|title }}</dd>
         <dt>Coordinates</dt>
-        <dd>{{ item.lat|default('') }}°, {{ item.lng|default('') }}°</dd>
+        <dd class="tip" data-tip="Coordinates of the Sentinel-2 satellite imagery tile. The European Space Agency's Sentinel-2 constellation captures multispectral imagery at 10m resolution from 786km altitude on a 5-day revisit cycle.">{{ item.lat|default('') }}°, {{ item.lng|default('') }}°</dd>
         <dt>Date</dt>
         <dd>{{ item.SK }}</dd>
         <dt>Season</dt>

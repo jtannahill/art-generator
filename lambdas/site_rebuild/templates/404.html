@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Not Found — art.jt{% endblock %}
+{% block description %}The page you're looking for doesn't exist. Browse today's generative weather art instead.{% endblock %}
+
+{% block content %}
+<div style="text-align:center; padding:4rem 1rem;">
+  <h1 style="font-size:3rem; margin-bottom:0.5rem; background:linear-gradient(135deg,#c4b5fd,#8ab4f8); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">404</h1>
+  <p style="font-size:1.2rem; color:#aaa; margin-bottom:0.5rem;">Page not found</p>
+  <p style="color:#666; max-width:480px; margin:0 auto 2.5rem; line-height:1.7;">The atmospheric data trail ends here. This page may have moved or never existed — like weather, the web is always shifting.</p>
+  <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+    <a href="/" class="generate-btn">Today's Art</a>
+    <a href="/weather/" class="generate-btn">Browse Archive</a>
+    <a href="/palettes/" class="generate-btn">Satellite Palettes</a>
+  </div>
+</div>
+{% endblock %}

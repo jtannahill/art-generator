@@ -42,14 +42,14 @@
     <div class="card-body">
       <h3>{{ latest.name|default(slug)|replace('-', ' ')|title }}</h3>
       {% if latest and latest.colors_parsed %}
-      <div class="swatch-strip">
+      <div class="swatch-strip" data-tip="Colors extracted via median cut quantization from Sentinel-2 satellite imagery at 10m ground resolution.">
         {% for color in latest.colors_parsed %}
         <div style="background:{{ color }}" data-hex="{{ color }}"></div>
         {% endfor %}
       </div>
       {% endif %}
       {% if latest and latest.mood %}
-      <p class="card-description">{{ latest.mood }}</p>
+      <p class="card-description tip" data-tip="Mood descriptions are AI-generated from the palette colors using Claude on Amazon Bedrock. They capture the aesthetic character of each landscape.">{{ latest.mood }}</p>
       {% endif %}
       <p class="card-meta">{{ palettes|length }} palette{{ 's' if palettes|length != 1 else '' }}</p>
     </div>
