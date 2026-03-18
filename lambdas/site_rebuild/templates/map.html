@@ -4,6 +4,18 @@
 {% block description %}Interactive world map of generative weather art and satellite color palettes. Explore the globe to discover artwork inspired by real atmospheric conditions.{% endblock %}
 {% block canonical_path %}/map/{% endblock %}
 
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "World Map — Generative Weather Art",
+  "url": "https://art.jamestannahill.com/map/",
+  "description": "Interactive globe showing all generative weather artworks and satellite color palettes by geographic location."
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <h1>World Map</h1>
 <p style="color:#888; margin-bottom:0.5rem;">

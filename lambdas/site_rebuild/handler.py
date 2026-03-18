@@ -349,23 +349,26 @@ def handler(event, context):
 > Daily generative art from real atmospheric data, inspired by abstract expressionism. Limited edition prints available.
 
 ## About
-art.jt is a generative art project by James Tannahill. Every day, the system scans 50 global weather stations, identifies the 10 most visually dramatic atmospheric conditions, and generates original SVG artwork using Claude on Amazon Bedrock. A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery. The visual language draws from abstract expressionists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, Bridget Riley, Yayoi Kusama, and others.
+art.jt is a generative art project by James Tannahill. Every day, the system scans 54 global weather points across 10 latitude bands, identifies the 10 most visually dramatic atmospheric conditions, and generates original SVG artwork using AI on Amazon Bedrock. No artist's work was used to train the model — each artist is described via text prompts capturing their visual philosophy, and the AI writes SVG code from scratch. A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery. The visual language draws from abstract expressionists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, Bridget Riley, Yayoi Kusama, Piet Mondrian, Wassily Kandinsky, Gerhard Richter, Kazimir Malevich, and Lesley Tannahill.
 
 ## Pages
-- [Homepage](https://art.jamestannahill.com/) — Today's weather art with generate button
+- [Homepage](https://art.jamestannahill.com/) — Today's weather art with generate button and artist selector
+- [Artists](https://art.jamestannahill.com/artist/) — Browse by artist inspiration (11 artists, infinite scroll galleries)
 - [Archive](https://art.jamestannahill.com/weather/) — All past generations, browsable by run
-- [Artists](https://art.jamestannahill.com/artist/) — Browse by artist inspiration (11 artists, infinite scroll)
-- [Duets](https://art.jamestannahill.com/duets/) — Same atmospheric data, two artistic lenses side by side
-- [Studies](https://art.jamestannahill.com/studies/) — Multi-day weather event tracking with day-by-day artwork
 - [World Map](https://art.jamestannahill.com/map/) — Interactive Mapbox globe with artwork and palette markers
 - [Satellite Palettes](https://art.jamestannahill.com/palettes/) — Color palettes from Sentinel-2 orbital imagery
-- [About](https://art.jamestannahill.com/about/) — About the project, the system, and the artist
+- [Compare](https://art.jamestannahill.com/comparison/) — Same weather data interpreted through 11 different artistic lenses
+- [About](https://art.jamestannahill.com/about/) — About the project, methodology, weather data, and the artist
 
 ## Print Shop
 Limited edition giclée prints available on every artwork page. Printed on Hahnemühle German Etching 310gsm with Certificate of Authenticity. Edition of 5 per size. Ships worldwide via theprintspace.
 
 ## How It Works
-Weather data from Open-Meteo API (GFS/NOAA model) → scored for visual interest (pressure 30%, wind 25%, temperature 20%, precipitation 15%, humidity 10%) → Claude on Bedrock generates SVG in selected artist's style → archived permanently in S3 → static HTML gallery on CloudFront. Satellite imagery from Copernicus Sentinel-2 → color quantization → mood briefs via Bedrock.
+Weather data from Open-Meteo API (GFS/NOAA model, 54 scan points, 6 variables per point) → scored for visual interest (pressure anomaly 30%, wind 25%, temperature deviation 20%, precipitation 15%, humidity 10%) → top 10 with 15° geographic separation → AI on Amazon Bedrock generates SVG in selected artist's style → PNG preview rendered via CairoSVG → archived permanently in S3 → static HTML gallery on CloudFront. Satellite imagery from Copernicus Sentinel-2 → color quantization → mood briefs via Bedrock.
+
+## Subscribe
+- [RSS Feed](https://art.jamestannahill.com/feed.xml) — Latest artworks in RSS 2.0 format
+- Newsletter signup available on every page — daily art digest via email
 
 ## Licensing
 Artwork: CC BY-NC-ND 4.0 (attribution required, no commercial use, no derivatives)

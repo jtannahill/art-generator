@@ -4,6 +4,18 @@
 {% block description %}Browse generative weather art by artist inspiration — Sam Francis, Mark Rothko, Hilma af Klint, and more.{% endblock %}
 {% block canonical_path %}/artist/{% endblock %}
 
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Artists — Generative Weather Art",
+  "url": "https://art.jamestannahill.com/artist/",
+  "description": "Browse generative weather art by artist inspiration — 11 abstract expressionist lenses interpreting real atmospheric data."
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <h1>Browse by Artist</h1>
 <div class="grid">

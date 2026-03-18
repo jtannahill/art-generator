@@ -4,6 +4,18 @@
 {% block description %}Color palettes extracted from Copernicus Sentinel-2 satellite imagery of visually striking locations worldwide. Earth's real colors as seen from space.{% endblock %}
 {% block canonical_path %}/palettes/{% endblock %}
 
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Satellite Color Palettes",
+  "url": "https://art.jamestannahill.com/palettes/",
+  "description": "Color palettes extracted from Copernicus Sentinel-2 satellite imagery — Earth's real colors from 786km above."
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="breadcrumb">
   <a href="/">Home</a>

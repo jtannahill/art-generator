@@ -28,6 +28,22 @@
   }
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Is the AI trained on these artists' work?", "acceptedAnswer": {"@type": "Answer", "text": "No. The AI model's understanding comes from art criticism and public discourse about these artists. Each artist is described in a text prompt. The model never sees their paintings. It writes SVG code from scratch based on the atmospheric data."}},
+    {"@type": "Question", "name": "Is the weather data real?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every piece is generated from live atmospheric measurements — pressure, wind speed, temperature, humidity, and precipitation from NOAA's Global Forecast System via the Open-Meteo API. The raw data is archived alongside each artwork."}},
+    {"@type": "Question", "name": "Can the same artwork be created twice?", "acceptedAnswer": {"@type": "Answer", "text": "No. Each artwork is generated from a unique combination of atmospheric conditions at a specific location and moment in time. Weather never repeats exactly, so neither does the art."}},
+    {"@type": "Question", "name": "How are the 10 daily locations chosen?", "acceptedAnswer": {"@type": "Answer", "text": "54 points across the globe are scanned every day. A composite visual interest score ranks them by pressure anomaly (30%), wind speed (25%), temperature deviation (20%), precipitation (15%), and humidity (10%). The top 10 with at least 15 degrees of geographic separation become that day's subjects."}},
+    {"@type": "Question", "name": "Can I buy a print?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every artwork page has a print shop. Limited edition giclée prints on Hahnemühle German Etching 310gsm, edition of 5 per size, with Certificate of Authenticity. Ships worldwide via theprintspace."}},
+    {"@type": "Question", "name": "Can I suggest a new artist?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Visit the Artists page and use the suggestion form at the bottom, or email art@jamestannahill.com."}},
+    {"@type": "Question", "name": "What are the satellite palettes?", "acceptedAnswer": {"@type": "Answer", "text": "A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes — the actual colors of Earth as seen from orbit."}},
+    {"@type": "Question", "name": "Can I use the artwork commercially?", "acceptedAnswer": {"@type": "Answer", "text": "Artwork is licensed under CC BY-NC-ND 4.0 — free for personal use with attribution, no commercial use or derivatives. For commercial licensing, contact art@jamestannahill.com."}}
+  ]
+}
+</script>
 {% endblock %}
 
 {% block content %}
@@ -64,6 +80,7 @@
   <a href="#system">The System</a>
   <a href="#method">How It's Made</a>
   <a href="#artist">The Artist</a>
+  <a href="#faq">FAQ</a>
 </nav>
 
 <p style="font-size:1.15rem; color:#ddd; line-height:1.9; margin-bottom:2rem; font-style:italic;">
@@ -140,6 +157,50 @@ Weather is the map I can't finish reading. It is planetary-scale, constantly rew
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
 The data is real. The locations are real. The weather happened. What the machine makes of it — and what you make of that — is where the art lives.
 </p>
+
+<h2 id="faq" style="margin-top:2.5rem;">FAQ</h2>
+
+<div class="faq">
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Is the AI trained on these artists' work?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">No. The AI model's understanding comes from art criticism and public discourse about these artists — the same way a human learns about an artist by reading about them. Each artist is described in a text prompt. The model never sees their paintings. It writes SVG code from scratch based on the atmospheric data.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Is the weather data real?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes. Every piece is generated from live atmospheric measurements at the time of creation — pressure, wind speed, temperature, humidity, and precipitation from NOAA's Global Forecast System via the Open-Meteo API. The raw data is archived alongside each artwork.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Can the same artwork be created twice?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">No. Each artwork is generated from a unique combination of atmospheric conditions at a specific location and moment in time. Weather never repeats exactly, so neither does the art. Every piece is a one-of-one fossil of weather that no longer exists.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">How are the 10 daily locations chosen?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">54 points across the globe are scanned every day. A composite visual interest score ranks them by pressure anomaly (30%), wind speed (25%), temperature deviation (20%), precipitation (15%), and humidity (10%). The top 10 — with at least 15° of geographic separation — become that day's subjects.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Can I buy a print?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes. Every artwork page has a print shop. Limited edition giclée prints on Hahnemühle German Etching 310gsm, edition of 5 per size, with Certificate of Authenticity. Ships worldwide via theprintspace.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Can I suggest a new artist?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes — visit the <a href="/artist/" style="color:#8ab4f8;">Artists page</a> and use the suggestion form at the bottom, or email <a href="mailto:art@jamestannahill.com" style="color:#8ab4f8;">art@jamestannahill.com</a>.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">What are the satellite palettes?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes. Deserts, glaciers, river deltas — the actual colors of Earth as seen from orbit. Browse them at <a href="/palettes/" style="color:#8ab4f8;">Palettes</a>.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Can I use the artwork commercially?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Artwork is licensed under CC BY-NC-ND 4.0 — free for personal use with attribution, no commercial use or derivatives. For commercial licensing, contact <a href="mailto:art@jamestannahill.com" style="color:#8ab4f8;">art@jamestannahill.com</a>.</p>
+  </details>
+</div>
 
 <div style="margin-top:2.5rem; padding:1.2rem; background:#111; border:1px solid #2a2a2a; border-radius:8px;">
   <p style="color:#888; font-size:0.9rem; margin:0;">
