@@ -374,6 +374,9 @@ Weather data from Open-Meteo API (GFS/NOAA model, 54 scan points, 6 variables pe
 - **Weather Drama Forecaster**: Runs daily at 20:00 UTC, fetches 24h GFS forecast for all 54 points, predicts tomorrow's most visually dramatic locations.
 - **Dynamic Pricing**: Print prices reflect quality score + weather rarity + edition scarcity. Base price can increase up to 2× for exceptional pieces from rare atmospheric events.
 
+## Natural Scarcity
+Every artwork is generated from a one-time atmospheric event. The weather data is archived, timestamped, and verifiable against NOAA public records. Unlike manufactured digital scarcity (minted supply caps), the scarcity is physical — the atmosphere produced it once and it's gone. Limited edition prints (5 per size) add a physical layer on top. When the last print sells, the edition is closed permanently.
+
 ## Subscribe
 - [RSS Feed](https://art.jamestannahill.com/feed.xml) — Latest artworks in RSS 2.0 format
 - Newsletter signup available on every page — daily art digest via email

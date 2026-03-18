@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}About — art.jt{% endblock %}
-{% block description %}James Tannahill builds generative art from real atmospheric data — weather patterns translated into abstract expressionism through AI. About the artist, the system, and the vision.{% endblock %}
+{% block description %}How generative weather art is made — real atmospheric data, 54 global scan points, AI interpretation through 11 artist lenses, natural scarcity from unrepeatable weather events. By James Tannahill.{% endblock %}
 {% block canonical_path %}/about/{% endblock %}
 {% block og_title %}About — art.jt{% endblock %}
 {% block og_description %}Generative art from real atmospheric data, inspired by abstract expressionism.{% endblock %}
@@ -41,6 +41,7 @@
     {"@type": "Question", "name": "Can I suggest a new artist?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Visit the Artists page and use the suggestion form at the bottom, or email art@jamestannahill.com."}},
     {"@type": "Question", "name": "What are the satellite palettes?", "acceptedAnswer": {"@type": "Answer", "text": "A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes — the actual colors of Earth as seen from orbit."}},
     {"@type": "Question", "name": "Why do print prices vary between artworks?", "acceptedAnswer": {"@type": "Answer", "text": "Prices reflect three signals: the AI critic's quality score, the rarity of the weather conditions, and how many editions have sold. Exceptional pieces from extreme weather can be priced up to 2x the base price."}},
+    {"@type": "Question", "name": "What makes each artwork unique?", "acceptedAnswer": {"@type": "Answer", "text": "Every artwork is generated from a one-time atmospheric event — a specific combination of pressure, wind, temperature, and precipitation at a specific location and moment. That weather will never occur again. The atmospheric data is archived and verifiable against NOAA public records. Limited edition prints (5 per size) add physical scarcity on top of natural scarcity."}},
     {"@type": "Question", "name": "Can I use the artwork commercially?", "acceptedAnswer": {"@type": "Answer", "text": "Artwork is licensed under CC BY-NC-ND 4.0 — free for personal use with attribution, no commercial use or derivatives. For commercial licensing, contact art@jamestannahill.com."}}
   ]
 }
@@ -223,6 +224,11 @@ The data is real. The locations are real. The weather happened. What the machine
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">What are the satellite palettes?</summary>
     <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes. Deserts, glaciers, river deltas — the actual colors of Earth as seen from orbit. Browse them at <a href="/palettes/" style="color:#8ab4f8;">Palettes</a>.</p>
+  </details>
+
+  <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
+    <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">What makes each artwork unique?</summary>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Every artwork is generated from a one-time atmospheric event — a specific combination of pressure, wind, temperature, and precipitation at a specific location and moment. That weather will never occur again. Unlike digital assets where scarcity is manufactured by capping supply, the scarcity here is physical: the atmosphere produced it once, and it's gone. The atmospheric data is archived alongside every piece, timestamped and verifiable against NOAA's public records. Limited edition prints (5 per size) add physical scarcity on top of natural scarcity.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
