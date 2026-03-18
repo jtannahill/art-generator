@@ -34,4 +34,30 @@
   </a>
   {% endfor %}
 </div>
+
+<div style="max-width:520px; margin:3rem auto 0; text-align:center; padding:2rem; background:#111; border:1px solid #2a2a2a; border-radius:8px;">
+  <h3 style="color:#fff; font-size:1rem; margin-bottom:0.5rem;">Suggest an Artist</h3>
+  <p style="color:#888; font-size:0.85rem; margin-bottom:1rem;">Know an abstract artist whose style would create interesting weather interpretations?</p>
+  <form id="suggestForm" style="display:flex; gap:0.5rem;">
+    <input type="text" id="suggestName" placeholder="Artist name" required style="flex:1; padding:0.6rem 0.8rem; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:6px; color:#e0e0e0; font-size:0.85rem; outline:none;">
+    <button type="submit" style="padding:0.6rem 1.2rem; background:linear-gradient(135deg,#1a1a3e,#2a1a4e); border:1px solid #444; border-radius:6px; color:#c4b5fd; font-size:0.85rem; font-weight:600; cursor:pointer; white-space:nowrap;">Submit</button>
+  </form>
+  <div id="suggestMsg" style="margin-top:0.5rem; font-size:0.8rem; min-height:1.2em;"></div>
+</div>
+
+<script>
+(function() {
+  var form = document.getElementById('suggestForm');
+  if (!form) return;
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var name = document.getElementById('suggestName').value.trim();
+    if (!name) return;
+    var msg = document.getElementById('suggestMsg');
+    window.location.href = 'mailto:art@jamestannahill.com?subject=' + encodeURIComponent('Artist Suggestion: ' + name) + '&body=' + encodeURIComponent('I'd like to suggest ' + name + ' as an artist inspiration for art.jt.\n\nWhy: ');
+    msg.style.color = '#c4b5fd';
+    msg.textContent = 'Opening your email client\u2026';
+  });
+})();
+</script>
 {% endblock %}
