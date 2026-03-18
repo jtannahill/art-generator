@@ -63,6 +63,39 @@ The pipeline runs at dawn UTC. Weather flows in from the <a href="https://open-m
 A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery — the actual colors of Earth as seen from orbit. Deserts, glaciers, river deltas, volcanic islands. A seasonal record of what the planet looks like from 786 kilometers up.
 </p>
 
+<h2 style="margin-top:2.5rem;">How the Art Is Made</h2>
+
+<h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Artistic Interpretation, Not Imitation</h3>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+No artist's work was used to train the model. Claude's understanding of these artists comes from art criticism, exhibition catalogs, and the public discourse around their practices — the same way a human art student learns by reading about artists before they ever pick up a brush. Each artist is described to the model in a few sentences that capture their visual philosophy: Rothko's luminous floating rectangles, Kusama's obsessive dot fields, Mondrian's primary-color grid logic. The model doesn't see their paintings. It reads their ideas, then writes SVG code — shapes, gradients, transforms, filters — from scratch. The atmospheric data is the only input. The artist's sensibility is the lens.
+</p>
+
+<h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Weather Data: 54 Points, 6 Variables</h3>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+Every run samples 54 points across 10 latitude bands, from 70°N (Arctic) to 60°S (Subantarctic). At each point, six atmospheric variables are measured at the current hour:
+</p>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem 2rem; color:#999; font-size:0.9rem; margin-bottom:1.5rem; padding:0 0.5rem;">
+  <span>Sea-level pressure (Pa)</span><span>→ Density, weight, visual mass</span>
+  <span>Wind speed &amp; direction</span><span>→ Dynamic energy, directional flow</span>
+  <span>Temperature (K)</span><span>→ Color temperature, saturation</span>
+  <span>Temperature anomaly</span><span>→ How far from the expected — the drama</span>
+  <span>Relative humidity (%)</span><span>→ Atmospheric moisture, softness</span>
+  <span>Precipitation (kg/m²)</span><span>→ Intensity, texture</span>
+</div>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+The composite visual interest score weights these: pressure anomaly (30%), wind (25%), temperature deviation (20%), precipitation (15%), humidity (10%). The top 10 scorers — with at least 15° of geographic separation to ensure diversity — become the day's artwork subjects.
+</p>
+
+<h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Why GFS?</h3>
+
+<p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
+The weather data comes from NOAA's <a href="https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast" target="_blank" rel="noopener" style="color:#8ab4f8">Global Forecast System (GFS)</a>, a 0.25° resolution atmospheric model updated every six hours. GFS was chosen over alternatives like ECMWF IFS (higher accuracy but rate-limited), ICON (better European resolution), or HRRR (3km US-only) because it offers the best tradeoff for this project: free global coverage at resolution sufficient for macro-scale weather drama, with reliable hourly data across all 54 scan points simultaneously. The art interprets continental-scale atmospheric patterns — pressure systems spanning oceans, temperature fronts crossing mountain ranges — where GFS excels. The <code style="color:#c4b5fd; background:#1a1a2e; padding:0.15rem 0.4rem; border-radius:3px; font-size:0.85rem;">gfs_seamless</code> variant blends forecast and analysis data for best-available current conditions.
+</p>
+
 <h2 style="margin-top:2.5rem;">The Artist</h2>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
