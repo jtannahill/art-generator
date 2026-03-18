@@ -24,7 +24,7 @@ Sam Francis | Gerhard Richter | Hilma af Klint | Wassily Kandinsky | Helen Frank
 | Orchestration | Step Functions, EventBridge (daily 06:00 UTC) |
 | Weather Data | Open-Meteo API (GFS/NOAA model) |
 | Satellite Imagery | Copernicus Sentinel Hub Process API (Sentinel-2 L2A) |
-| Art Generation | Amazon Bedrock (Claude Sonnet 4) → SVG |
+| Art Generation | Amazon Bedrock (Claude Sonnet 4) → SVG → PNG preview (CairoSVG) |
 | Color Extraction | Pillow median cut quantization |
 | Storage | S3 (versioned), DynamoDB |
 | CDN | CloudFront with OAC + CloudFront Function (index rewrite) |
@@ -61,7 +61,7 @@ EventBridge (daily 06:00 UTC)
 | Artist Gallery | `/artist/{key}/` | Infinite scroll gallery via API |
 | Archive | `/weather/` | All runs chronologically with artist labels |
 | Run | `/weather/{run_id}/` | Single generation (10 pieces) |
-| Artwork | `/weather/{run_id}/{slug}/` | Full artwork + rationale + metadata + print inquiry |
+| Artwork | `/weather/{run_id}/{slug}/` | Full artwork + rationale + metadata + print inquiry + OG preview |
 | Map | `/map/` | Mapbox dark globe with all artwork markers |
 | Palettes | `/palettes/` | Satellite color palettes by location |
 | About | `/about/` | Project story, artist bio, how it works |
@@ -73,7 +73,8 @@ EventBridge (daily 06:00 UTC)
 | Function | Purpose |
 |----------|---------|
 | `art-weather-ingest` | Scans 50 global weather points, scores for visual drama |
-| `art-weather-render` | Bedrock SVG generation with artist-style prompts, retry on invalid SVG |
+| `art-weather-render` | Bedrock SVG generation with artist-style prompts, PNG preview rendering (CairoSVG), retry on invalid SVG |
+| `art-x-poster` | RSS-driven X/Twitter posting with OAuth 1.0a (text + link, DynamoDB dedup) |
 | `art-satellite-ingest` | Sentinel Hub Process API → true-color imagery for 30 rotating locations |
 | `art-palette-extract` | Color quantization + Bedrock mood descriptions |
 | `art-site-rebuild` | Static HTML, asset copying, sitemap/robots/llms.txt, CloudFront invalidation |
@@ -83,7 +84,8 @@ EventBridge (daily 06:00 UTC)
 ## SEO & Discoverability
 
 - **Schema.org**: `WebSite`, `VisualArtwork` (per piece with geo, medium, license), `AboutPage`, `Person`
-- **Open Graph + Twitter Cards**: unique title, description, image per page
+- **Open Graph + Twitter Cards**: unique title, description, PNG preview image per artwork page
+- **RSS Feed**: `/feed.xml` — latest artworks for social syndication (dlvr.it → X/IG)
 - **Canonical URLs**: prevent duplicate content across runs
 - **robots.txt**: allows all crawlers, sitemap reference
 - **sitemap.xml**: dynamic, all pages + all artwork
