@@ -31,18 +31,49 @@
 {% endblock %}
 
 {% block content %}
+<style>
+  .about-nav {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #222;
+    flex-wrap: wrap;
+  }
+  .about-nav a {
+    color: #888;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .about-nav a:hover { color: #c4b5fd; }
+  @media (max-width: 768px) {
+    .about-nav { gap: 1rem; }
+    .about-nav a { font-size: 0.8rem; }
+  }
+</style>
+
 <div style="max-width:720px; margin:0 auto;">
 
 <h1>About</h1>
+
+<nav class="about-nav">
+  <a href="#work">The Work</a>
+  <a href="#system">The System</a>
+  <a href="#method">How It's Made</a>
+  <a href="#artist">The Artist</a>
+</nav>
 
 <p style="font-size:1.15rem; color:#ddd; line-height:1.9; margin-bottom:2rem; font-style:italic;">
 The atmosphere is the oldest artist on Earth. It has been painting since before there were eyes to see it — sculpting light through ice crystals, dragging color across horizons, compressing entire landscapes into a single hour of sky. This project is an attempt to listen to what it's making.
 </p>
 
-<h2 style="margin-top:2.5rem;">The Work</h2>
+<h2 id="work" style="margin-top:2.5rem;">The Work</h2>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-Every day, fifty points across the planet are sampled for what the atmosphere is actually doing — not what it looks like on a forecast, but its raw physical state. Pressure gradients steep enough to bend trees. Winds crossing open water with nothing to slow them down. Temperature anomalies where the air is ten degrees warmer or colder than it should be. The ten most extreme conditions become source material for original artwork.
+Every day, fifty-four points across the planet are sampled for what the atmosphere is actually doing — not what it looks like on a forecast, but its raw physical state. Pressure gradients steep enough to bend trees. Winds crossing open water with nothing to slow them down. Temperature anomalies where the air is ten degrees warmer or colder than it should be. The ten most extreme conditions become source material for original artwork.
 </p>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
@@ -53,22 +84,22 @@ The data passes through the aesthetic lens of eleven artists who understood that
 The result is a growing archive of the planet's most volatile moments, translated into color and form. No two pieces share the same atmospheric conditions. None can be repeated. Each one is a fossil of weather that no longer exists.
 </p>
 
-<h2 style="margin-top:2.5rem;">The System</h2>
+<h2 id="system" style="margin-top:2.5rem;">The System</h2>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-The pipeline runs at dawn UTC. Weather flows in from the <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a> (NOAA's GFS model) and is scored on a composite index — pressure anomaly weighted heaviest, then wind, temperature deviation, precipitation, humidity. The highest-scoring conditions are sent to Claude on Amazon Bedrock, which interprets the atmospheric data as SVG artwork. Every piece is rendered in seven possible canvas formats, from square to panoramic, chosen by the conditions themselves. Everything is archived permanently.
+The pipeline runs at dawn UTC. Weather flows in from the <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a> (NOAA's GFS model) and is scored on a composite index — pressure anomaly weighted heaviest, then wind, temperature deviation, precipitation, humidity. The highest-scoring conditions are sent to an AI model on Amazon Bedrock, which interprets the atmospheric data as SVG artwork. Every piece is rendered in seven possible canvas formats, from square to panoramic, chosen by the conditions themselves. Everything is archived permanently.
 </p>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
 A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery — the actual colors of Earth as seen from orbit. Deserts, glaciers, river deltas, volcanic islands. A seasonal record of what the planet looks like from 786 kilometers up.
 </p>
 
-<h2 style="margin-top:2.5rem;">How the Art Is Made</h2>
+<h2 id="method" style="margin-top:2.5rem;">How the Art Is Made</h2>
 
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Artistic Interpretation, Not Imitation</h3>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-No artist's work was used to train the model. Claude's understanding of these artists comes from art criticism, exhibition catalogs, and the public discourse around their practices — the same way a human art student learns by reading about artists before they ever pick up a brush. Each artist is described to the model in a few sentences that capture their visual philosophy: Rothko's luminous floating rectangles, Kusama's obsessive dot fields, Mondrian's primary-color grid logic. The model doesn't see their paintings. It reads their ideas, then writes SVG code — shapes, gradients, transforms, filters — from scratch. The atmospheric data is the only input. The artist's sensibility is the lens.
+No artist's work was used to train the model. The AI's understanding of these artists comes from art criticism, exhibition catalogs, and the public discourse around their practices — the same way a human art student learns by reading about artists before they ever pick up a brush. Each artist is described to the model in a few sentences that capture their visual philosophy: Rothko's luminous floating rectangles, Kusama's obsessive dot fields, Mondrian's primary-color grid logic. The model doesn't see their paintings. It reads their ideas, then writes SVG code — shapes, gradients, transforms, filters — from scratch. The atmospheric data is the only input. The artist's sensibility is the lens.
 </p>
 
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Weather Data: 54 Points, 6 Variables</h3>
@@ -96,7 +127,7 @@ The composite visual interest score weights these: pressure anomaly (30%), wind 
 The weather data comes from NOAA's <a href="https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast" target="_blank" rel="noopener" style="color:#8ab4f8">Global Forecast System (GFS)</a>, a 0.25° resolution atmospheric model updated every six hours. GFS was chosen over alternatives like ECMWF IFS (higher accuracy but rate-limited), ICON (better European resolution), or HRRR (3km US-only) because it offers the best tradeoff for this project: free global coverage at resolution sufficient for macro-scale weather drama, with reliable hourly data across all 54 scan points simultaneously. The art interprets continental-scale atmospheric patterns — pressure systems spanning oceans, temperature fronts crossing mountain ranges — where GFS excels. The <code style="color:#c4b5fd; background:#1a1a2e; padding:0.15rem 0.4rem; border-radius:3px; font-size:0.85rem;">gfs_seamless</code> variant blends forecast and analysis data for best-available current conditions.
 </p>
 
-<h2 style="margin-top:2.5rem;">The Artist</h2>
+<h2 id="artist" style="margin-top:2.5rem;">The Artist</h2>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
 I'm <a href="https://jamestannahill.com" target="_blank" rel="noopener">James Tannahill</a>. I grew up staring at maps the way other people stared at posters — tracing coastlines, memorizing the shapes of countries I'd never visit, trying to understand how a flat sheet of paper could contain an ocean. That impulse never went away. It just found new material.
