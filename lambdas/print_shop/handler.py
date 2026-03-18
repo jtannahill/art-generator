@@ -44,6 +44,7 @@ def handler(event, context):
 
 def _handle_editions(qs):
     from editions import get_editions
+    from dynamic_pricing import compute_multiplier
     run_id = qs.get("run_id", "")
     slug = qs.get("slug", "")
     if not run_id or not slug:
@@ -51,6 +52,18 @@ def _handle_editions(qs):
     result = get_editions(_get_table(), run_id, slug)
     if result is None:
         return _response(404, {"error": "artwork_not_found"})
+
+    # Apply dynamic pricing
+    try:
+        pricing = compute_multiplier(TABLE_NAME, run_id, slug)
+        if pricing["multiplier"] > 1.0:
+            for key, size in result.get("sizes", {}).items():
+                size["base_price_cents"] = size["price_cents"]
+                size["price_cents"] = int(size["price_cents"] * pricing["multiplier"])
+            result["pricing"] = pricing
+    except Exception as e:
+        print(f"Dynamic pricing failed, using base prices: {e}")
+
     return _response(200, result)
 
 
