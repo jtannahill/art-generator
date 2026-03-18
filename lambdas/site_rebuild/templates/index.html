@@ -4,10 +4,99 @@
 {% block description %}Daily generative art from real atmospheric data — 54 global weather points translated into SVG artwork through 11 abstract expressionist lenses. Free to browse, prints available.{% endblock %}
 
 {% block content %}
-<div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-  <h1 style="margin-bottom:0">Today's Weather Art</h1>
-  <div style="display:flex; align-items:center; gap:0.5rem;">
-    <select id="artist-select" style="background:#1a1a2e; color:#c4b5fd; border:1px solid #444; border-radius:6px; padding:0.5rem 0.8rem; font-size:0.85rem; cursor:pointer;">
+<style>
+  .hero-controls {
+    margin-bottom: 2rem;
+  }
+  .hero-controls h1 {
+    margin-bottom: 1rem;
+  }
+  .artist-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #0f0f1a 0%, #141428 100%);
+    border: 1px solid #2a2a3e;
+    border-radius: 12px;
+    flex-wrap: wrap;
+  }
+  .artist-bar label {
+    color: #666;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .artist-bar select {
+    flex: 1;
+    min-width: 160px;
+    background: transparent;
+    color: #fff;
+    border: none;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23666' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 center;
+    padding-right: 16px;
+  }
+  .artist-bar select option {
+    background: #141428;
+    color: #fff;
+  }
+  .artist-bar .gen-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.5rem;
+    background: linear-gradient(135deg, #2a1a4e, #1a1a3e);
+    border: 1px solid #c4b5fd33;
+    border-radius: 8px;
+    color: #c4b5fd;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .artist-bar .gen-btn:hover {
+    background: linear-gradient(135deg, #3a2a6e, #2a2a5e);
+    border-color: #c4b5fd66;
+    box-shadow: 0 0 20px rgba(196, 181, 253, 0.1);
+    transform: translateY(-1px);
+  }
+  .artist-bar .gen-btn.loading { opacity: 0.6; pointer-events: none; }
+  .artist-bar .gen-btn .spinner { display: none; width: 14px; height: 14px; border: 2px solid #666; border-top-color: #c4b5fd; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  .artist-bar .gen-btn.loading .spinner { display: inline-block; }
+  .artist-bar .artist-link {
+    font-size: 0.75rem;
+    color: #555;
+    transition: color 0.2s;
+  }
+  .artist-bar .artist-link:hover { color: #8ab4f8; }
+  @media (max-width: 768px) {
+    .artist-bar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+    .artist-bar label { display: none; }
+    .artist-bar select { font-size: 1rem; padding: 0.5rem 0; }
+    .artist-bar .gen-btn { justify-content: center; padding: 0.75rem; }
+    .artist-bar .artist-link { text-align: center; }
+  }
+</style>
+
+<div class="hero-controls">
+  <h1>Today's Weather Art</h1>
+  <div class="artist-bar">
+    <label>Style</label>
+    <select id="artist-select">
       <option value="sam_francis">Sam Francis</option>
       <option value="gerhard_richter">Gerhard Richter</option>
       <option value="hilma_af_klint">Hilma af Klint</option>
@@ -20,11 +109,11 @@
       <option value="kazimir_malevich">Kazimir Malevich</option>
       <option value="lesley_tannahill">Lesley Tannahill</option>
     </select>
-    <button class="generate-btn" onclick="generateArt(this)" style="margin-bottom:0">
+    <button class="gen-btn" onclick="generateArt(this)">
       <span class="spinner"></span>
       Generate
     </button>
-    <a id="artist-link" href="https://www.guggenheim.org/artwork/artist/sam-francis" target="_blank" rel="noopener" style="font-size:0.75rem; color:#666;">about this artist</a>
+    <a id="artist-link" href="https://www.guggenheim.org/artwork/artist/sam-francis" target="_blank" rel="noopener" class="artist-link">about this artist &#8599;</a>
   </div>
 </div>
 {% if today_weather %}
@@ -159,7 +248,7 @@ function generateArt(btn) {
       toast.classList.add('show');
       setTimeout(function() { toast.classList.remove('show'); btn.classList.remove('loading'); }, 5000);
     })
-    .catch(function(e) {
+    .catch(function() {
       toast.textContent = 'Error triggering pipeline';
       toast.classList.add('show');
       setTimeout(function() { toast.classList.remove('show'); btn.classList.remove('loading'); }, 3000);
