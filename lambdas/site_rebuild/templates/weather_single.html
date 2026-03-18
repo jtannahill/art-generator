@@ -87,7 +87,11 @@
   <img src="/weather/{{ run_id }}/{{ slug }}/artwork.svg" alt="{{ slug }} SVG artwork">
 </div>
 
-<div>
+<div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+  <button class="print-cta" onclick="openPrintDrawer()">
+    <span style="font-size:1.1rem;">Buy Print</span>
+    <span style="font-size:0.75rem; opacity:0.7;">Limited Edition &middot; Ships Worldwide</span>
+  </button>
   <a href="/weather/{{ run_id }}/{{ slug }}/artwork.svg" class="download-btn" download>Download SVG</a>
 </div>
 
@@ -136,7 +140,7 @@
   <h2>Technical Details</h2>
   <dl>
     <dt>Model</dt>
-    <dd>Claude Sonnet 4 (us.anthropic.claude-sonnet-4-20250514-v1:0) via Amazon Bedrock</dd>
+    <dd>AI (Sonnet 4) via Amazon Bedrock</dd>
     <dt>Artist Inspiration</dt>
     <dd><a href="/artist/{{ artwork.artist|default('sam_francis') }}/">{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }}</a></dd>
     <dt>Weather Source</dt>
@@ -151,10 +155,6 @@
     <dt>Run ID</dt>
     <dd>{{ run_id }}</dd>
   </dl>
-</div>
-
-<div style="margin:1.5rem 0;">
-  <button class="generate-btn" id="buy-print-btn" onclick="openPrintDrawer()">Buy Print</button>
 </div>
 
 <div style="margin:1rem 0; padding:0.8rem; background:#0d0d0d; border:1px solid #1a1a1a; border-radius:6px; font-size:0.8rem; color:#666;">
