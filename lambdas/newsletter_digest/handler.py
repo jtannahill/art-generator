@@ -1,4 +1,4 @@
-"""Newsletter Digest Lambda — sends daily art email to subscribers via SES.
+"""Newsletter Digest Lambda — sends daily art email to subscribers via Resend.
 Triggered after site-rebuild in the daily pipeline."""
 
 import json
@@ -16,9 +16,19 @@ FEED_URL = os.environ.get("FEED_URL", "https://art.jamestannahill.com/feed.xml")
 SITE_URL = "https://art.jamestannahill.com"
 UNSUBSCRIBE_BASE = "https://kvorpfc3nbj6h7otsc2634duxm0xtqis.lambda-url.us-east-1.on.aws/unsubscribe"
 MAX_ITEMS = int(os.environ.get("MAX_ITEMS", "6"))
+RESEND_API_KEY_PARAM = os.environ.get("RESEND_API_KEY_PARAM", "/art-generator/resend-api-key")
 
 dynamodb = boto3.resource("dynamodb")
-ses = boto3.client("ses", region_name="us-east-1")
+ssm = boto3.client("ssm", region_name="us-east-1")
+
+_resend_key = None
+
+
+def _get_resend_key():
+    global _resend_key
+    if not _resend_key:
+        _resend_key = ssm.get_parameter(Name=RESEND_API_KEY_PARAM, WithDecryption=True)["Parameter"]["Value"]
+    return _resend_key
 
 
 def handler(event, context):
@@ -51,27 +61,39 @@ def handler(event, context):
     html_body = build_email_html(items, today)
     text_body = build_email_text(items, today)
 
-    # Send to each subscriber
+    # Send to each subscriber via Resend
     sent = 0
     failed = 0
+    api_key = _get_resend_key()
+
     for email in subscribers:
         unsub_url = f"{UNSUBSCRIBE_BASE}?email={urllib.parse.quote(email, safe='')}"
         per_html = html_body.replace("{{UNSUBSCRIBE_URL}}", unsub_url)
-        per_text = text_body.replace("{{UNSUBSCRIBE_URL}}", unsub_url)
         try:
-            ses.send_email(
-                Source=f"art.jt <{SENDER}>",
-                Destination={"ToAddresses": [email]},
-                Message={
-                    "Subject": {"Data": subject, "Charset": "UTF-8"},
-                    "Body": {
-                        "Html": {"Data": per_html, "Charset": "UTF-8"},
-                        "Text": {"Data": per_text, "Charset": "UTF-8"},
-                    },
+            payload = json.dumps({
+                "from": f"art.jt <{SENDER}>",
+                "to": [email],
+                "subject": subject,
+                "html": per_html,
+                "headers": {"List-Unsubscribe": f"<{unsub_url}>"},
+            }).encode()
+            req = urllib.request.Request(
+                "https://api.resend.com/emails",
+                data=payload,
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                    "User-Agent": "art-newsletter/1.0",
                 },
-                Tags=[],
             )
+            resp = urllib.request.urlopen(req, timeout=10)
+            result = json.loads(resp.read())
+            print(f"[OK] Sent to {email}: {result.get('id', '')}")
             sent += 1
+        except urllib.error.HTTPError as e:
+            body = e.read().decode()
+            print(f"[ERROR] Failed to send to {email}: {e.code} {body}")
+            failed += 1
         except Exception as e:
             print(f"[ERROR] Failed to send to {email}: {e}")
             failed += 1
