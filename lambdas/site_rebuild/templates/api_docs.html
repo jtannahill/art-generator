@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation — art.jt{% endblock %}
+{% block description %}art.jt API — score artwork quality, track global weather drama, compute dynamic pricing. Free tier available.{% endblock %}
+{% block canonical_path %}/api/{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebAPI",
+  "name": "art.jt API",
+  "url": "https://art.jamestannahill.com/api/",
+  "description": "Art Critic, Weather Drama, and Dynamic Pricing APIs powered by generative weather art.",
+  "provider": {
+    "@type": "Person",
+    "name": "James Tannahill",
+    "url": "https://jamestannahill.com"
+  },
+  "documentation": "https://art.jamestannahill.com/api/"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<style>
+  .api-section { margin-bottom: 3rem; }
+  .api-section h2 { border-bottom: 1px solid #222; padding-bottom: 0.5rem; }
+  .endpoint { margin: 1.5rem 0; padding: 1.25rem; background: #111; border: 1px solid #2a2a2a; border-radius: 8px; }
+  .endpoint-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+  .method { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; font-family: monospace; }
+  .method-get { background: #1a3a1a; color: #4ade80; }
+  .method-post { background: #1a1a3e; color: #c4b5fd; }
+  .endpoint-path { font-family: monospace; color: #fff; font-size: 1rem; }
+  .endpoint-desc { color: #999; font-size: 0.9rem; line-height: 1.6; }
+  .endpoint-price { color: #666; font-size: 0.8rem; margin-top: 0.5rem; }
+  pre { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; color: #c4b5fd; line-height: 1.5; }
+  code { font-family: 'SF Mono', Monaco, 'Courier New', monospace; }
+  .tier-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .tier-table th { text-align: left; padding: 0.75rem 1rem; color: #888; border-bottom: 1px solid #2a2a2a; font-weight: 500; }
+  .tier-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #1a1a1a; color: #bbb; }
+  .tier-table tr:hover td { background: #111; }
+  .tier-highlight { color: #c4b5fd; font-weight: 600; }
+  .cta-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin: 2rem 0; }
+  .cta-bar a { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+  .cta-primary { background: linear-gradient(135deg, #2a1a4e, #1a1a3e); border: 1px solid #c4b5fd44; color: #c4b5fd; }
+  .cta-primary:hover { border-color: #c4b5fd88; box-shadow: 0 0 20px rgba(196,181,253,0.15); }
+  .cta-secondary { background: #111; border: 1px solid #2a2a2a; color: #888; }
+  .cta-secondary:hover { border-color: #444; color: #fff; }
+  .error-table { width: 100%; font-size: 0.85rem; }
+  .error-table td { padding: 0.5rem 0; color: #999; }
+  .error-table td:first-child { color: #c4b5fd; font-family: monospace; width: 60px; }
+</style>
+
+<div style="max-width:800px; margin:0 auto;">
+
+<h1>API</h1>
+
+<p style="color:#bbb; font-size:1.05rem; line-height:1.7; margin-bottom:0.5rem;">
+Score artwork quality, track global weather drama, and compute scarcity-based pricing — powered by the same ML models behind <a href="/">art.jt</a>.
+</p>
+
+<div class="cta-bar">
+  <a href="/api/quickstart/" class="cta-primary">Quickstart Guide</a>
+  <a href="mailto:art@jamestannahill.com?subject=art.jt%20API%20Key%20Request" class="cta-secondary">Get API Key</a>
+</div>
+
+<div class="api-section">
+<h2>Endpoints</h2>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method method-post">POST</span>
+    <span class="endpoint-path">/v1/critique</span>
+  </div>
+  <p class="endpoint-desc">Score any image on composition, color harmony, complexity, and emotional impact. Returns scores 1-10 per dimension plus a one-sentence critique. Powered by AI vision.</p>
+  <p class="endpoint-price">$0.02/request &middot; ~1.5s latency &middot; PNG, JPG, WebP up to 5MB</p>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method method-get">GET</span>
+    <span class="endpoint-path">/v1/weather/rankings</span>
+  </div>
+  <p class="endpoint-desc">Today's ranked global locations by atmospheric visual interest. 54 scan points scored on pressure anomaly, wind speed, temperature deviation, precipitation, and humidity.</p>
+  <p class="endpoint-price">$0.005/request &middot; &lt;200ms &middot; Also: <code>/forecast</code> (tomorrow) and <code>/score?lat=X&amp;lng=Y</code> (live)</p>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method method-post">POST</span>
+    <span class="endpoint-path">/v1/price</span>
+  </div>
+  <p class="endpoint-desc">Compute a scarcity-based price multiplier (1.0&ndash;2.0&times;) from quality score, weather rarity, and edition sell-through. Returns component breakdown and pricing recommendation.</p>
+  <p class="endpoint-price">$0.005/request &middot; &lt;50ms &middot; Pure computation</p>
+</div>
+</div>
+
+<div class="api-section">
+<h2>Authentication</h2>
+
+<p style="color:#bbb; line-height:1.7;">All requests require an API key in the <code>x-api-key</code> header:</p>
+
+<pre>curl -H "x-api-key: YOUR_KEY" https://api.art.jamestannahill.com/v1/weather/rankings</pre>
+</div>
+
+<div class="api-section">
+<h2>Pricing</h2>
+
+<table class="tier-table">
+  <thead>
+    <tr><th>Tier</th><th>Price</th><th>Critique</th><th>Weather</th><th>Pricing</th><th>Rate</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="tier-highlight">Free</td><td>$0/mo</td><td>50/mo</td><td>100/mo</td><td>100/mo</td><td>10/s</td></tr>
+    <tr><td class="tier-highlight">Starter</td><td>$29/mo</td><td>1,000/mo</td><td>2,000/mo</td><td>5,000/mo</td><td>50/s</td></tr>
+  </tbody>
+</table>
+
+<p style="color:#666; font-size:0.8rem; margin-top:0.75rem;">Pro ($99/mo) and Scale ($299/mo) tiers coming soon. <a href="mailto:art@jamestannahill.com" style="color:#8ab4f8;">Contact us</a> for enterprise.</p>
+</div>
+
+<div class="api-section">
+<h2>Errors</h2>
+
+<pre>{
+  "error": {
+    "code": "rate_limit_exceeded",
+    "message": "Upgrade to Starter for higher limits.",
+    "request_id": "req_abc123"
+  }
+}</pre>
+
+<table class="error-table" style="margin-top:1rem;">
+  <tr><td>200</td><td>Success</td></tr>
+  <tr><td>400</td><td>Bad request — missing params, invalid image</td></tr>
+  <tr><td>401</td><td>Missing or invalid API key</td></tr>
+  <tr><td>403</td><td>Endpoint not included in your tier</td></tr>
+  <tr><td>429</td><td>Rate limit exceeded</td></tr>
+  <tr><td>500</td><td>Internal error</td></tr>
+</table>
+</div>
+
+</div>
+{% endblock %}

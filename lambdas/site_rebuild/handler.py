@@ -296,6 +296,10 @@ def handler(event, context):
     # 404 error page
     pages["site/404.html"] = env.get_template("404.html").render()
 
+    # API docs
+    pages["site/api/index.html"] = env.get_template("api_docs.html").render()
+    pages["site/api/quickstart/index.html"] = env.get_template("api_quickstart.html").render()
+
     # Upload favicon
     # Upload static assets
     static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -319,6 +323,8 @@ def handler(event, context):
         ("https://art.jamestannahill.com/duets/", "daily", "0.8"),
         ("https://art.jamestannahill.com/comparison/", "daily", "0.8"),
         ("https://art.jamestannahill.com/studies/", "daily", "0.8"),
+        ("https://art.jamestannahill.com/api/", "monthly", "0.8"),
+        ("https://art.jamestannahill.com/api/quickstart/", "monthly", "0.7"),
         ("https://art.jamestannahill.com/privacy/", "yearly", "0.3"),
         ("https://art.jamestannahill.com/terms/", "yearly", "0.3"),
     ]
@@ -376,6 +382,14 @@ Weather data from Open-Meteo API (GFS/NOAA model, 54 scan points, 6 variables pe
 
 ## Natural Scarcity
 Every artwork is generated from a one-time atmospheric event. The weather data is archived, timestamped, and verifiable against NOAA public records. Unlike manufactured digital scarcity (minted supply caps), the scarcity is physical — the atmosphere produced it once and it's gone. Limited edition prints (5 per size) add a physical layer on top. When the last print sells, the edition is closed permanently.
+
+## API
+Paid API at api.art.jamestannahill.com with three endpoints:
+- Art Critic (POST /v1/critique): Score any image 1-10 on composition, color, complexity, impact. $0.02/req.
+- Weather Drama (GET /v1/weather/rankings): Ranked global atmospheric drama locations. $0.005/req.
+- Dynamic Pricing (POST /v1/price): Scarcity-based price multiplier from quality + rarity + demand. $0.005/req.
+Free tier: 50 critiques + 100 weather + 100 pricing per month. Starter: $29/mo.
+Docs: https://art.jamestannahill.com/api/
 
 ## Subscribe
 - [RSS Feed](https://art.jamestannahill.com/feed.xml) — Latest artworks in RSS 2.0 format

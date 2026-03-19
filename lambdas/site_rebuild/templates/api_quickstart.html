@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}API Quickstart — art.jt{% endblock %}
+{% block description %}Get started with the art.jt API in 2 minutes. cURL, Python, and Node.js examples for Art Critic, Weather Drama, and Dynamic Pricing.{% endblock %}
+{% block canonical_path %}/api/quickstart/{% endblock %}
+
+{% block content %}
+<style>
+  pre { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; color: #c4b5fd; line-height: 1.5; margin-bottom: 1.5rem; }
+  code { font-family: 'SF Mono', Monaco, 'Courier New', monospace; }
+  .lang-tabs { display: flex; gap: 0; margin-bottom: 0; }
+  .lang-tab { padding: 0.5rem 1rem; background: #0d0d0d; border: 1px solid #1a1a1a; color: #666; font-size: 0.8rem; cursor: pointer; border-bottom: none; }
+  .lang-tab:first-child { border-radius: 6px 0 0 0; }
+  .lang-tab:last-child { border-radius: 0 6px 0 0; }
+  .lang-tab.active { color: #c4b5fd; background: #111; border-color: #2a2a2a; }
+  .response { color: #4ade80; }
+  .comment { color: #666; }
+</style>
+
+<div style="max-width:800px; margin:0 auto;">
+
+<div class="breadcrumb">
+  <a href="/api/">API</a>
+  <span>Quickstart</span>
+</div>
+
+<h1>Quickstart</h1>
+
+<p style="color:#bbb; line-height:1.7; margin-bottom:2rem;">
+Get an API key by emailing <a href="mailto:art@jamestannahill.com?subject=art.jt%20API%20Key%20Request">art@jamestannahill.com</a>. Free tier: 50 critiques + 100 weather + 100 pricing per month.
+</p>
+
+<h2>Art Critic</h2>
+
+<p style="color:#999; margin-bottom:1rem;">Score any image on composition, color, complexity, and emotional impact.</p>
+
+<h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">cURL</h3>
+<pre>curl -X POST https://api.art.jamestannahill.com/v1/critique \
+  -H "x-api-key: YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"image_url": "https://example.com/artwork.png"}'</pre>
+
+<h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">Python</h3>
+<pre><span class="comment"># pip install requests</span>
+import requests
+
+resp = requests.post(
+    "https://api.art.jamestannahill.com/v1/critique",
+    headers={"x-api-key": "YOUR_KEY"},
+    json={"image_url": "https://example.com/artwork.png"},
+)
+data = resp.json()
+print(f"Overall: {data['overall']}/10 — {data['critique']}")</pre>
+
+<h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">Node.js</h3>
+<pre>const resp = await fetch("https://api.art.jamestannahill.com/v1/critique", {
+  method: "POST",
+  headers: { "x-api-key": "YOUR_KEY", "Content-Type": "application/json" },
+  body: JSON.stringify({ image_url: "https://example.com/artwork.png" }),
+});
+const data = await resp.json();
+console.log(`Overall: ${data.overall}/10 — ${data.critique}`);</pre>
+
+<h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">Response</h3>
+<pre class="response">{
+  "composition": 8,
+  "color": 7,
+  "complexity": 9,
+  "impact": 8,
+  "overall": 8,
+  "critique": "A commanding abstract piece with sophisticated layering.",
+  "request_id": "req_abc123"
+}</pre>
+
+<h2 style="margin-top:3rem;">Weather Drama</h2>
+
+<p style="color:#999; margin-bottom:1rem;">Today's most atmospherically dramatic locations worldwide.</p>
+
+<h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">cURL</h3>
+<pre>curl https://api.art.jamestannahill.com/v1/weather/rankings?limit=5 \
+  -H "x-api-key: YOUR_KEY"</pre>
+
+<h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">Response</h3>
+<pre class="response">{
+  "date": "2026-03-19",
+  "rankings": [
+    {
+      "rank": 1,
+      "lat": 60.0, "lng": -70.0,
+      "score": 62.7,
+      "pressure_hpa": 972.6,
+      "wind_speed_kmh": 82.1,
+      "temp_c": -16.0,
+      "humidity_pct": 94.0,
+      "precipitation_mm": 1.6
+    }
+  ],
+  "model": "GFS (NOAA)",
+  "scan_points": 54
+}</pre>
+
+<p style="color:#999; font-size:0.9rem; margin-top:1rem;">Also available:</p>
+<pre><span class="comment"># Tomorrow's forecast</span>
+GET /v1/weather/forecast?limit=10
+
+<span class="comment"># Score a specific location</span>
+GET /v1/weather/score?lat=40.7&amp;lng=-74.0</pre>
+
+<h2 style="margin-top:3rem;">Dynamic Pricing</h2>
+
+<p style="color:#999; margin-bottom:1rem;">Compute a scarcity-based price multiplier from quality, rarity, and demand signals.</p>
+
+<h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">cURL</h3>
+<pre>curl -X POST https://api.art.jamestannahill.com/v1/price \
+  -H "x-api-key: YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "quality_score": 8,
+    "rarity_score": 72,
+    "total_supply": 25,
+    "total_sold": 8
+  }'</pre>
+
+<h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">Response</h3>
+<pre class="response">{
+  "multiplier": 1.46,
+  "components": {
+    "quality_bonus": 0.30,
+    "rarity_bonus": 0.13,
+    "scarcity_bonus": 0.03
+  },
+  "suggested_action": "Price above base — high quality + moderate rarity"
+}</pre>
+
+<div style="margin-top:3rem; padding:1.2rem; background:#111; border:1px solid #2a2a2a; border-radius:8px;">
+  <p style="color:#888; font-size:0.9rem; margin:0;">
+    Questions? Need higher limits? <a href="mailto:art@jamestannahill.com">art@jamestannahill.com</a>
+  </p>
+</div>
+
+</div>
+{% endblock %}
