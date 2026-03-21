@@ -29,7 +29,10 @@ Sam Francis | Gerhard Richter | Hilma af Klint | Wassily Kandinsky | Helen Frank
 | Storage | S3 (versioned), DynamoDB |
 | CDN | CloudFront with OAC + CloudFront Function (index rewrite) |
 | Templating | Jinja2 → static HTML |
-| Runtime | Python 3.12 Lambda (7 functions) |
+| ML | Art critic (commentary scoring), weather forecaster, dynamic pricing |
+| Newsletter | Resend (daily digest) |
+| Social | RSS feed → dlvr.it (X/Instagram) |
+| Runtime | Python 3.12 Lambda (15 functions) |
 | API | Lambda Function URLs (trigger + infinite scroll) |
 | Mapping | Mapbox GL JS (dark globe, artwork markers) |
 | Analytics | Google Analytics 4 |
@@ -45,8 +48,14 @@ EventBridge (daily 06:00 UTC)
         ├── Satellite Branch
         │   ├── Satellite Ingest (Sentinel Hub Process API → true-color JPEG)
         │   └── Palette Extract (median cut → 5-7 colors → Bedrock mood brief)
+        ├── ML Branch
+        │   ├── Art Critic (scores + commentary on generated pieces)
+        │   └── Weather Forecast (atmospheric condition predictions)
+        ├── Newsletter + Social
+        │   ├── Newsletter Digest (Resend → subscribers)
+        │   └── X Poster (RSS → OAuth 1.0a posting, DynamoDB dedup)
         └── Site Rebuild
-            ├── Jinja2 templates → static HTML (homepage, archive, artists, map, about, privacy, terms)
+            ├── Jinja2 templates → static HTML (homepage, archive, artists, studies, map, about, privacy, terms)
             ├── Asset copying (SVGs + satellite thumbs → site/ prefix)
             ├── sitemap.xml, robots.txt, llms.txt
             └── CloudFront invalidation
@@ -63,7 +72,9 @@ EventBridge (daily 06:00 UTC)
 | Run | `/weather/{run_id}/` | Single generation (10 pieces) |
 | Artwork | `/weather/{run_id}/{slug}/` | Full artwork + rationale + metadata + print inquiry + OG preview |
 | Map | `/map/` | Mapbox dark globe with all artwork markers |
+| Studies | `/studies/` | Deep-dive artistic studies of compelling pieces |
 | Palettes | `/palettes/` | Satellite color palettes by location |
+| Print Shop | `/prints/` | Limited edition prints via theprintspace (Hahnemühle German Etching) |
 | About | `/about/` | Project story, artist bio, how it works |
 | Privacy | `/privacy/` | Privacy policy (GA4 disclosure) |
 | Terms | `/terms/` | Terms of use (CC BY-NC-ND 4.0 details) |
@@ -77,6 +88,13 @@ EventBridge (daily 06:00 UTC)
 | `art-x-poster` | RSS-driven X/Twitter posting with OAuth 1.0a (text + link, DynamoDB dedup) |
 | `art-satellite-ingest` | Sentinel Hub Process API → true-color imagery for 30 rotating locations |
 | `art-palette-extract` | Color quantization + Bedrock mood descriptions |
+| `art-critic` | ML commentary scoring on generated artworks |
+| `art-weather-forecast` | Atmospheric condition predictions for upcoming generations |
+| `art-newsletter-digest` | Daily newsletter via Resend to subscribers |
+| `art-study-detector` | Identifies compelling pieces for deeper artistic studies |
+| `art-study-admin` | Manages study generation and publishing workflow |
+| `art-print-shop` | Print inquiry handling and theprintspace integration |
+| `art-api-product` | Product catalog API for print shop listings |
 | `art-site-rebuild` | Static HTML, asset copying, sitemap/robots/llms.txt, CloudFront invalidation |
 | `art-trigger` | Generate button endpoint (2-hour cooldown) |
 | `art-api` | Paginated DynamoDB queries for infinite scroll galleries |
