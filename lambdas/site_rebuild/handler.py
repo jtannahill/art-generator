@@ -55,8 +55,15 @@ def handler(event, context):
     pages = {}
     api_url = os.environ.get("API_URL", "")
 
-    # Get latest run for index page
-    latest_run = max(weather_by_run.keys()) if weather_by_run else None
+    # Get latest run for index page — skip test runs, prefer runs with 5+ pieces
+    if weather_by_run:
+        production_runs = {k: v for k, v in weather_by_run.items() if "test" not in k.lower()}
+        if not production_runs:
+            production_runs = weather_by_run
+        # Prefer runs with the most pieces (daily runs have 10, test runs have 1-2)
+        latest_run = max(production_runs.keys(), key=lambda k: (len(production_runs[k]), k))
+    else:
+        latest_run = None
     today_weather = weather_by_run[latest_run] if latest_run else []
     latest_palettes = _latest_palettes(palettes_by_location)
     pages["site/index.html"] = env.get_template("index.html").render(
