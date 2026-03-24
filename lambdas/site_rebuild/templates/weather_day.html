@@ -16,7 +16,7 @@
 <div class="grid">
   {% for item in artworks %}
   <a href="/weather/{{ date }}/{{ item.SK }}/" class="card">
-    <img src="/weather/{{ date }}/{{ item.SK }}/artwork.svg" alt="{{ item.slug|default(item.SK) }}" loading="lazy">
+    <img src="/weather/{{ date }}/{{ item.SK }}/preview-2048.png" alt="{{ item.slug|default(item.SK) }}" loading="lazy">
     <div class="card-body">
       <h3>{{ item.slug|default(item.SK)|replace('-', ' ')|title }}</h3>
       <p class="card-meta" style="color:#c4b5fd; margin-bottom:0.3rem;">{{ item|coords }}</p>

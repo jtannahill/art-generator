@@ -39,7 +39,7 @@
   <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:0;">
     {% for piece in comp.pieces %}
     <a href="{{ piece.url }}" style="border-right:1px solid #1a1a1a; border-bottom:1px solid #1a1a1a;">
-      <img src="{{ piece.svg_url }}" alt="{{ piece.artist_name }} interpretation" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
+      <img src="{{ piece.img_url|default(piece.svg_url) }}" alt="{{ piece.artist_name }} interpretation" loading="lazy" style="width:100%; object-fit:contain; background:#0a0a0a;">
       <div style="padding:0.5rem 0.75rem;">
         <span style="color:#c4b5fd; font-size:0.8rem;">{{ piece.artist_name }}</span>
       </div>

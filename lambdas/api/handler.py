@@ -97,6 +97,7 @@ def handler(event, context):
             "score": float(item.get("score", 0)),
             "rationale": item.get("rationale", ""),
             "svg_url": f"/weather/{run_id}/{slug}/artwork.svg",
+            "img_url": f"/weather/{run_id}/{slug}/preview-2048.png",
             "page_url": f"/weather/{run_id}/{slug}/",
         })
 

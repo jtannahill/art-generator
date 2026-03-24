@@ -62,7 +62,7 @@ function createCard(item) {
   card.href = item.page_url;
   card.className = 'card';
   card.innerHTML =
-    '<img src="' + item.svg_url + '" alt="' + item.slug + '" loading="lazy">' +
+    '<img src="' + (item.img_url || item.svg_url) + '" alt="' + item.slug + '" loading="lazy">' +
     '<div class="card-body">' +
       '<h3>' + item.slug.replace(/-/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); }) + '</h3>' +
       '<p class="card-description">' + (item.rationale || '') + '</p>' +

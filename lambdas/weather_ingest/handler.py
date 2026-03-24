@@ -78,8 +78,17 @@ def handler(event, context):
     # Generate unique run ID for this generation
     run_id = now.strftime("%Y-%m-%d-%H%M%S")
 
-    # Pass artist through from Step Function input
-    artist = event.get("artist", "sam_francis") if isinstance(event, dict) else "sam_francis"
+    # Rotate artist daily — cycle through all 11 artists by day-of-year
+    ARTISTS = [
+        "sam_francis", "gerhard_richter", "hilma_af_klint",
+        "wassily_kandinsky", "helen_frankenthaler", "piet_mondrian",
+        "yayoi_kusama", "mark_rothko", "bridget_riley",
+        "kazimir_malevich", "lesley_tannahill",
+    ]
+    if isinstance(event, dict) and event.get("artist"):
+        artist = event["artist"]  # Allow manual override via Step Function input
+    else:
+        artist = ARTISTS[now.timetuple().tm_yday % len(ARTISTS)]
 
     # Add metadata to each region
     for r in regions:
