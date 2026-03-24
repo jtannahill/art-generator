@@ -146,6 +146,7 @@ def handler(event, context):
                 "temp": str(a.get("temp", "")),
                 "wind": str(a.get("wind_speed", "")),
                 "svg_url": f"/weather/{a.get('run_id', run_id)}/{slug}/artwork.svg",
+                "img_url": f"/weather/{a.get('run_id', run_id)}/{slug}/preview-2048.png",
                 "url": f"/weather/{a.get('run_id', run_id)}/{slug}/",
             })
 
@@ -249,6 +250,7 @@ def handler(event, context):
                     "lat": lat, "lng": lng,
                     "title": slug.replace("-", " ").title(),
                     "svg_url": f"/weather/{run_id}/{slug}/artwork.svg",
+                    "img_url": f"/weather/{run_id}/{slug}/preview-2048.png",
                     "url": f"/weather/{run_id}/{slug}/",
                 })
 
@@ -358,7 +360,7 @@ def handler(event, context):
 > Daily generative art from real atmospheric data, inspired by abstract expressionism. Limited edition prints available.
 
 ## About
-art.jt is a generative art project by James Tannahill. Every day, the system scans 54 global weather points across 10 latitude bands, identifies the 10 most visually dramatic atmospheric conditions, and generates original SVG artwork using AI on Amazon Bedrock. No artist's work was used to train the model — each artist is described via text prompts capturing their visual philosophy, and the AI writes SVG code from scratch. A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery. The visual language draws from abstract expressionists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, Bridget Riley, Yayoi Kusama, Piet Mondrian, Wassily Kandinsky, Gerhard Richter, Kazimir Malevich, and Lesley Tannahill.
+art.jt is a generative art project by James Tannahill. Every day, the system scans 54 global weather points across 10 latitude bands, identifies the 10 most visually dramatic atmospheric conditions, and generates original digital artwork — high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude on Amazon Bedrock. No artist's work was used to train the model — each artist is described via text prompts capturing their visual philosophy. A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery. The visual language draws from abstract expressionists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, Bridget Riley, Yayoi Kusama, Piet Mondrian, Wassily Kandinsky, Gerhard Richter, Kazimir Malevich, and Lesley Tannahill.
 
 ## Pages
 - [Homepage](https://art.jamestannahill.com/) — Today's weather art with generate button and artist selector
@@ -611,6 +613,7 @@ def _find_comparisons(weather_items):
                 "artist": artist_key,
                 "artist_name": artist_key.replace("_", " ").title(),
                 "svg_url": f"/weather/{item_run}/{item_slug}/artwork.svg",
+                "img_url": f"/weather/{item_run}/{item_slug}/preview-2048.png",
                 "url": f"/weather/{item_run}/{item_slug}/",
             })
 
@@ -677,12 +680,14 @@ def _find_duets(weather_items):
                         "artist": a1_key,
                         "artist_name": a1_key.replace("_", " ").title(),
                         "svg_url": f"/weather/{a1_run}/{a1_slug}/artwork.svg",
+                        "img_url": f"/weather/{a1_run}/{a1_slug}/preview-2048.png",
                         "url": f"/weather/{a1_run}/{a1_slug}/",
                     },
                     "right": {
                         "artist": a2_key,
                         "artist_name": a2_key.replace("_", " ").title(),
                         "svg_url": f"/weather/{a2_run}/{a2_slug}/artwork.svg",
+                        "img_url": f"/weather/{a2_run}/{a2_slug}/preview-2048.png",
                         "url": f"/weather/{a2_run}/{a2_slug}/",
                     },
                 })

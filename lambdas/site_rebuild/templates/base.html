@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}art.jt — Generative Weather Art{% endblock %}</title>
-  <meta name="description" content="{% block description %}Daily generative art from real atmospheric data, inspired by abstract expressionism. Each piece is driven by live weather patterns — pressure, wind, temperature — translated into SVG artwork.{% endblock %}">
+  <meta name="description" content="{% block description %}Daily generative art from real atmospheric data, inspired by abstract expressionism. Each piece is driven by live weather patterns — pressure, wind, temperature — rendered as high-resolution digital artwork.{% endblock %}">
   <link rel="canonical" href="https://art.jamestannahill.com{% block canonical_path %}/{% endblock %}">
 
   <!-- Open Graph -->
@@ -246,14 +246,14 @@
     .metadata dt { color: #888; font-size: 0.85rem; }
     .metadata dd { color: #e0e0e0; font-size: 0.85rem; }
 
-    .svg-viewer {
+    .artwork-viewer {
       background: #111;
       border: 1px solid #2a2a2a;
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 1.5rem;
     }
-    .svg-viewer img { width: 100%; max-width: 800px; display: block; margin: 0 auto; }
+    .artwork-viewer img { width: 100%; max-width: 800px; display: block; margin: 0 auto; }
 
     .breadcrumb {
       display: flex;
@@ -361,7 +361,7 @@
       .metadata dl { grid-template-columns: 1fr; gap: 0.3rem; }
       .metadata dt { float: none; font-weight: 600; }
       .metadata dd { margin-left: 0; margin-bottom: 0.5rem; }
-      .svg-viewer { padding: 0.5rem; }
+      .artwork-viewer { padding: 0.5rem; }
       .breadcrumb { font-size: 0.75rem; flex-wrap: wrap; }
       footer { padding: 1rem; font-size: 0.7rem; }
       .generate-btn { font-size: 0.8rem; padding: 0.5rem 0.8rem; }

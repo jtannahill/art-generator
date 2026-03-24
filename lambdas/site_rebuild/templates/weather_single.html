@@ -24,9 +24,9 @@
   "name": "{{ slug|replace('-', ' ')|title }} — {{ date }}",
   "description": "{{ artwork.rationale|default('')|replace('"', '\\"') }}",
   "url": "https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/",
-  "image": "https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/artwork.svg",
+  "image": "https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/preview-2048.png",
   "dateCreated": "{{ artwork.created_at|default(date) }}",
-  "artMedium": "Digital — generative SVG from atmospheric data",
+  "artMedium": "Digital — generative art from atmospheric data{% if artwork.renderer == 'flux-1.1-pro' %} (Flux 1.1 Pro){% else %} (SVG){% endif %}",
   "artform": "Generative Art",
   "artworkSurface": "Digital",
   {% set dims = (artwork.canvas_format|default('2048x2048')).split('x') %}
@@ -83,8 +83,8 @@
 
 <h1>{{ slug|replace('-', ' ')|title }}</h1>
 
-<div class="svg-viewer">
-  <img src="/weather/{{ run_id }}/{{ slug }}/artwork.svg" alt="{{ slug }} SVG artwork">
+<div class="artwork-viewer">
+  <img src="/weather/{{ run_id }}/{{ slug }}/preview-2048.png" alt="{{ slug }} weather artwork">
 </div>
 
 <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
@@ -92,7 +92,10 @@
     <span style="font-size:1.1rem;">Buy Print</span>
     <span style="font-size:0.75rem; opacity:0.7;">Limited Edition &middot; Ships Worldwide</span>
   </button>
+  {% if artwork.has_svg %}
   <a href="/weather/{{ run_id }}/{{ slug }}/artwork.svg" class="download-btn" download>Download SVG</a>
+  {% endif %}
+  <a href="/weather/{{ run_id }}/{{ slug }}/preview-2048.png" class="download-btn" download>Download PNG</a>
 </div>
 
 {% if artwork.rationale %}
@@ -140,14 +143,14 @@
   <h2>Technical Details</h2>
   <dl>
     <dt>Model</dt>
-    <dd>AI (Sonnet 4) via Amazon Bedrock</dd>
+    <dd>{% if artwork.renderer == 'flux-1.1-pro' %}Flux 1.1 Pro (Black Forest Labs){% else %}AI (Sonnet 4) via Amazon Bedrock{% endif %}</dd>
     <dt>Artist Inspiration</dt>
     <dd><a href="/artist/{{ artwork.artist|default('sam_francis') }}/">{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }}</a></dd>
     <dt>Weather Source</dt>
     <dd>Open-Meteo API (GFS model)</dd>
     <dt>Format</dt>
     {% set cf = artwork.canvas_format|default('2048x2048') %}
-    <dd>SVG ({{ cf.replace('x', '&times;') }} viewBox)</dd>
+    <dd>{% if artwork.renderer == 'flux-1.1-pro' %}PNG (Flux 1.1 Pro){% else %}SVG ({{ cf.replace('x', '&times;') }} viewBox){% endif %}{% if artwork.has_svg %} + SVG vector download{% endif %}</dd>
     <dt>Generated</dt>
     <dd>{{ artwork.created_at|default(run_id) }}</dd>
     <dt>Compute</dt>
@@ -166,7 +169,7 @@
 <div class="drawer-overlay" id="drawer-overlay" onclick="closePrintDrawer()"></div>
 <div class="drawer" id="print-drawer">
   <button class="drawer-close" onclick="closePrintDrawer()">&times;</button>
-  <img class="drawer-thumb" src="/weather/{{ run_id }}/{{ slug }}/artwork.svg" alt="{{ slug }}">
+  <img class="drawer-thumb" src="/weather/{{ run_id }}/{{ slug }}/preview-2048.png" alt="{{ slug }}">
   <h3>{{ slug|replace('-', ' ')|title }}</h3>
   <p class="subtitle">{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }} — {{ date }}</p>
   <div class="size-options" id="size-options">
