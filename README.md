@@ -1,12 +1,12 @@
 # art.jamestannahill.com
 
-Generative art from real atmospheric data. Daily artworks derived entirely from live weather patterns — pressure, wind, temperature — translated into SVG through the lens of abstract expressionism.
+Generative art from real atmospheric data. Daily artworks derived entirely from live weather patterns — pressure, wind, temperature — rendered as high-resolution digital art through the lens of abstract expressionism.
 
 **Live:** [art.jamestannahill.com](https://art.jamestannahill.com)
 
 ## What It Does
 
-Every day, this system scans 50 weather stations across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original SVG artwork for each using Claude on Amazon Bedrock. Users can select from 11 artist inspirations — each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
+Every day, this system scans 50 weather stations across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original artwork for each — high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude on Amazon Bedrock. Users can select from 11 artist inspirations — each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
 
 A parallel pipeline extracts color palettes from Copernicus Sentinel-2 satellite imagery, building a seasonal archive of Earth's real colors as seen from 786 km above the surface.
 
@@ -24,7 +24,7 @@ Sam Francis | Gerhard Richter | Hilma af Klint | Wassily Kandinsky | Helen Frank
 | Orchestration | Step Functions, EventBridge (daily 06:00 UTC) |
 | Weather Data | Open-Meteo API (GFS/NOAA model) |
 | Satellite Imagery | Copernicus Sentinel Hub Process API (Sentinel-2 L2A) |
-| Art Generation | Amazon Bedrock (Claude Sonnet 4) → SVG → PNG preview (CairoSVG) |
+| Art Generation | Flux 1.1 Pro (PNG) + Amazon Bedrock Claude (SVG) → PNG preview (CairoSVG fallback) |
 | Color Extraction | Pillow median cut quantization |
 | Storage | S3 (versioned), DynamoDB |
 | CDN | CloudFront with OAC + CloudFront Function (index rewrite) |
@@ -44,7 +44,7 @@ EventBridge (daily 06:00 UTC)
     └── Step Function (concurrency 2)
         ├── Weather Branch
         │   ├── Weather Ingest (Open-Meteo → 50 global points → top 10 scored)
-        │   └── Weather Render ×10 (Bedrock → SVG, 7 canvas formats, 30-60+ elements)
+        │   └── Weather Render ×10 (Flux PNG or Bedrock SVG, 7 canvas formats)
         ├── Satellite Branch
         │   ├── Satellite Ingest (Sentinel Hub Process API → true-color JPEG)
         │   └── Palette Extract (median cut → 5-7 colors → Bedrock mood brief)
@@ -56,7 +56,7 @@ EventBridge (daily 06:00 UTC)
         │   └── X Poster (RSS → OAuth 1.0a posting, DynamoDB dedup)
         └── Site Rebuild
             ├── Jinja2 templates → static HTML (homepage, archive, artists, studies, map, about, privacy, terms)
-            ├── Asset copying (SVGs + satellite thumbs → site/ prefix)
+            ├── Asset copying (artwork PNGs/SVGs + satellite thumbs → site/ prefix)
             ├── sitemap.xml, robots.txt, llms.txt
             └── CloudFront invalidation
 ```
@@ -84,7 +84,7 @@ EventBridge (daily 06:00 UTC)
 | Function | Purpose |
 |----------|---------|
 | `art-weather-ingest` | Scans 50 global weather points, scores for visual drama |
-| `art-weather-render` | Bedrock SVG generation with artist-style prompts, PNG preview rendering (CairoSVG), retry on invalid SVG |
+| `art-weather-render` | Dual-mode art generation: Flux 1.1 Pro (PNG) or Bedrock Claude (SVG), PNG preview rendering (CairoSVG), artist-style prompts |
 | `art-x-poster` | RSS-driven X/Twitter posting with OAuth 1.0a (text + link, DynamoDB dedup) |
 | `art-satellite-ingest` | Sentinel Hub Process API → true-color imagery for 30 rotating locations |
 | `art-palette-extract` | Color quantization + Bedrock mood descriptions |
