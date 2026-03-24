@@ -13,29 +13,56 @@ bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
 
-CRITIC_PROMPT = """You are an art critic evaluating a generative artwork created from atmospheric weather data.
+ARTIST_FIDELITY = {
+    "sam_francis": "Sam Francis: bold saturated color fields, energetic splashes/splatters, luminous negative space, color pooling at edges. Palette: pure saturated cadmium yellow, ultramarine blue, cadmium red. White space is luminous.",
+    "gerhard_richter": "Gerhard Richter: sweeping squeegee strokes layering and revealing color beneath. Horizontal/vertical paint drags. Rich complex color layering. No discrete shapes — continuous dragged paint.",
+    "hilma_af_klint": "Hilma af Klint: mystical geometric abstraction, biomorphic spirals, circles within circles, botanical symmetry. Pastels alongside jewel tones. Gold/ochre as sacred element.",
+    "wassily_kandinsky": "Wassily Kandinsky: geometric shapes (circles, triangles, lines) in musical harmony. Bold primaries on muted backgrounds. Shapes suggest rhythm and movement.",
+    "helen_frankenthaler": "Helen Frankenthaler: stain painting — color soaked/bled into canvas. Transparent washes pooling and overlapping. No visible brushstrokes — poured, absorbed color.",
+    "piet_mondrian": "Piet Mondrian: ONLY horizontal/vertical black lines dividing primary color rectangles (red, blue, yellow) and white fields. Asymmetric balance. No curves, no diagonals, no gradients.",
+    "yayoi_kusama": "Yayoi Kusama: obsessive dots and circles, infinity nets, polka dots in vivid colors on contrasting backgrounds. Everything circular — no straight lines or angular forms.",
+    "mark_rothko": "Mark Rothko: 2-3 soft-edged horizontal color bands floating on canvas. Deeply saturated, glowing from within. No hard edges, no patterns, no detail. Reduction and contemplation.",
+    "bridget_riley": "Bridget Riley: precise geometric op art patterns creating optical movement/vibration. Undulating lines, chevrons, systematic color progressions. Mathematically controlled.",
+    "kazimir_malevich": "Kazimir Malevich: suprematist flat geometric forms (squares, circles, crosses) floating in dominant white space. Bold flat colors, no gradients, no texture. Dynamic diagonals.",
+    "lesley_tannahill": "Lesley Tannahill: dense palimpsest layers — paint over paint, scraping back, fragments emerging from abstract fields. Muted California palette (warm greys, dusty pinks, ochre). Should feel WORKED, not clean.",
+}
+
+def build_critic_prompt(artist_key=None):
+    fidelity_section = ""
+    if artist_key and artist_key in ARTIST_FIDELITY:
+        fidelity_section = f"""
+- Artist fidelity (does this look like it could be by {artist_key.replace('_', ' ').title()}? Key markers: {ARTIST_FIDELITY[artist_key]})
+"""
+    return f"""You are an art critic evaluating a generative artwork created from atmospheric weather data.
 
 Score this artwork on a scale of 1-10 across these criteria:
 - Composition (balance, use of space, visual flow)
 - Color harmony (palette cohesion, contrast, mood)
 - Complexity (detail, layering, technique)
-- Emotional impact (does it evoke a response?)
-
+- Emotional impact (does it evoke a response?){fidelity_section}
 Respond with ONLY valid JSON:
-{
+{{
   "composition": <1-10>,
   "color": <1-10>,
   "complexity": <1-10>,
-  "impact": <1-10>,
+  "impact": <1-10>,{'"artist_fidelity": <1-10>,' if artist_key else ''}
   "overall": <1-10>,
   "one_liner": "<one sentence critique>"
-}"""
+}}"""
+
+
+# Legacy fallback
+CRITIC_PROMPT = build_critic_prompt()
 
 
 def handler(event, context):
     """Score a single artwork. Called after PNG render."""
-    run_id = event["run_id"]
+    run_id = event.get("run_id", event.get("date", "unknown"))
     slug = event["slug"]
+    artist_key = event.get("artist", "")
+
+    # Build artist-aware prompt
+    prompt = build_critic_prompt(artist_key) if artist_key else CRITIC_PROMPT
 
     # Download the preview PNG
     s3_key = f"weather/{run_id}/{slug}/preview-2048.png"
@@ -64,7 +91,7 @@ def handler(event, context):
                 "role": "user",
                 "content": [
                     {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": img_b64}},
-                    {"type": "text", "text": CRITIC_PROMPT},
+                    {"type": "text", "text": prompt},
                 ],
             }],
         }),
