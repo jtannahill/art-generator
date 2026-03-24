@@ -195,15 +195,34 @@ def generate_flux(prompt, region):
         },
         method="POST",
     )
-    try:
-        resp = urllib.request.urlopen(req, timeout=30)
-        result = json.loads(resp.read())
-    except urllib.error.HTTPError as e:
-        # Replicate returns 402 but still creates the prediction
-        body = e.read()
-        result = json.loads(body)
-        if not result.get("id"):
-            raise
+    # Submit with retry on 429
+    result = None
+    for attempt in range(3):
+        try:
+            resp = urllib.request.urlopen(req, timeout=30)
+            result = json.loads(resp.read())
+            break
+        except urllib.error.HTTPError as e:
+            body = e.read()
+            if e.code == 429:
+                wait = (attempt + 1) * 15
+                print(f"Flux rate limited (429), retrying in {wait}s (attempt {attempt+1}/3)")
+                time.sleep(wait)
+                # Rebuild request (urlopen consumes it)
+                req = urllib.request.Request(
+                    "https://api.replicate.com/v1/models/black-forest-labs/flux-1.1-pro/predictions",
+                    data=payload,
+                    headers={"Authorization": f"Bearer {REPLICATE_TOKEN}", "Content-Type": "application/json"},
+                    method="POST",
+                )
+                continue
+            # Replicate returns 402 but still creates the prediction
+            result = json.loads(body)
+            if not result.get("id"):
+                raise
+            break
+    if not result or not result.get("id"):
+        raise RuntimeError("Flux submission failed after 3 retries")
     pred_url = result["urls"]["get"]
     print(f"Flux submitted: {result['id']}")
 

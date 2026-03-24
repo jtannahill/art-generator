@@ -103,8 +103,15 @@ def handler(event, context):
         text = text.split("\n", 1)[1] if "\n" in text else text[3:]
         text = text.rsplit("```", 1)[0]
 
-    scores = json.loads(text.strip())
+    try:
+        scores = json.loads(text.strip())
+    except json.JSONDecodeError:
+        import re
+        cleaned = re.sub(r",\s*([}\]])", r"\1", text.strip())
+        scores = json.loads(cleaned)
+
     overall = scores.get("overall", 5)
+    fidelity = scores.get("artist_fidelity", None)
 
     # Store score in DynamoDB
     table = dynamodb.Table(TABLE_NAME)
@@ -117,5 +124,10 @@ def handler(event, context):
         },
     )
 
-    print(f"[CRITIC] {run_id}/{slug}: {overall}/10 — {scores.get('one_liner', '')}")
-    return {"run_id": run_id, "slug": slug, "quality_score": overall, "detail": scores}
+    fidelity_msg = f", fidelity={fidelity}/10" if fidelity else ""
+    low_fidelity = fidelity is not None and int(fidelity) <= 3
+    if low_fidelity:
+        print(f"[CRITIC] LOW FIDELITY WARNING: {run_id}/{slug} scored {fidelity}/10 for artist fidelity — does not resemble {artist_key}")
+
+    print(f"[CRITIC] {run_id}/{slug}: {overall}/10{fidelity_msg} — {scores.get('one_liner', '')}")
+    return {"run_id": run_id, "slug": slug, "quality_score": overall, "artist_fidelity": fidelity, "low_fidelity": low_fidelity, "detail": scores}
