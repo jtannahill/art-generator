@@ -95,7 +95,7 @@
   {% if artwork.has_svg %}
   <a href="/weather/{{ run_id }}/{{ slug }}/artwork.svg" class="download-btn" download>Download SVG</a>
   {% endif %}
-  <a href="/weather/{{ run_id }}/{{ slug }}/preview-2048.png" class="download-btn" download>Download PNG</a>
+  <a href="/weather/{{ run_id }}/{{ slug }}/preview-4k.png" class="download-btn" download>Download PNG (4K)</a>
 </div>
 
 {% if artwork.rationale %}
@@ -150,7 +150,7 @@
     <dd>Open-Meteo API (GFS model)</dd>
     <dt>Format</dt>
     {% set cf = artwork.canvas_format|default('2048x2048') %}
-    <dd>{% if artwork.renderer == 'flux-1.1-pro' %}PNG (Flux 1.1 Pro){% else %}SVG ({{ cf.replace('x', '&times;') }} viewBox){% endif %}{% if artwork.has_svg %} + SVG vector download{% endif %}</dd>
+    <dd>{% if artwork.renderer == 'flux-1.1-pro' %}PNG 4K (Flux 1.1 Pro){% else %}SVG ({{ cf.replace('x', '&times;') }} viewBox) + PNG 4K{% endif %}{% if artwork.has_svg %} + SVG vector download{% endif %}</dd>
     <dt>Generated</dt>
     <dd>{{ artwork.created_at|default(run_id) }}</dd>
     <dt>Compute</dt>
