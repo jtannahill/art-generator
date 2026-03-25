@@ -93,9 +93,9 @@
     <span style="font-size:0.75rem; opacity:0.7;">Limited Edition &middot; Ships Worldwide</span>
   </button>
   {% if artwork.has_svg %}
-  <a href="/weather/{{ run_id }}/{{ slug }}/artwork.svg" class="download-btn" download>Download SVG</a>
+  <a href="/weather/{{ run_id }}/{{ slug }}/artwork.svg" class="download-btn" download="{{ slug }}-{{ artwork.artist|default('artwork') }}-{{ run_id }}.svg">Download SVG</a>
   {% endif %}
-  <a href="/weather/{{ run_id }}/{{ slug }}/preview-4k.png" class="download-btn" download>Download PNG (4K)</a>
+  <a href="/weather/{{ run_id }}/{{ slug }}/preview-4k.png" class="download-btn" download="{{ slug }}-{{ artwork.artist|default('artwork') }}-{{ run_id }}-4k.png">Download PNG (4K)</a>
 </div>
 
 {% if artwork.rationale %}
