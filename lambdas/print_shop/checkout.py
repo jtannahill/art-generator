@@ -1,6 +1,10 @@
 """Checkout action — creates Stripe Checkout Session."""
 
+import os
 import stripe
+import boto3
+
+BUCKET_NAME = os.environ.get("BUCKET_NAME", "art-generator-216890068001")
 
 
 def create_checkout_session(
@@ -58,3 +62,14 @@ def create_checkout_session(
     )
 
     return {"url": session.url}
+
+
+def get_print_file_url(run_id: str, slug: str) -> str:
+    """Generate a pre-signed S3 URL for the 4K print file (valid 7 days)."""
+    s3 = boto3.client("s3")
+    key = f"weather/{run_id}/{slug}/preview-4k.png"
+    return s3.generate_presigned_url(
+        "get_object",
+        Params={"Bucket": BUCKET_NAME, "Key": key},
+        ExpiresIn=604800,  # 7 days
+    )

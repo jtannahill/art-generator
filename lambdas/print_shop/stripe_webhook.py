@@ -68,6 +68,9 @@ def handle_checkout_completed(table, session: dict, tps_api_key: str) -> dict:
     # Create ORDER + SESSION lookup items
     order_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
+    # Print file is always the 4K PNG
+    print_file_s3_key = f"weather/{run_id}/{slug}/preview-4k.png"
+
     order_item = {
         "PK": f"ORDER#{order_id}", "SK": "META",
         "stripe_session_id": session_id,
@@ -78,6 +81,7 @@ def handle_checkout_completed(table, session: dict, tps_api_key: str) -> dict:
         "size_key": size_key,
         "edition_number": edition_number, "edition_limit": edition_limit,
         "price_cents": price_cents,
+        "print_file_s3_key": print_file_s3_key,
         "created_at": now,
     }
     table.put_item(Item=order_item)
