@@ -66,28 +66,20 @@ def handler(event, context):
     # If Flux failed, fall back to rendering PNG from SVG
     png_2048 = None
     png_4k = None
-    png_8k = None
     if flux_png:
         png_2048 = flux_png  # Flux output is the primary preview (~1024px)
-        # Two-pass upscale: 1024 → 4096 → 8192 for print-quality output
+        # AI upscale: 1024 → 4096 via Real-ESRGAN for print-quality output
         try:
-            print("Upscaling pass 1: 4x via Real-ESRGAN...")
+            print("Upscaling 4x via Real-ESRGAN...")
             png_4k = upscale_image(flux_png, scale=4)  # 1024 → 4096
-            print(f"Pass 1 complete: {len(png_4k)} bytes")
-            try:
-                print("Upscaling pass 2: 2x via Real-ESRGAN...")
-                png_8k = upscale_image(png_4k, scale=2)  # 4096 → 8192
-                print(f"Pass 2 complete: {len(png_8k)} bytes")
-            except Exception as e:
-                print(f"8K upscale failed (non-fatal): {e}")
+            print(f"Upscale complete: {len(png_4k)} bytes ({len(png_4k)/1024/1024:.1f} MB)")
         except Exception as e:
-            print(f"Upscale failed, using Flux original as 4K fallback: {e}")
+            print(f"Upscale failed, using Flux original as fallback: {e}")
             png_4k = flux_png
     elif svg_text and cairosvg:
         try:
             png_2048 = render_png(svg_text, 2048)
             png_4k = render_png(svg_text, 4096)
-            png_8k = render_png(svg_text, 8192)
         except Exception as e:
             print(f"PNG rendering from SVG fallback failed: {e}")
 
@@ -124,14 +116,6 @@ def handler(event, context):
             Body=png_4k,
             ContentType="image/png",
         )
-    if png_8k:
-        s3.put_object(
-            Bucket=BUCKET_NAME,
-            Key=f"{prefix}/preview-8k.png",
-            Body=png_8k,
-            ContentType="image/png",
-        )
-
     metadata = {
         "date": date,
         "run_id": run_id,
@@ -153,7 +137,6 @@ def handler(event, context):
         "canvas_format": canvas_format,
         "renderer": "flux-1.1-pro" if flux_png else "claude-svg",
         "has_svg": bool(svg_text),
-        "has_8k": bool(png_8k),
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     s3.put_object(

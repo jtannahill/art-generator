@@ -92,10 +92,7 @@
     <span style="font-size:1.1rem;">Buy Print</span>
     <span style="font-size:0.75rem; opacity:0.7;">Limited Edition &middot; Ships Worldwide</span>
   </button>
-  {% if artwork.has_8k %}
-  <a href="/weather/{{ run_id }}/{{ slug }}/preview-8k.png" class="download-btn" download="{{ slug }}-{{ artwork.artist|default('artwork') }}-{{ run_id }}-8k.png">Download PNG (8K Print)</a>
-  {% endif %}
-  <a href="/weather/{{ run_id }}/{{ slug }}/preview-4k.png" class="download-btn" download="{{ slug }}-{{ artwork.artist|default('artwork') }}-{{ run_id }}-4k.png">Download PNG (4K)</a>
+  <a href="/weather/{{ run_id }}/{{ slug }}/preview-4k.png" class="download-btn" download="{{ slug }}-{{ artwork.artist|default('artwork') }}-{{ run_id }}-4k.png">Download PNG (4K Print-Quality)</a>
   {% if artwork.has_svg %}
   <a href="/weather/{{ run_id }}/{{ slug }}/artwork.svg" class="download-btn" download="{{ slug }}-{{ artwork.artist|default('artwork') }}-{{ run_id }}-vector.svg" style="opacity:0.7;">Download Vector Interpretation (SVG)</a>
   {% endif %}
@@ -153,7 +150,7 @@
     <dd>Open-Meteo API (GFS model)</dd>
     <dt>Format</dt>
     {% set cf = artwork.canvas_format|default('2048x2048') %}
-    <dd>{% if artwork.renderer == 'flux-1.1-pro' %}PNG{% if artwork.has_8k %} 8K{% else %} 4K{% endif %} (Flux 1.1 Pro + Real-ESRGAN upscale){% else %}SVG ({{ cf.replace('x', '&times;') }} viewBox) + PNG 4K/8K{% endif %}{% if artwork.has_svg %} + SVG vector interpretation{% endif %}</dd>
+    <dd>{% if artwork.renderer == 'flux-1.1-pro' %}PNG 4K (Flux 1.1 Pro + Real-ESRGAN 4&times; upscale){% else %}SVG ({{ cf.replace('x', '&times;') }} viewBox) + PNG 4K{% endif %}{% if artwork.has_svg %} + SVG vector interpretation{% endif %}</dd>
     <dt>Generated</dt>
     <dd>{{ artwork.created_at|default(run_id) }}</dd>
     <dt>Compute</dt>
