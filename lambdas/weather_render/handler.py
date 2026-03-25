@@ -66,13 +66,28 @@ def handler(event, context):
     # If Flux failed, fall back to rendering PNG from SVG
     png_2048 = None
     png_4k = None
+    png_8k = None
     if flux_png:
-        png_2048 = flux_png  # Flux output is the primary preview
-        png_4k = flux_png    # Same image (Flux generates at 1024, high quality)
+        png_2048 = flux_png  # Flux output is the primary preview (~1024px)
+        # Two-pass upscale: 1024 → 4096 → 8192 for print-quality output
+        try:
+            print("Upscaling pass 1: 4x via Real-ESRGAN...")
+            png_4k = upscale_image(flux_png, scale=4)  # 1024 → 4096
+            print(f"Pass 1 complete: {len(png_4k)} bytes")
+            try:
+                print("Upscaling pass 2: 2x via Real-ESRGAN...")
+                png_8k = upscale_image(png_4k, scale=2)  # 4096 → 8192
+                print(f"Pass 2 complete: {len(png_8k)} bytes")
+            except Exception as e:
+                print(f"8K upscale failed (non-fatal): {e}")
+        except Exception as e:
+            print(f"Upscale failed, using Flux original as 4K fallback: {e}")
+            png_4k = flux_png
     elif svg_text and cairosvg:
         try:
             png_2048 = render_png(svg_text, 2048)
             png_4k = render_png(svg_text, 4096)
+            png_8k = render_png(svg_text, 8192)
         except Exception as e:
             print(f"PNG rendering from SVG fallback failed: {e}")
 
@@ -109,6 +124,13 @@ def handler(event, context):
             Body=png_4k,
             ContentType="image/png",
         )
+    if png_8k:
+        s3.put_object(
+            Bucket=BUCKET_NAME,
+            Key=f"{prefix}/preview-8k.png",
+            Body=png_8k,
+            ContentType="image/png",
+        )
 
     metadata = {
         "date": date,
@@ -131,6 +153,7 @@ def handler(event, context):
         "canvas_format": canvas_format,
         "renderer": "flux-1.1-pro" if flux_png else "claude-svg",
         "has_svg": bool(svg_text),
+        "has_8k": bool(png_8k),
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     s3.put_object(
@@ -244,6 +267,76 @@ def generate_flux(prompt, region):
             raise RuntimeError(f"Flux failed: {status.get('error', 'unknown')}")
 
     raise RuntimeError("Flux timed out after 4 minutes")
+
+
+def upscale_image(png_bytes, scale=4):
+    """Upscale PNG via Replicate Real-ESRGAN. Returns upscaled PNG bytes."""
+    import base64
+    # Convert to data URI for Replicate
+    b64 = base64.b64encode(png_bytes).decode()
+    data_uri = f"data:image/png;base64,{b64}"
+
+    payload = json.dumps({
+        "input": {
+            "image": data_uri,
+            "scale": scale,
+            "face_enhance": False,
+        }
+    }).encode()
+
+    req = urllib.request.Request(
+        "https://api.replicate.com/v1/models/nightmareai/real-esrgan/predictions",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {REPLICATE_TOKEN}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+
+    # Submit with retry on 429
+    result = None
+    for attempt in range(3):
+        try:
+            resp = urllib.request.urlopen(req, timeout=30)
+            result = json.loads(resp.read())
+            break
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                wait = (attempt + 1) * 15
+                print(f"Upscale rate limited (429), retrying in {wait}s")
+                time.sleep(wait)
+                req = urllib.request.Request(
+                    "https://api.replicate.com/v1/models/nightmareai/real-esrgan/predictions",
+                    data=payload,
+                    headers={"Authorization": f"Bearer {REPLICATE_TOKEN}", "Content-Type": "application/json"},
+                    method="POST",
+                )
+                continue
+            raise
+    if not result or not result.get("id"):
+        raise RuntimeError("Upscale submission failed")
+
+    pred_url = result["urls"]["get"]
+    print(f"Upscale submitted: {result['id']} (scale={scale}x)")
+
+    # Poll for completion (up to 5 minutes)
+    for _ in range(60):
+        time.sleep(5)
+        status_req = urllib.request.Request(
+            pred_url,
+            headers={"Authorization": f"Bearer {REPLICATE_TOKEN}"},
+        )
+        status = json.loads(urllib.request.urlopen(status_req, timeout=30).read())
+        if status["status"] == "succeeded":
+            img_url = status["output"]
+            if isinstance(img_url, list):
+                img_url = img_url[0]
+            return urllib.request.urlopen(img_url, timeout=60).read()
+        elif status["status"] == "failed":
+            raise RuntimeError(f"Upscale failed: {status.get('error', 'unknown')}")
+
+    raise RuntimeError("Upscale timed out after 5 minutes")
 
 
 def build_flux_prompt(region):

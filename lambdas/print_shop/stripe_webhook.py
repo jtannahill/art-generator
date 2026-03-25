@@ -68,8 +68,13 @@ def handle_checkout_completed(table, session: dict, tps_api_key: str) -> dict:
     # Create ORDER + SESSION lookup items
     order_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
-    # Print file is always the 4K PNG
-    print_file_s3_key = f"weather/{run_id}/{slug}/preview-4k.png"
+    # Print file — prefer 8K (print-quality), fall back to 4K
+    print_file_s3_key = f"weather/{run_id}/{slug}/preview-8k.png"
+    try:
+        import boto3 as _b3
+        _b3.client("s3").head_object(Bucket="art-generator-216890068001", Key=print_file_s3_key)
+    except Exception:
+        print_file_s3_key = f"weather/{run_id}/{slug}/preview-4k.png"
 
     order_item = {
         "PK": f"ORDER#{order_id}", "SK": "META",
