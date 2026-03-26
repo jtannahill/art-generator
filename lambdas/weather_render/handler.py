@@ -512,9 +512,13 @@ def generate_rationale(region):
 
 def _convert_dynamo(val):
     """Convert floats to Decimal-safe strings for DynamoDB."""
+    from decimal import Decimal
     if isinstance(val, float):
-        from decimal import Decimal
         return Decimal(str(val))
+    if isinstance(val, dict):
+        return {k: _convert_dynamo(v) for k, v in val.items()}
+    if isinstance(val, list):
+        return [_convert_dynamo(v) for v in val]
     return val
 
 
