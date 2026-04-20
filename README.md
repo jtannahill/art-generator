@@ -6,7 +6,7 @@ Generative art from real atmospheric data. Daily artworks derived entirely from 
 
 ## What It Does
 
-Every day, this system scans 50 weather stations across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original artwork for each — high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude on Amazon Bedrock. Users can select from 11 artist inspirations — each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
+Every day, this system scans 50 weather stations across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original artwork for each — high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude on Amazon Bedrock. Users can select from 15 artist inspirations — each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
 
 A parallel pipeline extracts color palettes from Copernicus Sentinel-2 satellite imagery, building a seasonal archive of Earth's real colors as seen from 786 km above the surface.
 
@@ -14,7 +14,7 @@ Every piece is permanently archived, browsable via infinite-scroll artist galler
 
 ## Artists
 
-Sam Francis | Gerhard Richter | Hilma af Klint | Wassily Kandinsky | Helen Frankenthaler | Piet Mondrian | Yayoi Kusama | Mark Rothko | Bridget Riley | Kazimir Malevich | Lesley Tannahill
+Sam Francis | Gerhard Richter | Hilma af Klint | Wassily Kandinsky | Helen Frankenthaler | Piet Mondrian | Yayoi Kusama | Mark Rothko | Bridget Riley | Kazimir Malevich | Lesley Tannahill | Arshile Gorky | Willem de Kooning | Joan Mitchell | Mark Tobey
 
 ## Stack
 

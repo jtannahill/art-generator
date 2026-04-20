@@ -49,6 +49,27 @@ REGION_NAMES = [
 
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 
+# Per-artist preferred latitude bands. Locations outside the range are penalised
+# so they only win if their weather signal is dramatically stronger than in-range options.
+# lat_range: (min_lat, max_lat) inclusive. outside_penalty: multiplier applied to score.
+ARTIST_GEO_BIAS = {
+    "hilma_af_klint":      {"lat_range": (20,  60), "outside_penalty": 0.35},  # spiritual/botanical → temperate
+    "helen_frankenthaler": {"lat_range": (-30, 50), "outside_penalty": 0.50},  # stain painting → warm/coastal
+    "yayoi_kusama":        {"lat_range": (-30, 40), "outside_penalty": 0.40},  # cosmic dots → tropical/subtropical
+    "sam_francis":         {"lat_range": (20,  60), "outside_penalty": 0.50},  # California color → mid-lat
+    "lesley_tannahill":    {"lat_range": (20,  60), "outside_penalty": 0.50},  # CA conceptual → mid-lat
+    "gerhard_richter":     {"lat_range": (40,  70), "outside_penalty": 0.75},  # Northern European, flexible
+    "mark_rothko":         {"lat_range": (30,  70), "outside_penalty": 0.75},  # contemplative, flexible
+    "wassily_kandinsky":   {"lat_range": (30,  70), "outside_penalty": 0.75},  # dynamic, flexible
+    "bridget_riley":       {"lat_range": (30,  65), "outside_penalty": 0.75},  # op art, flexible
+    "piet_mondrian":       {"lat_range": (35,  65), "outside_penalty": 0.75},  # neoplasticism, flexible
+    "kazimir_malevich":    {"lat_range": (50,  90), "outside_penalty": 0.70},  # suprematism — polar/cosmic is fine
+    "arshile_gorky":       {"lat_range": (25,  60), "outside_penalty": 0.60},  # biomorphic surrealism — temperate/warm
+    "willem_de_kooning":   {"lat_range": (35,  65), "outside_penalty": 0.70},  # NYC/East Hampton coastal energy
+    "joan_mitchell":       {"lat_range": (35,  65), "outside_penalty": 0.70},  # Paris/Vétheuil + American landscape
+    "mark_tobey":          {"lat_range": (40,  70), "outside_penalty": 0.75},  # Seattle/Basel — northern, introspective
+}
+
 
 def handler(event, context):
     """Lambda entry point. Fetches weather for global grid, scores, returns top 10."""
@@ -72,23 +93,24 @@ def handler(event, context):
 
     print(f"Fetched weather for {len(all_weather)} locations")
 
-    # Score and rank
-    regions = score_regions(all_weather)
-
-    # Generate unique run ID for this generation
-    run_id = now.strftime("%Y-%m-%d-%H%M%S")
-
-    # Rotate artist daily — cycle through all 11 artists by day-of-year
+    # Rotate artist daily — must happen before scoring so geo bias can be applied
     ARTISTS = [
         "sam_francis", "gerhard_richter", "hilma_af_klint",
         "wassily_kandinsky", "helen_frankenthaler", "piet_mondrian",
         "yayoi_kusama", "mark_rothko", "bridget_riley",
         "kazimir_malevich", "lesley_tannahill",
+        "arshile_gorky", "willem_de_kooning", "joan_mitchell", "mark_tobey",
     ]
     if isinstance(event, dict) and event.get("artist"):
         artist = event["artist"]  # Allow manual override via Step Function input
     else:
         artist = ARTISTS[now.timetuple().tm_yday % len(ARTISTS)]
+
+    # Score and rank with artist-aware geo bias
+    regions = score_regions(all_weather, artist=artist)
+
+    # Generate unique run ID for this generation
+    run_id = now.strftime("%Y-%m-%d-%H%M%S")
 
     # Add metadata to each region
     for r in regions:
@@ -148,9 +170,12 @@ def fetch_weather(lat, lng, hour):
     }
 
 
-def score_regions(weather_data, grid_resolution=0.25):
+def score_regions(weather_data, grid_resolution=0.25, artist=None):
     """Score weather locations for visual interest.
-    Returns top 10 with minimum 15° separation."""
+    Returns top 10 with minimum 15° separation.
+    If artist is provided, applies a latitude-band penalty so locations
+    outside the artist's preferred geographic range only win when their
+    weather signal is substantially stronger than in-range alternatives."""
     if not weather_data:
         return []
 
@@ -175,6 +200,18 @@ def score_regions(weather_data, grid_resolution=0.25):
         0.15 * normalize(precips) +
         0.10 * normalize(humidities)
     )
+
+    # Artist-aware geo bias — penalise locations outside the artist's preferred lat band
+    if artist and artist in ARTIST_GEO_BIAS:
+        bias = ARTIST_GEO_BIAS[artist]
+        lat_min, lat_max = bias["lat_range"]
+        penalty = bias["outside_penalty"]
+        lats = np.array([w["lat"] for w in weather_data])
+        in_range = (lats >= lat_min) & (lats <= lat_max)
+        multipliers = np.where(in_range, 1.0, penalty)
+        scores = scores * multipliers
+        out_count = int(np.sum(~in_range))
+        print(f"Geo bias applied for {artist}: {out_count} locations penalised (outside {lat_min}°–{lat_max}°)")
 
     # Sort by score descending
     ranked = sorted(zip(scores, weather_data), key=lambda x: -x[0])

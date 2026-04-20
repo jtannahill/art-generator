@@ -4,6 +4,7 @@ import json
 import os
 import base64
 import boto3
+from decimal import Decimal
 
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "art-generator-216890068001")
 TABLE_NAME = os.environ.get("TABLE_NAME", "art-generator")
@@ -25,6 +26,10 @@ ARTIST_FIDELITY = {
     "bridget_riley": "Bridget Riley: precise geometric op art patterns creating optical movement/vibration. Undulating lines, chevrons, systematic color progressions. Mathematically controlled.",
     "kazimir_malevich": "Kazimir Malevich: suprematist flat geometric forms (squares, circles, crosses) floating in dominant white space. Bold flat colors, no gradients, no texture. Dynamic diagonals.",
     "lesley_tannahill": "Lesley Tannahill: dense palimpsest layers — paint over paint, scraping back, fragments emerging from abstract fields. Muted California palette (warm greys, dusty pinks, ochre). Should feel WORKED, not clean.",
+    "arshile_gorky": "Arshile Gorky: biomorphic forms hovering between figuration and abstraction — organic shapes dissolving at edges, neither fully figure nor fully abstract. Thin washes with dense tortured marks on top. Earth tones (ochre, sienna, umber) with surprising acid green or cerulean accents. Anguished and lyrical simultaneously.",
+    "willem_de_kooning": "Willem de Kooning: aggressive slashing brushstrokes, visceral gestural energy, flesh tones (pink, yellow, orange) colliding with blacks and whites. Paint should feel FLUNG and DRAGGED. High-chroma clashes, no peaceful passages. Fragmentary figuration dissolving into pure paint marks.",
+    "joan_mitchell": "Joan Mitchell: dense clusters of gestural brushwork in vibrant saturated color (viridian green, cobalt blue, cadmium yellow) against luminous open ground. Marks grouped and blooming like memory of landscape. Loaded paint, physical presence, exuberant color — never muddy. Emotional directness.",
+    "mark_tobey": "Mark Tobey: dense networks of white/cream calligraphic marks on dark grounds (blue-black, umber-black). All-over composition — no focal point, every inch equally alive with teeming marks. Highly restrained palette (dark ground + white writing). Should feel like looking at city lights, cosmic networks, or spiritual illumination.",
 }
 
 def build_critic_prompt(artist_key=None):
@@ -119,7 +124,7 @@ def handler(event, context):
         Key={"PK": f"WEATHER#{run_id}", "SK": slug},
         UpdateExpression="SET quality_score = :qs, quality_detail = :qd",
         ExpressionAttributeValues={
-            ":qs": overall,
+            ":qs": Decimal(str(overall)),
             ":qd": json.dumps(scores),
         },
     )
