@@ -18,6 +18,10 @@ TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
 def handler(event, context):
     """Scans DynamoDB, renders all pages, uploads to S3, invalidates CloudFront."""
+    # Extract today's date from run_id if available (e.g. "2026-03-29-060044" -> "2026-03-29")
+    run_id = event.get("run_id", "")
+    today_date = run_id[:10] if run_id and len(run_id) >= 10 else None
+
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(TABLE_NAME)
     items = scan_all(table)
@@ -109,6 +113,11 @@ def handler(event, context):
         "bridget_riley": ("Bridget Riley", "https://www.tate.org.uk/art/artists/bridget-riley-1845"),
         "kazimir_malevich": ("Kazimir Malevich", "https://www.guggenheim.org/artwork/artist/kazimir-malevich"),
         "lesley_tannahill": ("Lesley Tannahill", "https://lesleytannahill.com"),
+        "arshile_gorky": ("Arshile Gorky", "https://www.guggenheim.org/artwork/artist/arshile-gorky"),
+        "willem_de_kooning": ("Willem de Kooning", "https://www.guggenheim.org/artwork/artist/willem-de-kooning"),
+        "joan_mitchell": ("Joan Mitchell", "https://www.guggenheim.org/artwork/artist/joan-mitchell"),
+        "mark_tobey": ("Mark Tobey", "https://www.guggenheim.org/artwork/artist/mark-tobey"),
+        "peter_max": ("Peter Max", "https://petermax.com"),
     }
     # Group weather items by artist for thumbnail mosaics
     artworks_by_artist = defaultdict(list)
@@ -469,7 +478,8 @@ Contact: art@jamestannahill.com
         )
 
     # Copy artwork assets into site/ prefix so CloudFront can serve them
-    _copy_assets_to_site(s3, weather_by_run, palettes_by_date)
+    # Only copy today's assets during scheduled runs — historical assets are already in site/
+    _copy_assets_to_site(s3, weather_by_run, palettes_by_date, only_date=today_date)
 
     # Invalidate CloudFront
     if DISTRIBUTION_ID:
@@ -716,10 +726,12 @@ def _latest_palettes(palettes_by_location):
     return latest
 
 
-def _copy_assets_to_site(s3, weather_by_run, palettes_by_date):
+def _copy_assets_to_site(s3, weather_by_run, palettes_by_date, only_date=None):
     """Copy artwork SVGs and palette assets into the site/ prefix for CloudFront.
-    Also renders preview PNGs from SVGs if they don't exist (for OG/Twitter cards)."""
-    for date, artworks in weather_by_run.items():
+    If only_date is set, only copies assets for that date (avoids re-copying all history)."""
+    weather_dates = {only_date: weather_by_run.get(only_date, [])} if only_date else weather_by_run
+    palette_dates = {only_date: palettes_by_date.get(only_date, [])} if only_date else palettes_by_date
+    for date, artworks in weather_dates.items():
         for artwork in artworks:
             slug = artwork.get("SK", artwork.get("slug", ""))
             src_prefix = f"weather/{date}/{slug}/"
@@ -742,7 +754,7 @@ def _copy_assets_to_site(s3, weather_by_run, palettes_by_date):
             # Note: PNGs are rendered by weather_render Lambda during generation.
             # Existing artworks without PNGs need a one-time backfill via scripts/backfill_canvas_format.py
 
-    for date, palettes in palettes_by_date.items():
+    for date, palettes in palette_dates.items():
         for palette in palettes:
             # slug is in PK (PALETTE#slug) or the slug field
             slug = palette.get("slug", "")
