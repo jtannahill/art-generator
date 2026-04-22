@@ -30,6 +30,7 @@ ARTIST_FIDELITY = {
     "willem_de_kooning": "Willem de Kooning: aggressive slashing brushstrokes, visceral gestural energy, flesh tones (pink, yellow, orange) colliding with blacks and whites. Paint should feel FLUNG and DRAGGED. High-chroma clashes, no peaceful passages. Fragmentary figuration dissolving into pure paint marks.",
     "joan_mitchell": "Joan Mitchell: dense clusters of gestural brushwork in vibrant saturated color (viridian green, cobalt blue, cadmium yellow) against luminous open ground. Marks grouped and blooming like memory of landscape. Loaded paint, physical presence, exuberant color — never muddy. Emotional directness.",
     "mark_tobey": "Mark Tobey: dense networks of white/cream calligraphic marks on dark grounds (blue-black, umber-black). All-over composition — no focal point, every inch equally alive with teeming marks. Highly restrained palette (dark ground + white writing). Should feel like looking at city lights, cosmic networks, or spiritual illumination.",
+    "peter_max": "Peter Max: bold heavy continuous black outlines on all forms, DayGlo full-spectrum neons (hot magenta, electric yellow, acid green, cobalt blue, vivid orange, UV violet) on black cosmic ground. Recognizable cosmic imagery — Earth as glowing orb, rainbow arcs, starfields, hearts. Maximum saturation, psychedelic 60s energy. Every line connects — flow-of-the-line draftsmanship. Zero subtlety, unapologetic neon joy.",
 }
 
 def build_critic_prompt(artist_key=None):

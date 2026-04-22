@@ -677,6 +677,12 @@ ARTIST_PROFILES = {
         "negative": "NOT hard-edged geometric, NOT figural, NOT colorful (highly restrained palette), NOT photorealistic. No single focal point or compositional hierarchy — this is rigorously all-over. NOT bold or aggressive — Tobey is introspective and meditative. NOT sparse or minimal.",
         "palette_guidance": "Dark grounds: blue-black, umber-black, charcoal, deep indigo. Marks: cream white, silver white, warm ochre-white. Occasional very subtle color whispers (pale blue, muted gold). 85%+ tonal — the quality of the mark matters more than color.",
     },
+    "peter_max": {
+        "description": "Peter Max — psychedelic 1960s poster art with bold continuous heavy outlines, DayGlo full-spectrum neon colors, and cosmic optimism. Earth as a radiant glowing orb floating in starfields. Rainbow arcs sweeping the sky, hearts, cosmic symbols, and vibrating neon palette. Creator of the first Earth Day poster (1970). Every line connects — no broken strokes — flow-of-the-line draftsmanship at full volume.",
+        "weather_mapping": "Wind speed drives the sweep of rainbow arcs — strong wind = arcs spanning the full canvas with trailing neon contrails. Pressure maps to cosmic density — low pressure = expansive starfields and floating Earth orb with room to breathe; high pressure = densely packed neon forms crowding the canvas with urgent energy. Temperature drives neon intensity — heat = electric hot pinks, magentas, acid yellows dominating; cold = electric blues, cyans, purples glowing against black cosmos. Precipitation adds streaks of neon rain and cascading color rivers. Humidity controls the glow halo radiating from the Earth orb and celestial bodies.",
+        "negative": "NOT photorealistic, NOT subtle, NOT pastel, NOT muted, NOT minimal. No thin or broken lines — outlines are HEAVY and continuous. No earth tones, no browns, no greys. Not purely abstract — forms should be recognizable as cosmic shapes (Earth, stars, rainbows, hearts) rendered in neon. NOT Rothko-style reduction — this is maximalist, joyful, and packed with imagery.",
+        "palette_guidance": "Full-spectrum DayGlo neons: hot magenta, electric yellow, acid green, cobalt blue, vivid orange, UV violet. Black cosmic ground to make neons vibrate at maximum intensity. Bold heavy black outlines defining every form. Colors should feel like they glow under blacklight — maximum saturation, zero subtlety, unapologetic psychedelic joy.",
+    },
 }
 
 # Legacy compat — ARTIST_PROMPTS still used in some paths

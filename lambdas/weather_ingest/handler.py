@@ -68,6 +68,7 @@ ARTIST_GEO_BIAS = {
     "willem_de_kooning":   {"lat_range": (35,  65), "outside_penalty": 0.70},  # NYC/East Hampton coastal energy
     "joan_mitchell":       {"lat_range": (35,  65), "outside_penalty": 0.70},  # Paris/Vétheuil + American landscape
     "mark_tobey":          {"lat_range": (40,  70), "outside_penalty": 0.75},  # Seattle/Basel — northern, introspective
+    "peter_max":           {"lat_range": (20,  60), "outside_penalty": 0.50},  # California cosmic — mid-lat
 }
 
 
@@ -100,9 +101,12 @@ def handler(event, context):
         "yayoi_kusama", "mark_rothko", "bridget_riley",
         "kazimir_malevich", "lesley_tannahill",
         "arshile_gorky", "willem_de_kooning", "joan_mitchell", "mark_tobey",
+        "peter_max",
     ]
     if isinstance(event, dict) and event.get("artist"):
         artist = event["artist"]  # Allow manual override via Step Function input
+    elif now.month == 4 and now.day == 22:
+        artist = "peter_max"  # Earth Day — Peter Max created the first Earth Day poster (1970)
     else:
         artist = ARTISTS[now.timetuple().tm_yday % len(ARTISTS)]
 
