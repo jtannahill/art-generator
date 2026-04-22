@@ -68,7 +68,7 @@ ARTIST_GEO_BIAS = {
     "willem_de_kooning":   {"lat_range": (35,  65), "outside_penalty": 0.70},  # NYC/East Hampton coastal energy
     "joan_mitchell":       {"lat_range": (35,  65), "outside_penalty": 0.70},  # Paris/Vétheuil + American landscape
     "mark_tobey":          {"lat_range": (40,  70), "outside_penalty": 0.75},  # Seattle/Basel — northern, introspective
-    "peter_max":           {"lat_range": (20,  60), "outside_penalty": 0.50},  # California cosmic — mid-lat
+    "peter_max":           {"lat_range": (10,  80), "outside_penalty": 0.50},  # cosmic/psychedelic — works globally
 }
 
 
