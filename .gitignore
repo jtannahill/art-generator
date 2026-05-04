@@ -44,3 +44,8 @@ lambdas/*/s3transfer/
 lambdas/*/six.py
 lambdas/*/urllib3/
 lambdas/*/pillow.libs/
+
+# Lambda deployment artifacts
+lambdas/*/handler.zip
+lambdas/*/deploy.zip
+lambdas/*/package/

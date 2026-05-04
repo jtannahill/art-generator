@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ palettes[0].name|default(location)|replace('-', ' ')|title }} — Satellite Palettes — art.jt{% endblock %}
+{% block title %}{{ palettes[0].name|default(location)|replace('-', ' ')|title }} - Satellite Palettes - art.jt{% endblock %}
 {% block description %}Color palettes extracted from Copernicus Sentinel-2 satellite imagery of {{ palettes[0].name|default(location)|replace('-', ' ')|title }}. Seasonal color archive from space.{% endblock %}
 {% block canonical_path %}/palettes/{{ location }}/{% endblock %}
 
@@ -27,7 +27,7 @@
     </div>
   </div>
   <div class="card-body">
-    <h3>{{ item.SK }} — {{ item.season|default('') | title }}</h3>
+    <h3>{{ item.SK }} - {{ item.season|default('') | title }}</h3>
 
     {% if item.mood %}
     <p style="font-style:italic; color:#aaa; margin-bottom:1rem; line-height:1.7;" class="tip" data-tip="Mood descriptions are AI-generated from the extracted palette colors using Claude on Amazon Bedrock. They interpret the aesthetic character of the landscape based on its dominant colors.">{{ item.mood }}</p>
@@ -55,7 +55,7 @@
         <dt>Date</dt>
         <dd>{{ item.SK }}</dd>
         <dt>Season</dt>
-        <dd>{{ item.season|default('—')|title }}</dd>
+        <dd>{{ item.season|default('-')|title }}</dd>
         {% if item.cloud_cover is defined and item.cloud_cover is not none %}
         <dt>Cloud Cover</dt>
         <dd>{{ item.cloud_cover }}%</dd>
@@ -71,7 +71,7 @@
         <dt>Source</dt>
         <dd>Copernicus Sentinel-2 L2A (European Space Agency)</dd>
         <dt>Bands</dt>
-        <dd>B04 (Red), B03 (Green), B02 (Blue) — true color composite</dd>
+        <dd>B04 (Red), B03 (Green), B02 (Blue) - true color composite</dd>
         <dt>Resolution</dt>
         <dd>10m ground resolution, rendered at 512×512px</dd>
         <dt>Extraction</dt>

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Duets — art.jt{% endblock %}
+{% block title %}Duets - art.jt{% endblock %}
 {% block description %}Same weather, two artists. See how different aesthetic frameworks interpret identical atmospheric conditions.{% endblock %}
 {% block canonical_path %}/duets/{% endblock %}
 
@@ -9,7 +9,7 @@
 {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "Duets — Same Weather, Two Artists",
+  "name": "Duets - Same Weather, Two Artists",
   "url": "https://art.jamestannahill.com/duets/",
   "description": "Side-by-side comparisons of how two artists interpret identical atmospheric conditions."
 }
@@ -24,8 +24,8 @@
 
 <h1>Duets</h1>
 <p style="color:#888; margin-bottom:2rem; max-width:720px;">
-  Same atmospheric data, two artistic lenses. Each pair shows how different aesthetic frameworks —
-  Rothko's luminous fields vs Kusama's obsessive dots, Francis's explosive splatters vs Mondrian's rigid geometry —
+  Same atmospheric data, two artistic lenses. Each pair shows how different aesthetic frameworks -
+  Rothko's luminous fields vs Kusama's obsessive dots, Francis's explosive splatters vs Mondrian's rigid geometry -
   produce radically different interpretations of identical weather conditions.
 </p>
 
@@ -35,7 +35,7 @@
   <div style="padding:1rem 1.5rem; border-bottom:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
     <div>
       <h3 style="margin:0; color:#fff;">{{ duet.location }}</h3>
-      <p style="color:#888; font-size:0.85rem; margin:0;">{{ duet.coords }} · <span class="tip-inline" data-tip="Drives color palette — extremes intensify hues">{{ duet.temp }}°C</span> · <span class="tip-inline" data-tip="Drives kinetic energy — strong wind = dynamic movement">{{ duet.wind }} m/s</span> · <span class="tip-inline" data-tip="Atmospheric weight — deep lows compress the composition">{{ duet.pressure }} hPa</span></p>
+      <p style="color:#888; font-size:0.85rem; margin:0;">{{ duet.coords }} · <span class="tip-inline" data-tip="Drives color palette - extremes intensify hues">{{ duet.temp }}°C</span> · <span class="tip-inline" data-tip="Drives kinetic energy - strong wind = dynamic movement">{{ duet.wind }} m/s</span> · <span class="tip-inline" data-tip="Atmospheric weight - deep lows compress the composition">{{ duet.pressure }} hPa</span></p>
     </div>
     <span style="color:#555; font-size:0.8rem;">{{ duet.date }}</span>
   </div>
@@ -62,7 +62,7 @@
 {% else %}
 <div style="padding:3rem; text-align:center; background:#111; border:1px solid #222; border-radius:8px;">
   <p style="color:#888; font-size:1.1rem; margin-bottom:0.5rem;">Duets will appear as more artist variations are generated.</p>
-  <p style="color:#555;">Generate art in different artist styles from the homepage — when two artists share the same weather location, they'll be paired here automatically.</p>
+  <p style="color:#555;">Generate art in different artist styles from the homepage - when two artists share the same weather location, they'll be paired here automatically.</p>
 </div>
 {% endif %}
 {% endblock %}

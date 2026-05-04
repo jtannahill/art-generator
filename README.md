@@ -1,12 +1,12 @@
 # art.jamestannahill.com
 
-Generative art from real atmospheric data. Daily artworks derived entirely from live weather patterns — pressure, wind, temperature — rendered as high-resolution digital art through the lens of abstract expressionism.
+Generative art from real atmospheric data. Daily artworks derived entirely from live weather patterns - pressure, wind, temperature - rendered as high-resolution digital art through the lens of abstract expressionism.
 
 **Live:** [art.jamestannahill.com](https://art.jamestannahill.com)
 
 ## What It Does
 
-Every day, this system scans 50 weather stations across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original artwork for each — high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude on Amazon Bedrock. Users can select from 15 artist inspirations — each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
+Every day, this system scans 50 weather stations across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original artwork for each - high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude on Amazon Bedrock. Users can select from 15 artist inspirations - each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
 
 A parallel pipeline extracts color palettes from Copernicus Sentinel-2 satellite imagery, building a seasonal archive of Earth's real colors as seen from 786 km above the surface.
 
@@ -66,7 +66,7 @@ EventBridge (daily 06:00 UTC)
 | Page | Path | Description |
 |------|------|-------------|
 | Homepage | `/` | Latest generation + Generate button with artist selector |
-| Artists | `/artist/` | Browse by artist — mosaic thumbnails from latest works |
+| Artists | `/artist/` | Browse by artist - mosaic thumbnails from latest works |
 | Artist Gallery | `/artist/{key}/` | Infinite scroll gallery via API |
 | Archive | `/weather/` | All runs chronologically with artist labels |
 | Run | `/weather/{run_id}/` | Single generation (10 pieces) |
@@ -103,7 +103,7 @@ EventBridge (daily 06:00 UTC)
 
 - **Schema.org**: `WebSite`, `VisualArtwork` (per piece with geo, medium, license), `AboutPage`, `Person`
 - **Open Graph + Twitter Cards**: unique title, description, PNG preview image per artwork page
-- **RSS Feed**: `/feed.xml` — latest artworks for social syndication (dlvr.it → X/IG)
+- **RSS Feed**: `/feed.xml` - latest artworks for social syndication (dlvr.it → X/IG)
 - **Canonical URLs**: prevent duplicate content across runs
 - **robots.txt**: allows all crawlers, sitemap reference
 - **sitemap.xml**: dynamic, all pages + all artwork

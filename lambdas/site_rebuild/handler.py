@@ -42,7 +42,19 @@ def handler(event, context):
     palettes_by_date = group_palette_by_date(palette_items)
 
     # Set up Jinja2
-    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
+    def _no_dash(value):
+        if isinstance(value, str):
+            return (value
+                .replace(" — ", " - ")
+                .replace(" – ", " - ")
+                .replace("— ", "- ")
+                .replace(" —", " -")
+                .replace("– ", "- ")
+                .replace(" –", " -")
+                .replace("—", "-")
+                .replace("–", "-"))
+        return value
+    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True, finalize=_no_dash)
 
     def format_coords(lat, lng):
         """Format lat/lng as '15°S, 70°W'."""

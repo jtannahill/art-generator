@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ artist_display }} — art.jt{% endblock %}
+{% block title %}{{ artist_display }} - art.jt{% endblock %}
 {% block description %}Generative weather art inspired by {{ artist_display }}. Each piece interprets real atmospheric data through this artist's visual language.{% endblock %}
 {% block canonical_path %}/artist/{{ artist_key }}/{% endblock %}
 
@@ -9,7 +9,7 @@
 {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "{{ artist_display }} — Generative Weather Art",
+  "name": "{{ artist_display }} - Generative Weather Art",
   "url": "https://art.jamestannahill.com/artist/{{ artist_key }}/",
   "description": "Generative weather art inspired by {{ artist_display }}. Each piece interprets real atmospheric data through this artist's visual language.",
   "isPartOf": {"@type": "WebSite", "url": "https://art.jamestannahill.com"}

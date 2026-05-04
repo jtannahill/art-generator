@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}{{ slug|replace('-', ' ')|title }} — {{ date }} — art.jt{% endblock %}
+{% block title %}{{ slug|replace('-', ' ')|title }} - {{ date }} - art.jt{% endblock %}
 
 {% set run_id = artwork.run_id|default(date) %}
 
 {% block description %}{{ artwork.rationale|default('Generative weather art from atmospheric data at ' ~ slug|replace('-', ' ')|title)|truncate(155) }}{% endblock %}
 {% block canonical_path %}/weather/{{ run_id }}/{{ slug }}/{% endblock %}
 {% block og_type %}article{% endblock %}
-{% block og_title %}{{ slug|replace('-', ' ')|title }} — Weather Art — {{ date }}{% endblock %}
+{% block og_title %}{{ slug|replace('-', ' ')|title }} - Weather Art - {{ date }}{% endblock %}
 {% block og_description %}{{ artwork.rationale|default('Generative weather art')|truncate(200) }}{% endblock %}
 {% block og_url %}/weather/{{ run_id }}/{{ slug }}/{% endblock %}
 {% block og_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/preview-2048.png{% endblock %}
-{% block twitter_title %}{{ slug|replace('-', ' ')|title }} — Weather Art{% endblock %}
+{% block twitter_title %}{{ slug|replace('-', ' ')|title }} - Weather Art{% endblock %}
 {% block twitter_description %}{{ artwork.rationale|default('Generative weather art')|truncate(200) }}{% endblock %}
 {% block twitter_card %}summary_large_image{% endblock %}
 {% block twitter_image %}https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/preview-2048.png{% endblock %}
@@ -21,12 +21,12 @@
 {
   "@context": "https://schema.org",
   "@type": "VisualArtwork",
-  "name": "{{ slug|replace('-', ' ')|title }} — {{ date }}",
+  "name": "{{ slug|replace('-', ' ')|title }} - {{ date }}",
   "description": "{{ artwork.rationale|default('')|replace('"', '\\"') }}",
   "url": "https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/",
   "image": "https://art.jamestannahill.com/weather/{{ run_id }}/{{ slug }}/preview-2048.png",
   "dateCreated": "{{ artwork.created_at|default(date) }}",
-  "artMedium": "Digital — generative art from atmospheric data{% if artwork.renderer == 'flux-1.1-pro' %} (Flux 1.1 Pro){% else %} (SVG){% endif %}",
+  "artMedium": "Digital - generative art from atmospheric data{% if artwork.renderer == 'flux-1.1-pro' %} (Flux 1.1 Pro){% else %} (SVG){% endif %}",
   "artform": "Generative Art",
   "artworkSurface": "Digital",
   {% set dims = (artwork.canvas_format|default('2048x2048')).split('x') %}
@@ -125,14 +125,14 @@
     {% endif %}
     {% if artwork.temp is defined and artwork.temp %}
     <dt><span class="tip" data-tip="Surface temperature shapes the color palette. Extreme heat pushes toward vivid, saturated hues. Deep cold pulls toward stark contrasts and crystalline forms.">Temperature</span></dt>
-    <dd>{{ artwork.temp }}&deg;C (<span class="tip" data-tip="Deviation from the average temperature at this latitude. Large anomalies — unusual heat or cold — intensify the visual drama and color saturation.">anomaly: {{ artwork.temp_anomaly|default('') }}&deg;C</span>)</dd>
+    <dd>{{ artwork.temp }}&deg;C (<span class="tip" data-tip="Deviation from the average temperature at this latitude. Large anomalies - unusual heat or cold - intensify the visual drama and color saturation.">anomaly: {{ artwork.temp_anomaly|default('') }}&deg;C</span>)</dd>
     {% endif %}
     {% if artwork.humidity is defined and artwork.humidity %}
     <dt><span class="tip" data-tip="Atmospheric moisture content. High humidity softens edges, blends colors, and creates diffuse, atmospheric layering. Dry air sharpens boundaries and adds clarity.">Humidity</span></dt>
     <dd>{{ artwork.humidity }}%</dd>
     {% endif %}
     {% if artwork.precipitation is defined and artwork.precipitation %}
-    <dt><span class="tip" data-tip="Active rainfall or snowfall. Precipitation adds textural density — dripping, pooling, and layered opacity effects that echo water moving through the atmosphere.">Precipitation</span></dt>
+    <dt><span class="tip" data-tip="Active rainfall or snowfall. Precipitation adds textural density - dripping, pooling, and layered opacity effects that echo water moving through the atmosphere.">Precipitation</span></dt>
     <dd>{{ artwork.precipitation }} mm</dd>
     {% endif %}
     {% if artwork.score is defined and artwork.score %}
@@ -174,7 +174,7 @@
   <button class="drawer-close" onclick="closePrintDrawer()">&times;</button>
   <img class="drawer-thumb" src="/weather/{{ run_id }}/{{ slug }}/preview-2048.png" alt="{{ slug }}">
   <h3>{{ slug|replace('-', ' ')|title }}</h3>
-  <p class="subtitle">{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }} — {{ date }}</p>
+  <p class="subtitle">{{ artwork.artist|default('sam_francis')|replace('_', ' ')|title }} - {{ date }}</p>
   <div class="size-options" id="size-options">
     <p style="color:#666;">Loading sizes...</p>
   </div>
@@ -223,7 +223,7 @@ function loadEditions() {
         div.onclick = function() { selectSize(key, s.price_cents); };
         div.innerHTML =
           '<div>' +
-            '<div class="size-label">' + key + ' — ' + s.dims + '"</div>' +
+            '<div class="size-label">' + key + ' - ' + s.dims + '"</div>' +
             '<div class="size-edition">' + s.sold + ' of ' + s.limit + ' sold</div>' +
           '</div>' +
           '<div>' +
@@ -245,7 +245,7 @@ function selectSize(key, priceCents) {
   });
   var btn = document.getElementById('checkout-btn');
   btn.disabled = false;
-  btn.textContent = 'Checkout — $' + (priceCents / 100).toFixed(0);
+  btn.textContent = 'Checkout - $' + (priceCents / 100).toFixed(0);
 }
 
 function checkout() {
@@ -263,13 +263,13 @@ function checkout() {
     if (data.url) {
       window.location.href = data.url;
     } else {
-      btn.textContent = data.error === 'sold_out' ? 'Sold Out' : 'Error — try again';
+      btn.textContent = data.error === 'sold_out' ? 'Sold Out' : 'Error - try again';
       setTimeout(function() { btn.disabled = false; btn.textContent = 'Checkout'; }, 3000);
     }
   })
   .catch(function() {
     btn.disabled = false;
-    btn.textContent = 'Error — try again';
+    btn.textContent = 'Error - try again';
   });
 }
 </script>

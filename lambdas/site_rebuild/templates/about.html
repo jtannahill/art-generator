@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}About — art.jt{% endblock %}
-{% block description %}How generative weather art is made — real atmospheric data, 54 global scan points, AI interpretation through 11 artist lenses, natural scarcity from unrepeatable weather events. By James Tannahill.{% endblock %}
+{% block title %}About - art.jt{% endblock %}
+{% block description %}How generative weather art is made - real atmospheric data, 54 global scan points, AI interpretation through 11 artist lenses, natural scarcity from unrepeatable weather events. By James Tannahill.{% endblock %}
 {% block canonical_path %}/about/{% endblock %}
-{% block og_title %}About — art.jt{% endblock %}
+{% block og_title %}About - art.jt{% endblock %}
 {% block og_description %}Generative art from real atmospheric data, inspired by abstract expressionism.{% endblock %}
 {% block og_url %}/about/{% endblock %}
 
@@ -34,15 +34,15 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "Is the AI trained on these artists' work?", "acceptedAnswer": {"@type": "Answer", "text": "No. The AI model's understanding comes from art criticism and public discourse about these artists. Each artist is described in a text prompt. The model never sees their paintings. It writes SVG code from scratch based on the atmospheric data."}},
-    {"@type": "Question", "name": "Is the weather data real?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every piece is generated from live atmospheric measurements — pressure, wind speed, temperature, humidity, and precipitation from NOAA's Global Forecast System via the Open-Meteo API. The raw data is archived alongside each artwork."}},
+    {"@type": "Question", "name": "Is the weather data real?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every piece is generated from live atmospheric measurements - pressure, wind speed, temperature, humidity, and precipitation from NOAA's Global Forecast System via the Open-Meteo API. The raw data is archived alongside each artwork."}},
     {"@type": "Question", "name": "Can the same artwork be created twice?", "acceptedAnswer": {"@type": "Answer", "text": "No. Each artwork is generated from a unique combination of atmospheric conditions at a specific location and moment in time. Weather never repeats exactly, so neither does the art."}},
     {"@type": "Question", "name": "How are the 10 daily locations chosen?", "acceptedAnswer": {"@type": "Answer", "text": "54 points across the globe are scanned every day. A composite visual interest score ranks them by pressure anomaly (30%), wind speed (25%), temperature deviation (20%), precipitation (15%), and humidity (10%). The top 10 with at least 15 degrees of geographic separation become that day's subjects."}},
-    {"@type": "Question", "name": "Can I buy a print?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every artwork page has a print shop — just click any artwork and look for the print option. Limited edition giclée prints on Hahnemühle German Etching 310gsm, edition of 5 per size, with Certificate of Authenticity. Ships worldwide via theprintspace. <a href="/weather/" style="color:#8ab4f8;">Browse the archive</a> to find your piece."}},
+    {"@type": "Question", "name": "Can I buy a print?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every artwork page has a print shop - just click any artwork and look for the print option. Limited edition giclée prints on Hahnemühle German Etching 310gsm, edition of 5 per size, with Certificate of Authenticity. Ships worldwide via theprintspace. <a href="/weather/" style="color:#8ab4f8;">Browse the archive</a> to find your piece."}},
     {"@type": "Question", "name": "Can I suggest a new artist?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Visit the Artists page and use the suggestion form at the bottom, or email art@jamestannahill.com."}},
-    {"@type": "Question", "name": "What are the satellite palettes?", "acceptedAnswer": {"@type": "Answer", "text": "A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes — the actual colors of Earth as seen from orbit."}},
+    {"@type": "Question", "name": "What are the satellite palettes?", "acceptedAnswer": {"@type": "Answer", "text": "A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes - the actual colors of Earth as seen from orbit."}},
     {"@type": "Question", "name": "Why do print prices vary between artworks?", "acceptedAnswer": {"@type": "Answer", "text": "Prices reflect three signals: the AI critic's quality score, the rarity of the weather conditions, and how many editions have sold. Exceptional pieces from extreme weather can be priced up to 2x the base price."}},
-    {"@type": "Question", "name": "What makes each artwork unique?", "acceptedAnswer": {"@type": "Answer", "text": "Every artwork is generated from a one-time atmospheric event — a specific combination of pressure, wind, temperature, and precipitation at a specific location and moment. That weather will never occur again. The atmospheric data is archived and verifiable against NOAA public records. Limited edition prints (5 per size) add physical scarcity on top of natural scarcity."}},
-    {"@type": "Question", "name": "Can I use the artwork commercially?", "acceptedAnswer": {"@type": "Answer", "text": "Artwork is licensed under CC BY-NC-ND 4.0 — free for personal use with attribution, no commercial use or derivatives. For commercial licensing, contact art@jamestannahill.com."}}
+    {"@type": "Question", "name": "What makes each artwork unique?", "acceptedAnswer": {"@type": "Answer", "text": "Every artwork is generated from a one-time atmospheric event - a specific combination of pressure, wind, temperature, and precipitation at a specific location and moment. That weather will never occur again. The atmospheric data is archived and verifiable against NOAA public records. Limited edition prints (5 per size) add physical scarcity on top of natural scarcity."}},
+    {"@type": "Question", "name": "Can I use the artwork commercially?", "acceptedAnswer": {"@type": "Answer", "text": "Artwork is licensed under CC BY-NC-ND 4.0 - free for personal use with attribution, no commercial use or derivatives. For commercial licensing, contact art@jamestannahill.com."}}
   ]
 }
 </script>
@@ -86,17 +86,17 @@
 </nav>
 
 <p style="font-size:1.15rem; color:#ddd; line-height:1.9; margin-bottom:2rem; font-style:italic;">
-The atmosphere is the oldest artist on Earth. It has been painting since before there were eyes to see it — sculpting light through ice crystals, dragging color across horizons, compressing entire landscapes into a single hour of sky. This project is an attempt to listen to what it's making.
+The atmosphere is the oldest artist on Earth. It has been painting since before there were eyes to see it - sculpting light through ice crystals, dragging color across horizons, compressing entire landscapes into a single hour of sky. This project is an attempt to listen to what it's making.
 </p>
 
 <h2 id="work" style="margin-top:2.5rem;">The Work</h2>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-Every day, fifty-four points across the planet are sampled for what the atmosphere is actually doing — not what it looks like on a forecast, but its raw physical state. Pressure gradients steep enough to bend trees. Winds crossing open water with nothing to slow them down. Temperature anomalies where the air is ten degrees warmer or colder than it should be. The ten most extreme conditions become source material for original artwork.
+Every day, fifty-four points across the planet are sampled for what the atmosphere is actually doing - not what it looks like on a forecast, but its raw physical state. Pressure gradients steep enough to bend trees. Winds crossing open water with nothing to slow them down. Temperature anomalies where the air is ten degrees warmer or colder than it should be. The ten most extreme conditions become source material for original artwork.
 </p>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-The data passes through the aesthetic lens of eleven artists who understood that abstraction is not the absence of meaning but its distillation. Sam Francis knew that empty space is as charged as color. Rothko proved that two rectangles can hold grief. Frankenthaler showed that letting paint find its own path is an act of trust. Hilma af Klint painted what she believed was invisible. <a href="https://lesleytannahill.com" target="_blank" rel="noopener">Lesley Tannahill</a> builds palimpsests where every mark remembers the marks beneath it. These sensibilities are not styles to imitate — they are ways of seeing that transform the same pressure reading into radically different compositions.
+The data passes through the aesthetic lens of eleven artists who understood that abstraction is not the absence of meaning but its distillation. Sam Francis knew that empty space is as charged as color. Rothko proved that two rectangles can hold grief. Frankenthaler showed that letting paint find its own path is an act of trust. Hilma af Klint painted what she believed was invisible. <a href="https://lesleytannahill.com" target="_blank" rel="noopener">Lesley Tannahill</a> builds palimpsests where every mark remembers the marks beneath it. These sensibilities are not styles to imitate - they are ways of seeing that transform the same pressure reading into radically different compositions.
 </p>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
@@ -106,11 +106,11 @@ The result is a growing archive of the planet's most volatile moments, translate
 <h2 id="system" style="margin-top:2.5rem;">The System</h2>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-The pipeline runs at dawn UTC. Weather flows in from the <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a> (NOAA's GFS model) and is scored on a composite index — pressure anomaly weighted heaviest, then wind, temperature deviation, precipitation, humidity. The highest-scoring conditions are sent to an AI model on Amazon Bedrock, which interprets the atmospheric data as original digital artwork — either high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude. Every piece is rendered in seven possible canvas formats, from square to panoramic, chosen by the conditions themselves. Everything is archived permanently.
+The pipeline runs at dawn UTC. Weather flows in from the <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a> (NOAA's GFS model) and is scored on a composite index - pressure anomaly weighted heaviest, then wind, temperature deviation, precipitation, humidity. The highest-scoring conditions are sent to an AI model on Amazon Bedrock, which interprets the atmospheric data as original digital artwork - either high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude. Every piece is rendered in seven possible canvas formats, from square to panoramic, chosen by the conditions themselves. Everything is archived permanently.
 </p>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery — the actual colors of Earth as seen from orbit. Deserts, glaciers, river deltas, volcanic islands. A seasonal record of what the planet looks like from 786 kilometers up.
+A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery - the actual colors of Earth as seen from orbit. Deserts, glaciers, river deltas, volcanic islands. A seasonal record of what the planet looks like from 786 kilometers up.
 </p>
 
 <h2 id="method" style="margin-top:2.5rem;">How the Art Is Made</h2>
@@ -118,7 +118,7 @@ A parallel system extracts color palettes from Copernicus Sentinel-2 satellite i
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Artistic Interpretation, Not Imitation</h3>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-No artist's work was used to train the model. The AI's understanding of these artists comes from art criticism, exhibition catalogs, and the public discourse around their practices — the same way a human art student learns by reading about artists before they ever pick up a brush. Each artist is described to the model in a few sentences that capture their visual philosophy: Rothko's luminous floating rectangles, Kusama's obsessive dot fields, Mondrian's primary-color grid logic. The model doesn't see their paintings. It reads their ideas, then writes SVG code — shapes, gradients, transforms, filters — from scratch. The atmospheric data is the only input. The artist's sensibility is the lens.
+No artist's work was used to train the model. The AI's understanding of these artists comes from art criticism, exhibition catalogs, and the public discourse around their practices - the same way a human art student learns by reading about artists before they ever pick up a brush. Each artist is described to the model in a few sentences that capture their visual philosophy: Rothko's luminous floating rectangles, Kusama's obsessive dot fields, Mondrian's primary-color grid logic. The model doesn't see their paintings. It reads their ideas, then writes SVG code - shapes, gradients, transforms, filters - from scratch. The atmospheric data is the only input. The artist's sensibility is the lens.
 </p>
 
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Weather Data: 54 Points, 6 Variables</h3>
@@ -131,31 +131,31 @@ Every run samples 54 points across 10 latitude bands, from 70°N (Arctic) to 60�
   <span>Sea-level pressure (Pa)</span><span>→ Density, weight, visual mass</span>
   <span>Wind speed &amp; direction</span><span>→ Dynamic energy, directional flow</span>
   <span>Temperature (K)</span><span>→ Color temperature, saturation</span>
-  <span>Temperature anomaly</span><span>→ How far from the expected — the drama</span>
+  <span>Temperature anomaly</span><span>→ How far from the expected - the drama</span>
   <span>Relative humidity (%)</span><span>→ Atmospheric moisture, softness</span>
   <span>Precipitation (kg/m²)</span><span>→ Intensity, texture</span>
 </div>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-The composite visual interest score weights these: pressure anomaly (30%), wind (25%), temperature deviation (20%), precipitation (15%), humidity (10%). The top 10 scorers — with at least 15° of geographic separation to ensure diversity — become the day's artwork subjects.
+The composite visual interest score weights these: pressure anomaly (30%), wind (25%), temperature deviation (20%), precipitation (15%), humidity (10%). The top 10 scorers - with at least 15° of geographic separation to ensure diversity - become the day's artwork subjects.
 </p>
 
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Why GFS?</h3>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-The weather data comes from NOAA's <a href="https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast" target="_blank" rel="noopener" style="color:#8ab4f8">Global Forecast System (GFS)</a>, a 0.25° resolution atmospheric model updated every six hours. GFS was chosen over alternatives like ECMWF IFS (higher accuracy but rate-limited), ICON (better European resolution), or HRRR (3km US-only) because it offers the best tradeoff for this project: free global coverage at resolution sufficient for macro-scale weather drama, with reliable hourly data across all 54 scan points simultaneously. The art interprets continental-scale atmospheric patterns — pressure systems spanning oceans, temperature fronts crossing mountain ranges — where GFS excels. The <code style="color:#c4b5fd; background:#1a1a2e; padding:0.15rem 0.4rem; border-radius:3px; font-size:0.85rem;">gfs_seamless</code> variant blends forecast and analysis data for best-available current conditions.
+The weather data comes from NOAA's <a href="https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast" target="_blank" rel="noopener" style="color:#8ab4f8">Global Forecast System (GFS)</a>, a 0.25° resolution atmospheric model updated every six hours. GFS was chosen over alternatives like ECMWF IFS (higher accuracy but rate-limited), ICON (better European resolution), or HRRR (3km US-only) because it offers the best tradeoff for this project: free global coverage at resolution sufficient for macro-scale weather drama, with reliable hourly data across all 54 scan points simultaneously. The art interprets continental-scale atmospheric patterns - pressure systems spanning oceans, temperature fronts crossing mountain ranges - where GFS excels. The <code style="color:#c4b5fd; background:#1a1a2e; padding:0.15rem 0.4rem; border-radius:3px; font-size:0.85rem;">gfs_seamless</code> variant blends forecast and analysis data for best-available current conditions.
 </p>
 
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Quality Scoring</h3>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-After each artwork is generated and rendered to PNG, an AI art critic evaluates it on four dimensions: composition, color harmony, complexity, and emotional impact. Each piece receives a quality score from 1 to 10. This score feeds into the archive, influences print pricing, and helps surface the strongest work. The critic sees only the final image — it has no access to the weather data or artist prompt that produced it.
+After each artwork is generated and rendered to PNG, an AI art critic evaluates it on four dimensions: composition, color harmony, complexity, and emotional impact. Each piece receives a quality score from 1 to 10. This score feeds into the archive, influences print pricing, and helps surface the strongest work. The critic sees only the final image - it has no access to the weather data or artist prompt that produced it.
 </p>
 
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Weather Forecasting</h3>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-Every evening at 20:00 UTC, a separate system scans the 24-hour GFS forecast for all 54 scan points, scoring each for predicted visual drama using the same composite formula. This produces a ranked list of tomorrow's most promising atmospheric conditions — a weather drama forecast that anticipates where the most striking art will come from before the pipeline runs.
+Every evening at 20:00 UTC, a separate system scans the 24-hour GFS forecast for all 54 scan points, scoring each for predicted visual drama using the same composite formula. This produces a ranked list of tomorrow's most promising atmospheric conditions - a weather drama forecast that anticipates where the most striking art will come from before the pipeline runs.
 </p>
 
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Dynamic Pricing</h3>
@@ -167,25 +167,25 @@ Print prices are not static. Each artwork's price reflects three signals: the qu
 <h3 style="font-size:1.1rem; color:#c4b5fd; margin-top:1.5rem; margin-bottom:0.75rem;">Natural Scarcity</h3>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-Every artwork is generated from a one-time atmospheric event — a specific combination of pressure, wind, temperature, and precipitation at a specific location and moment. That weather will never occur again. Unlike digital assets where scarcity is manufactured by capping supply, the scarcity here is physical: the atmosphere produced it once, and it's gone. The artwork is a fossil of a moment that no longer exists.
+Every artwork is generated from a one-time atmospheric event - a specific combination of pressure, wind, temperature, and precipitation at a specific location and moment. That weather will never occur again. Unlike digital assets where scarcity is manufactured by capping supply, the scarcity here is physical: the atmosphere produced it once, and it's gone. The artwork is a fossil of a moment that no longer exists.
 </p>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-This is closer to photography than to minting — capturing something real, unrepeatable, and time-bound. The atmospheric data is archived alongside every piece, timestamped and verifiable against NOAA's public records. The weather happened. The art it produced is the only one of its kind. Limited edition prints (5 per size) add a physical layer of scarcity on top of a natural one. When the last print of a piece sells, that's it — the weather is gone, the edition is closed, and the work exists only in the hands of its collectors.
+This is closer to photography than to minting - capturing something real, unrepeatable, and time-bound. The atmospheric data is archived alongside every piece, timestamped and verifiable against NOAA's public records. The weather happened. The art it produced is the only one of its kind. Limited edition prints (5 per size) add a physical layer of scarcity on top of a natural one. When the last print of a piece sells, that's it - the weather is gone, the edition is closed, and the work exists only in the hands of its collectors.
 </p>
 
 <h2 id="artist" style="margin-top:2.5rem;">The Artist</h2>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-I'm <a href="https://jamestannahill.com" target="_blank" rel="noopener">James Tannahill</a>. I grew up staring at maps the way other people stared at posters — tracing coastlines, memorizing the shapes of countries I'd never visit, trying to understand how a flat sheet of paper could contain an ocean. That impulse never went away. It just found new material.
+I'm <a href="https://jamestannahill.com" target="_blank" rel="noopener">James Tannahill</a>. I grew up staring at maps the way other people stared at posters - tracing coastlines, memorizing the shapes of countries I'd never visit, trying to understand how a flat sheet of paper could contain an ocean. That impulse never went away. It just found new material.
 </p>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-Weather is the map I can't finish reading. It is planetary-scale, constantly rewriting itself, and fundamentally invisible at any useful resolution. You can stand in a storm and still only experience a pinhole of what the system is doing. This project is my way of seeing more of it — using the language of the painters who taught me that seeing is not passive, that abstraction is a form of attention, and that the most honest response to something overwhelming is to let it move through you and onto the canvas.
+Weather is the map I can't finish reading. It is planetary-scale, constantly rewriting itself, and fundamentally invisible at any useful resolution. You can stand in a storm and still only experience a pinhole of what the system is doing. This project is my way of seeing more of it - using the language of the painters who taught me that seeing is not passive, that abstraction is a form of attention, and that the most honest response to something overwhelming is to let it move through you and onto the canvas.
 </p>
 
 <p style="color:#bbb; line-height:1.8; margin-bottom:1.5rem;">
-The data is real. The locations are real. The weather happened. What the machine makes of it — and what you make of that — is where the art lives.
+The data is real. The locations are real. The weather happened. What the machine makes of it - and what you make of that - is where the art lives.
 </p>
 
 <h2 id="faq" style="margin-top:2.5rem;">FAQ</h2>
@@ -193,12 +193,12 @@ The data is real. The locations are real. The weather happened. What the machine
 <div class="faq">
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Is the AI trained on these artists' work?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">No. The AI model's understanding comes from art criticism and public discourse about these artists — the same way a human learns about an artist by reading about them. Each artist is described in a text prompt. The model never sees their paintings. It writes SVG code from scratch based on the atmospheric data.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">No. The AI model's understanding comes from art criticism and public discourse about these artists - the same way a human learns about an artist by reading about them. Each artist is described in a text prompt. The model never sees their paintings. It writes SVG code from scratch based on the atmospheric data.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Is the weather data real?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes. Every piece is generated from live atmospheric measurements at the time of creation — pressure, wind speed, temperature, humidity, and precipitation from NOAA's Global Forecast System via the Open-Meteo API. The raw data is archived alongside each artwork.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes. Every piece is generated from live atmospheric measurements at the time of creation - pressure, wind speed, temperature, humidity, and precipitation from NOAA's Global Forecast System via the Open-Meteo API. The raw data is archived alongside each artwork.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
@@ -208,37 +208,37 @@ The data is real. The locations are real. The weather happened. What the machine
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">How are the 10 daily locations chosen?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">54 points across the globe are scanned every day. A composite visual interest score ranks them by pressure anomaly (30%), wind speed (25%), temperature deviation (20%), precipitation (15%), and humidity (10%). The top 10 — with at least 15° of geographic separation — become that day's subjects.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">54 points across the globe are scanned every day. A composite visual interest score ranks them by pressure anomaly (30%), wind speed (25%), temperature deviation (20%), precipitation (15%), and humidity (10%). The top 10 - with at least 15° of geographic separation - become that day's subjects.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Can I buy a print?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes. Every artwork page has a print shop — just click any artwork and look for the print option. Limited edition giclée prints on Hahnemühle German Etching 310gsm, edition of 5 per size, with Certificate of Authenticity. Ships worldwide via theprintspace. <a href="/weather/" style="color:#8ab4f8;">Browse the archive</a> to find your piece.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes. Every artwork page has a print shop - just click any artwork and look for the print option. Limited edition giclée prints on Hahnemühle German Etching 310gsm, edition of 5 per size, with Certificate of Authenticity. Ships worldwide via theprintspace. <a href="/weather/" style="color:#8ab4f8;">Browse the archive</a> to find your piece.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Can I suggest a new artist?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes — visit the <a href="/artist/" style="color:#8ab4f8;">Artists page</a> and use the suggestion form at the bottom, or email <a href="mailto:art@jamestannahill.com" style="color:#8ab4f8;">art@jamestannahill.com</a>.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Yes - visit the <a href="/artist/" style="color:#8ab4f8;">Artists page</a> and use the suggestion form at the bottom, or email <a href="mailto:art@jamestannahill.com" style="color:#8ab4f8;">art@jamestannahill.com</a>.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">What are the satellite palettes?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes. Deserts, glaciers, river deltas — the actual colors of Earth as seen from orbit. Browse them at <a href="/palettes/" style="color:#8ab4f8;">Palettes</a>.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">A parallel system captures true-color imagery from the Copernicus Sentinel-2 satellite (786km altitude) and extracts the dominant color palettes. Deserts, glaciers, river deltas - the actual colors of Earth as seen from orbit. Browse them at <a href="/palettes/" style="color:#8ab4f8;">Palettes</a>.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">What makes each artwork unique?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Every artwork is generated from a one-time atmospheric event — a specific combination of pressure, wind, temperature, and precipitation at a specific location and moment. That weather will never occur again. Unlike digital assets where scarcity is manufactured by capping supply, the scarcity here is physical: the atmosphere produced it once, and it's gone. The atmospheric data is archived alongside every piece, timestamped and verifiable against NOAA's public records. Limited edition prints (5 per size) add physical scarcity on top of natural scarcity.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Every artwork is generated from a one-time atmospheric event - a specific combination of pressure, wind, temperature, and precipitation at a specific location and moment. That weather will never occur again. Unlike digital assets where scarcity is manufactured by capping supply, the scarcity here is physical: the atmosphere produced it once, and it's gone. The atmospheric data is archived alongside every piece, timestamped and verifiable against NOAA's public records. Limited edition prints (5 per size) add physical scarcity on top of natural scarcity.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Why do print prices vary between artworks?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Prices reflect three signals: the AI critic's quality score (composition, color, complexity, emotional impact), the rarity of the weather conditions that produced the piece, and how many editions have already sold. Exceptional pieces from extreme weather events are priced higher — up to 2× the base price.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Prices reflect three signals: the AI critic's quality score (composition, color, complexity, emotional impact), the rarity of the weather conditions that produced the piece, and how many editions have already sold. Exceptional pieces from extreme weather events are priced higher - up to 2× the base price.</p>
   </details>
 
   <details style="margin-bottom:1rem; border:1px solid #2a2a2a; border-radius:8px; background:#111;">
     <summary style="padding:1rem; cursor:pointer; color:#fff; font-size:0.95rem; font-weight:500;">Can I use the artwork commercially?</summary>
-    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Artwork is licensed under CC BY-NC-ND 4.0 — free for personal use with attribution, no commercial use or derivatives. For commercial licensing, contact <a href="mailto:art@jamestannahill.com" style="color:#8ab4f8;">art@jamestannahill.com</a>.</p>
+    <p style="padding:0 1rem 1rem; color:#bbb; font-size:0.9rem; line-height:1.7; margin:0;">Artwork is licensed under CC BY-NC-ND 4.0 - free for personal use with attribution, no commercial use or derivatives. For commercial licensing, contact <a href="mailto:art@jamestannahill.com" style="color:#8ab4f8;">art@jamestannahill.com</a>.</p>
   </details>
 </div>
 

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}API Quickstart — art.jt{% endblock %}
+{% block title %}API Quickstart - art.jt{% endblock %}
 {% block description %}Get started with the art.jt API in 2 minutes. cURL, Python, and Node.js examples for Art Critic, Weather Drama, and Dynamic Pricing.{% endblock %}
 {% block canonical_path %}/api/quickstart/{% endblock %}
 
@@ -50,7 +50,7 @@ resp = requests.post(
     json={"image_url": "https://example.com/artwork.png"},
 )
 data = resp.json()
-print(f"Overall: {data['overall']}/10 — {data['critique']}")</pre>
+print(f"Overall: {data['overall']}/10 - {data['critique']}")</pre>
 
 <h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">Node.js</h3>
 <pre>const resp = await fetch("https://api.art.jamestannahill.com/v1/critique", {
@@ -59,7 +59,7 @@ print(f"Overall: {data['overall']}/10 — {data['critique']}")</pre>
   body: JSON.stringify({ image_url: "https://example.com/artwork.png" }),
 });
 const data = await resp.json();
-console.log(`Overall: ${data.overall}/10 — ${data.critique}`);</pre>
+console.log(`Overall: ${data.overall}/10 - ${data.critique}`);</pre>
 
 <h3 style="color:#888; font-size:0.85rem; margin-bottom:0.5rem;">Response</h3>
 <pre class="response">{
@@ -129,7 +129,7 @@ GET /v1/weather/score?lat=40.7&amp;lng=-74.0</pre>
     "rarity_bonus": 0.13,
     "scarcity_bonus": 0.03
   },
-  "suggested_action": "Price above base — high quality + moderate rarity"
+  "suggested_action": "Price above base - high quality + moderate rarity"
 }</pre>
 
 <div style="margin-top:3rem; padding:1.2rem; background:#111; border:1px solid #2a2a2a; border-radius:8px;">
