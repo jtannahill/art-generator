@@ -32,7 +32,8 @@ Sam Francis | Gerhard Richter | Hilma af Klint | Wassily Kandinsky | Helen Frank
 | ML | Art critic (commentary scoring), weather forecaster, dynamic pricing |
 | Newsletter | Resend (daily digest) |
 | Social | RSS feed → dlvr.it (X/Instagram) |
-| Runtime | Python 3.12 Lambda (15 functions) |
+| Runtime | Python 3.12 Lambda (16 functions) |
+| Watermarking | Pillow + Fredoka font, on-demand at download, S3-cached |
 | API | Lambda Function URLs (trigger + infinite scroll) |
 | Mapping | Mapbox GL JS (dark globe, artwork markers) |
 | Analytics | Google Analytics 4 |
@@ -98,6 +99,7 @@ EventBridge (daily 06:00 UTC)
 | `art-site-rebuild` | Static HTML, asset copying, sitemap/robots/llms.txt, CloudFront invalidation |
 | `art-trigger` | Generate button endpoint (2-hour cooldown) |
 | `art-api` | Paginated DynamoDB queries for infinite scroll galleries |
+| `art-watermark-download` | Watermarks public PNG downloads (4K/8K) on demand. Caches to `site/downloads/`, returns 302 to CloudFront. Print-shop fulfillment uses the un-watermarked source path directly. |
 
 ## SEO & Discoverability
 

@@ -390,8 +390,37 @@ export class ArtGeneratorStack extends cdk.Stack {
       description: 'URL for the print shop Lambda',
     });
 
+    // === Watermark Download Lambda (public PNG downloads, watermarked) ===
+    const watermarkFn = new lambda.Function(this, 'WatermarkDownloadFn', {
+      functionName: 'art-watermark-download',
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambdas/watermark_download')),
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 1024,
+      environment: {
+        BUCKET_NAME: bucket.bucketName,
+      },
+    });
+    bucket.grantRead(watermarkFn, 'weather/*');
+    bucket.grantReadWrite(watermarkFn, 'downloads/*');
+
+    const watermarkUrl = watermarkFn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+        allowedMethods: [lambda.HttpMethod.GET],
+      },
+    });
+
+    new cdk.CfnOutput(this, 'WatermarkUrl', {
+      value: watermarkUrl.url,
+      description: 'URL for watermarked PNG download Lambda',
+    });
+
     // Pass dynamic URLs to site-rebuild Lambda
     siteRebuild.addEnvironment('PRINT_SHOP_URL', printShopUrl.url);
     siteRebuild.addEnvironment('API_URL', apiUrl.url);
+    siteRebuild.addEnvironment('WATERMARK_URL', watermarkUrl.url);
   }
 }

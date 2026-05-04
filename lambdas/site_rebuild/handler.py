@@ -110,6 +110,7 @@ def handler(event, context):
                 date=date,
                 slug=slug,
                 print_shop_url=os.environ.get("PRINT_SHOP_URL", ""),
+                watermark_url=os.environ.get("WATERMARK_URL", "").rstrip("/"),
             )
 
     # Render artist gallery pages with infinite scroll
