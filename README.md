@@ -6,7 +6,13 @@ Generative art from real atmospheric data. Daily artworks derived entirely from 
 
 ## What It Does
 
-Every day, this system scans 50 weather stations across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original artwork for each - high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude on Amazon Bedrock. Users can select from 15 artist inspirations - each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
+Every day, this system scans 50 weather stations across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original artwork for each. There are three rendering paths:
+
+1. **Flux 1.1 Pro** from a descriptive text prompt (most artists)
+2. **Custom FLUX.1-dev LoRA fine-tunes** for five artists trained on their own canvas reproductions (Lesley Tannahill, Sam Francis, Hilma af Klint, Joan Mitchell, Willem de Kooning)
+3. **Bedrock Claude SVG** for a parallel vector version of every piece
+
+Users can select from 16 artist inspirations - each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
 
 A parallel pipeline extracts color palettes from Copernicus Sentinel-2 satellite imagery, building a seasonal archive of Earth's real colors as seen from 786 km above the surface.
 
@@ -14,7 +20,27 @@ Every piece is permanently archived, browsable via infinite-scroll artist galler
 
 ## Artists
 
-Sam Francis | Gerhard Richter | Hilma af Klint | Wassily Kandinsky | Helen Frankenthaler | Piet Mondrian | Yayoi Kusama | Mark Rothko | Bridget Riley | Kazimir Malevich | Lesley Tannahill | Arshile Gorky | Willem de Kooning | Joan Mitchell | Mark Tobey
+Sam Francis* | Gerhard Richter | Hilma af Klint* | Wassily Kandinsky | Helen Frankenthaler | Piet Mondrian | Yayoi Kusama | Mark Rothko | Bridget Riley | Kazimir Malevich | Lesley Tannahill* | Arshile Gorky | Willem de Kooning* | Joan Mitchell* | Mark Tobey | Peter Max
+
+*Asterisked artists have a custom FLUX.1-dev LoRA fine-tune. See [Custom LoRAs](#custom-loras).*
+
+## Custom LoRAs
+
+Five artists are rendered through private FLUX.1-dev LoRA fine-tunes trained on hand-curated canvas reproductions, rather than from text prompts alone. Each artist's `/artist/{key}/` page carries a "Model & Methodology" block documenting the training corpus, hyperparameters, and provenance.
+
+| Artist | Source | Training Set | Replicate Model |
+|---|---|---|---|
+| Lesley Tannahill | [lesleytannahill.com](https://lesleytannahill.com) Selected Self-Portraits | 28 canvases | `jtannahill/lora-lesley-tannahill` |
+| Sam Francis | [samfrancis.com](https://samfrancis.com) Works on Canvas | 31 canvases | `jtannahill/lora-sam-francis` |
+| Hilma af Klint | WikiArt (Paintings for the Temple, Ten Largest, Swan, Dove, Atom Series, Altarpieces) | 27 canvases | `jtannahill/lora-hilma-af-klint` |
+| Joan Mitchell | WikiArt (Vetheuil + New York periods, 1951-1992) | 60 canvases | `jtannahill/lora-joan-mitchell` |
+| Willem de Kooning | [Willem de Kooning Foundation](https://www.dekooning.org/) (1916-1988) | 66 canvases | `jtannahill/lora-willem-de-kooning` |
+
+All LoRAs use rank 32, 1500 training steps, learning rate 1e-4, trained on Lambda Cloud H100 in ~12 minutes via [`ostris/flux-dev-lora-trainer`](https://replicate.com/ostris/flux-dev-lora-trainer) on Replicate (~$1-2 per training). Per-image captions encode title, medium, dimensions, and year. Trigger words follow the convention `{artist}_style`.
+
+The `weather_render` Lambda dispatches via `ARTIST_LORA_MODELS`: when an artist key has a registered LoRA, the prompt is prepended with the trigger word and the call routes through `replicate.com/predictions` to the per-artist model instead of the public `flux-1.1-pro` endpoint. Inference cost is similar (~$0.04/piece).
+
+Training scaffold lives in [`~/lora-train/`](../lora-train/) (separate repo).
 
 ## Stack
 
@@ -24,7 +50,7 @@ Sam Francis | Gerhard Richter | Hilma af Klint | Wassily Kandinsky | Helen Frank
 | Orchestration | Step Functions, EventBridge (daily 06:00 UTC) |
 | Weather Data | Open-Meteo API (GFS/NOAA model) |
 | Satellite Imagery | Copernicus Sentinel Hub Process API (Sentinel-2 L2A) |
-| Art Generation | Flux 1.1 Pro (PNG) + Amazon Bedrock Claude (SVG) → PNG preview (CairoSVG fallback) |
+| Art Generation | Flux 1.1 Pro (PNG, most artists), FLUX.1-dev LoRA fine-tunes (5 artists), Amazon Bedrock Claude (SVG, parallel) |
 | Color Extraction | Pillow median cut quantization |
 | Storage | S3 (versioned), DynamoDB |
 | CDN | CloudFront with OAC + CloudFront Function (index rewrite) |
@@ -85,7 +111,7 @@ EventBridge (daily 06:00 UTC)
 | Function | Purpose |
 |----------|---------|
 | `art-weather-ingest` | Scans 50 global weather points, scores for visual drama |
-| `art-weather-render` | Dual-mode art generation: Flux 1.1 Pro (PNG) or Bedrock Claude (SVG), PNG preview rendering (CairoSVG), artist-style prompts |
+| `art-weather-render` | Tri-mode art generation: Flux 1.1 Pro (PNG), per-artist FLUX.1-dev LoRA fine-tune (5 artists, dispatched via `ARTIST_LORA_MODELS`), or Bedrock Claude (SVG). PNG preview rendering (CairoSVG). |
 | `art-x-poster` | RSS-driven X/Twitter posting with OAuth 1.0a (text + link, DynamoDB dedup) |
 | `art-satellite-ingest` | Sentinel Hub Process API → true-color imagery for 30 rotating locations |
 | `art-palette-extract` | Color quantization + Bedrock mood descriptions |
