@@ -58,6 +58,18 @@ ARTIST_LORA_MODELS = {
         "trigger_word": "willem_de_kooning_style",
         "lora_scale": 1.0,
     },
+    "helen_frankenthaler": {
+        "model": "jtannahill/lora-helen-frankenthaler",
+        "version": "d8cf0d5e7a1c2cdab0fd6041d1bc54023876aedd32ee5dc3d84f43af4e75c010",
+        "trigger_word": "helen_frankenthaler_style",
+        "lora_scale": 1.0,
+    },
+    "gerhard_richter": {
+        "model": "jtannahill/lora-gerhard-richter",
+        "version": "fd4dfee86784a17c1008f635f2a17e5c30afc486125b0858effc54b41efe1761",
+        "trigger_word": "gerhard_richter_style",
+        "lora_scale": 1.0,
+    },
 }
 
 

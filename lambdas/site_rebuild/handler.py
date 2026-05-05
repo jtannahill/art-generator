@@ -176,6 +176,38 @@ ARTIST_METHODOLOGY = {
         trigger_word="willem_de_kooning_style",
         filed_date="2026-05-05",
     ),
+    "helen_frankenthaler": _bloomberg_methodology(
+        artist_display="Helen Frankenthaler",
+        source_url="https://www.wikiart.org/en/helen-frankenthaler",
+        source_label="WikiArt catalog",
+        series_html=(
+            ', spanning her soak-stain breakthroughs and color-field '
+            'works (1952-2004) - thinned acrylic poured onto unprimed '
+            'canvas, atmospheric color washes'
+        ),
+        training_set_count=60,
+        lora_rank=32,
+        steps=1500,
+        train_minutes=12,
+        trigger_word="helen_frankenthaler_style",
+        filed_date="2026-05-05",
+    ),
+    "gerhard_richter": _bloomberg_methodology(
+        artist_display="Gerhard Richter",
+        source_url="https://www.wikiart.org/en/gerhard-richter",
+        source_label="WikiArt catalog",
+        series_html=(
+            ', covering his photorealist canvases and the squeegee '
+            '<em>Abstrakte Bilder</em> (1962-2017) - dragged-paint '
+            'surfaces, color-strip compositions, blurred photo paintings'
+        ),
+        training_set_count=60,
+        lora_rank=32,
+        steps=1500,
+        train_minutes=12,
+        trigger_word="gerhard_richter_style",
+        filed_date="2026-05-05",
+    ),
 }
 
 
@@ -553,15 +585,15 @@ def handler(event, context):
 > Daily generative art from real atmospheric data, inspired by abstract expressionism. Limited edition prints available.
 
 ## About
-art.jt is a generative art project by James Tannahill. Every day, the system scans 54 global weather points across 10 latitude bands, identifies the 10 most visually dramatic atmospheric conditions, and generates original digital artwork — high-resolution PNG via Flux 1.1 Pro or vector SVG via Claude on Amazon Bedrock. No artist's work was used to train the model — each artist is described via text prompts capturing their visual philosophy. A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery. The visual language draws from abstract expressionists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, Bridget Riley, Yayoi Kusama, Piet Mondrian, Wassily Kandinsky, Gerhard Richter, Kazimir Malevich, and Lesley Tannahill.
+art.jt is a generative art project by James Tannahill. Every day, the system scans 54 global weather points across 10 latitude bands, identifies the 10 most visually dramatic atmospheric conditions, and generates original digital artwork — high-resolution PNG via Flux 1.1 Pro (or per-artist FLUX.1-dev LoRA fine-tunes for seven artists) and a parallel vector SVG via Claude on Amazon Bedrock. Most artists are rendered from descriptive text prompts capturing their visual philosophy; for seven artists (Lesley Tannahill, Sam Francis, Hilma af Klint, Joan Mitchell, Willem de Kooning, Helen Frankenthaler, and Gerhard Richter) a private LoRA fine-tune trained on hand-curated canvas reproductions is used instead. A parallel system extracts color palettes from Copernicus Sentinel-2 satellite imagery. The visual language draws from 16 artists including Sam Francis, Mark Rothko, Helen Frankenthaler, Hilma af Klint, Bridget Riley, Yayoi Kusama, Piet Mondrian, Wassily Kandinsky, Gerhard Richter, Kazimir Malevich, Lesley Tannahill, Arshile Gorky, Willem de Kooning, Joan Mitchell, Mark Tobey, and Peter Max.
 
 ## Pages
 - [Homepage](https://art.jamestannahill.com/) — Today's weather art with generate button and artist selector
-- [Artists](https://art.jamestannahill.com/artist/) — Browse by artist inspiration (11 artists, infinite scroll galleries)
+- [Artists](https://art.jamestannahill.com/artist/) — Browse by artist inspiration (16 artists, infinite scroll galleries; 7 with custom FLUX.1-dev LoRA fine-tunes)
 - [Archive](https://art.jamestannahill.com/weather/) — All past generations, browsable by run
 - [World Map](https://art.jamestannahill.com/map/) — Interactive Mapbox globe with artwork and palette markers
 - [Satellite Palettes](https://art.jamestannahill.com/palettes/) — Color palettes from Sentinel-2 orbital imagery
-- [Compare](https://art.jamestannahill.com/comparison/) — Same weather data interpreted through 11 different artistic lenses
+- [Compare](https://art.jamestannahill.com/comparison/) — Same weather data interpreted through 16 different artistic lenses
 - [About](https://art.jamestannahill.com/about/) — About the project, methodology, weather data, and the artist
 
 ## Print Shop
