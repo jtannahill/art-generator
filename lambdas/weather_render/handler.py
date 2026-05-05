@@ -46,6 +46,18 @@ ARTIST_LORA_MODELS = {
         "trigger_word": "hilma_af_klint_style",
         "lora_scale": 1.0,
     },
+    "joan_mitchell": {
+        "model": "jtannahill/lora-joan-mitchell",
+        "version": "a292691e6d349b87abd4c767b4bd967bc614e76f4578809319aca78de85de4c0",
+        "trigger_word": "joan_mitchell_style",
+        "lora_scale": 1.0,
+    },
+    "willem_de_kooning": {
+        "model": "jtannahill/lora-willem-de-kooning",
+        "version": "ff91b1988571b344cc2c98747504968c0a76f59812cc402cbbb7241c55300756",
+        "trigger_word": "willem_de_kooning_style",
+        "lora_scale": 1.0,
+    },
 }
 
 

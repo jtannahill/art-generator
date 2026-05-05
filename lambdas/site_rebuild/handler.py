@@ -144,6 +144,38 @@ ARTIST_METHODOLOGY = {
         trigger_word="hilma_af_klint_style",
         filed_date="2026-05-05",
     ),
+    "joan_mitchell": _bloomberg_methodology(
+        artist_display="Joan Mitchell",
+        source_url="https://www.wikiart.org/en/joan-mitchell",
+        source_label="WikiArt catalog",
+        series_html=(
+            ', spanning her New York and Vetheuil periods (1951-1992) - '
+            'gestural abstractions and color-field landscapes built from '
+            'dense clusters of expressive brushwork'
+        ),
+        training_set_count=60,
+        lora_rank=32,
+        steps=1500,
+        train_minutes=12,
+        trigger_word="joan_mitchell_style",
+        filed_date="2026-05-05",
+    ),
+    "willem_de_kooning": _bloomberg_methodology(
+        artist_display="Willem de Kooning",
+        source_url="https://www.dekooning.org/the-artist/artworks/view/paintings",
+        source_label="Willem de Kooning Foundation archive",
+        series_html=(
+            ', drawn from his full painted oeuvre (1916-1988) - the '
+            '<em>Women</em> series, abstract urban landscapes, and '
+            'late ribbon paintings'
+        ),
+        training_set_count=66,
+        lora_rank=32,
+        steps=1500,
+        train_minutes=12,
+        trigger_word="willem_de_kooning_style",
+        filed_date="2026-05-05",
+    ),
 }
 
 
