@@ -23,6 +23,19 @@ TABLE_NAME = os.environ.get("TABLE_NAME", "art-generator")
 REPLICATE_TOKEN = os.environ.get("REPLICATE_API_TOKEN", "")
 MODEL_ID = "us.anthropic.claude-sonnet-4-20250514-v1:0"
 
+# Per-artist LoRA fine-tunes (FLUX.1-dev base).
+# When an artist has an entry here, weather_render routes through the LoRA
+# Replicate model instead of the generic Flux 1.1 Pro endpoint, prepending
+# the trigger word to the prompt for proper style activation.
+ARTIST_LORA_MODELS = {
+    "lesley_tannahill": {
+        "model": "jtannahill/lora-lesley-tannahill",
+        "version": "3e91d41e3c409fd25194a2a678697c01e5a142886a8fd7a92e0175479b43823f",
+        "trigger_word": "lesley_tannahill_style",
+        "lora_scale": 1.0,
+    },
+}
+
 
 def handler(event, context):
     """Receives a single region dict, generates Flux raster + Claude SVG in parallel."""
@@ -151,7 +164,11 @@ def handler(event, context):
         "rationale": rationale,
         "s3_prefix": prefix,
         "canvas_format": canvas_format,
-        "renderer": "flux-1.1-pro" if flux_png else "claude-svg",
+        "renderer": (
+            f"flux-dev-lora:{ARTIST_LORA_MODELS[artist]['model']}" if flux_png and artist in ARTIST_LORA_MODELS
+            else "flux-1.1-pro" if flux_png
+            else "claude-svg"
+        ),
         "has_svg": bool(svg_text),
         "has_8k": bool(png_8k),
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -187,7 +204,16 @@ def handler(event, context):
 # ---------------------------------------------------------------------------
 
 def generate_flux(prompt, region):
-    """Submit to Replicate Flux 1.1 Pro and poll for result. Returns PNG bytes."""
+    """Submit to Replicate Flux 1.1 Pro and poll for result. Returns PNG bytes.
+
+    If the artist has an entry in ARTIST_LORA_MODELS, route through the
+    per-artist LoRA fine-tune (FLUX.1-dev base) instead of the generic
+    Flux 1.1 Pro endpoint.
+    """
+    artist = region.get("artist", "")
+    if artist in ARTIST_LORA_MODELS:
+        return generate_flux_lora(prompt, region, ARTIST_LORA_MODELS[artist])
+
     import random
     random.seed(hash(f"{region['slug']}{region.get('date', '')}{region.get('artist', '')}"))
     formats = [
@@ -267,6 +293,82 @@ def generate_flux(prompt, region):
             raise RuntimeError(f"Flux failed: {status.get('error', 'unknown')}")
 
     raise RuntimeError("Flux timed out after 4 minutes")
+
+
+def generate_flux_lora(prompt, region, lora_cfg):
+    """Submit to a per-artist FLUX-dev LoRA on Replicate. Returns PNG bytes.
+
+    The prompt is prepended with the trigger word so the LoRA fires.
+    Aspect ratio is randomized like the base Flux path. The prediction is
+    submitted to /v1/predictions with an explicit version pin for
+    reproducibility, then polled the same way as the base Flux path.
+    """
+    import random
+    random.seed(hash(f"{region['slug']}{region.get('date', '')}{region.get('artist', '')}"))
+    aspect_ratios = ["1:1", "16:9", "9:16", "4:3", "3:4"]
+    aspect = random.choice(aspect_ratios)
+
+    triggered = f"{lora_cfg['trigger_word']}, {prompt}"
+
+    payload = json.dumps({
+        "version": lora_cfg["version"],
+        "input": {
+            "prompt": triggered,
+            "lora_scale": lora_cfg.get("lora_scale", 1.0),
+            "model": "dev",
+            "num_outputs": 1,
+            "aspect_ratio": aspect,
+            "output_format": "png",
+            "guidance_scale": 3.5,
+            "num_inference_steps": 28,
+        },
+    }).encode()
+
+    submit_url = "https://api.replicate.com/v1/predictions"
+    headers = {
+        "Authorization": f"Bearer {REPLICATE_TOKEN}",
+        "Content-Type": "application/json",
+    }
+
+    result = None
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(submit_url, data=payload, headers=headers, method="POST")
+            resp = urllib.request.urlopen(req, timeout=30)
+            result = json.loads(resp.read())
+            break
+        except urllib.error.HTTPError as e:
+            body = e.read()
+            if e.code == 429:
+                wait = (attempt + 1) * 15
+                print(f"LoRA rate limited (429), retrying in {wait}s ({attempt+1}/3)")
+                time.sleep(wait)
+                continue
+            result = json.loads(body)
+            if not result.get("id"):
+                raise
+            break
+    if not result or not result.get("id"):
+        raise RuntimeError("LoRA submission failed after 3 retries")
+
+    pred_url = result["urls"]["get"]
+    print(f"LoRA submitted: {result['id']} (artist={region.get('artist')}, lora={lora_cfg['model']})")
+
+    for _ in range(48):
+        time.sleep(5)
+        status_req = urllib.request.Request(
+            pred_url, headers={"Authorization": f"Bearer {REPLICATE_TOKEN}"},
+        )
+        status = json.loads(urllib.request.urlopen(status_req, timeout=30).read())
+        if status["status"] == "succeeded":
+            img_url = status["output"]
+            if isinstance(img_url, list):
+                img_url = img_url[0]
+            return urllib.request.urlopen(img_url, timeout=60).read()
+        elif status["status"] == "failed":
+            raise RuntimeError(f"LoRA failed: {status.get('error', 'unknown')}")
+
+    raise RuntimeError("LoRA timed out after 4 minutes")
 
 
 def upscale_image(png_bytes, scale=4):
