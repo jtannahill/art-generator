@@ -34,6 +34,12 @@ ARTIST_LORA_MODELS = {
         "trigger_word": "lesley_tannahill_style",
         "lora_scale": 1.0,
     },
+    "sam_francis": {
+        "model": "jtannahill/lora-sam-francis",
+        "version": "e750f2b37cad5955f679a8727f0031972d503c650691950b480afd9dabea190c",
+        "trigger_word": "sam_francis_style",
+        "lora_scale": 1.0,
+    },
 }
 
 

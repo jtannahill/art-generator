@@ -19,97 +19,115 @@ TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
 # Per-artist methodology blurb shown on /artist/{key}/. Plain HTML, gets
 # inlined verbatim. Add a key for each artist that has a custom-trained
 # LoRA fine-tune so visitors understand which model produced the work.
+def _bloomberg_methodology(*, artist_display, source_url, source_label,
+                           series_html, training_set_count, lora_rank, steps,
+                           train_minutes, trigger_word, filed_date):
+    """Render the shared Bloomberg-style methodology block. Each artist with
+    a custom-trained LoRA passes its own facts; layout and styling are
+    shared (monochrome, hairlines, monospace data grid, H100 tooltip)."""
+    return (
+        f'<div style="font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#e0e0e0;">'
+        f'  <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">'
+        f'    <span style="font-family:\'Courier New\',monospace;font-size:0.9rem;font-weight:700;color:#fff;letter-spacing:1px;">01</span>'
+        f'    <span style="font-size:0.7rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:2px;">Model &amp; Methodology</span>'
+        f'    <span style="flex:1;height:1px;background:#2a2a2a;margin-left:0.5rem;"></span>'
+        f'    <span style="font-size:0.65rem;color:#666;text-transform:uppercase;letter-spacing:1.5px;">Filed {filed_date}</span>'
+        f'  </div>'
+        f'  <h2 style="font-size:1.4rem;color:#fff;margin:0 0 1rem;letter-spacing:-0.5px;line-height:1.25;">'
+        f'    Custom FLUX.1-dev LoRA, fine-tuned on {artist_display}\'s own canvas work.'
+        f'  </h2>'
+        f'  <p style="font-size:0.92rem;line-height:1.7;color:#bbb;margin:0 0 1.25rem;max-width:62ch;">'
+        f'    Pieces in this gallery are produced by a private FLUX.1-dev LoRA '
+        f'    trained on {training_set_count} hand-curated reproductions from '
+        f'    <a href="{source_url}" target="_blank" rel="noopener" style="color:#e0e0e0;text-decoration:none;border-bottom:1px solid #444;">{source_label}</a>'
+        f'{series_html}. '
+        f'    Every image was captioned with its title, medium, dimensions, and year, '
+        f'    binding the trigger to specific painterly cues rather than a generic style label.'
+        f'  </p>'
+        f'  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a;margin:0 0 1.25rem;">'
+        f'    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
+        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Base Model</div>'
+        f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">FLUX.1-dev</div>'
+        f'    </div>'
+        f'    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
+        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Training Set</div>'
+        f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">{training_set_count} canvases</div>'
+        f'    </div>'
+        f'    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
+        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">LoRA Rank</div>'
+        f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">{lora_rank}</div>'
+        f'    </div>'
+        f'    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
+        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Steps</div>'
+        f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">{steps:,}</div>'
+        f'    </div>'
+        f'    <div style="padding:0.85rem 1rem;">'
+        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Train Time</div>'
+        f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">'
+        f'{train_minutes} min &middot; '
+        f'<span class="tip-h100" style="position:relative;border-bottom:1px dotted #888;cursor:help;">H100</span>'
+        f'      </div>'
+        f'    </div>'
+        f'  </div>'
+        f'  <style>'
+        f'    .tip-h100::after {{'
+        f'      content: "NVIDIA H100 Tensor Core GPU - 80GB HBM3, datacenter accelerator rented on demand from Replicate.";'
+        f'      position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);'
+        f'      width: 260px; padding: 0.6rem 0.75rem;'
+        f'      background: #0a0a0a; color: #ddd; border: 1px solid #333; border-radius: 4px;'
+        f'      font-family: -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;'
+        f'      font-size: 0.72rem; font-weight: 400; line-height: 1.5;'
+        f'      letter-spacing: 0; text-transform: none; white-space: normal;'
+        f'      opacity: 0; pointer-events: none; transition: opacity 0.15s ease;'
+        f'      z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.5);'
+        f'    }}'
+        f'    .tip-h100:hover::after {{ opacity: 1; }}'
+        f'  </style>'
+        f'  <p style="font-size:0.78rem;color:#888;line-height:1.6;margin:0;font-style:italic;">'
+        f'    Trigger word <code style="font-family:\'Courier New\',monospace;background:#1a1a1a;color:#ccc;padding:1px 6px;border-radius:2px;font-style:normal;">{trigger_word}</code> '
+        f'    is prepended to every weather-derived prompt before inference. '
+        f'    Trained via <code style="font-family:\'Courier New\',monospace;background:#1a1a1a;color:#ccc;padding:1px 6px;border-radius:2px;font-style:normal;">ostris/flux-dev-lora-trainer</code> on Replicate.'
+        f'  </p>'
+        f'</div>'
+    )
+
+
 ARTIST_METHODOLOGY = {
-    "lesley_tannahill": (
-        # Bloomberg editorial layout (monochrome): section number, hairline
-        # rules, caps labels with letter-spacing, monospace data grid.
-        '<div style="font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#e0e0e0;">'
-        '  <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">'
-        '    <span style="font-family:\'Courier New\',monospace;font-size:0.9rem;font-weight:700;color:#fff;letter-spacing:1px;">01</span>'
-        '    <span style="font-size:0.7rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:2px;">Model &amp; Methodology</span>'
-        '    <span style="flex:1;height:1px;background:#2a2a2a;margin-left:0.5rem;"></span>'
-        '    <span style="font-size:0.65rem;color:#666;text-transform:uppercase;letter-spacing:1.5px;">Filed 2026-05-05</span>'
-        '  </div>'
-        '  <h2 style="font-size:1.4rem;color:#fff;margin:0 0 1rem;letter-spacing:-0.5px;line-height:1.25;">'
-        '    Custom FLUX.1-dev LoRA, fine-tuned on the artist\'s own canvas work.'
-        '  </h2>'
-        '  <p style="font-size:0.92rem;line-height:1.7;color:#bbb;margin:0 0 1.25rem;max-width:62ch;">'
-        '    Pieces in this gallery are produced by a private FLUX.1-dev LoRA '
-        '    trained on 28 hand-curated reproductions from '
-        '    <a href="https://lesleytannahill.com" target="_blank" rel="noopener" style="color:#e0e0e0;text-decoration:none;border-bottom:1px solid #444;">lesleytannahill.com</a>, '
-        '    spanning the <em>Selected Self-Portraits</em> series: '
-        '    <a href="https://lesleytannahill.com/selected-self-portraits/fictions/" target="_blank" rel="noopener" style="color:#e0e0e0;text-decoration:none;border-bottom:1px solid #444;"><em>Fictions</em></a>, '
-        '    <a href="https://lesleytannahill.com/selected-self-portraits/making-up-my-minds/" target="_blank" rel="noopener" style="color:#e0e0e0;text-decoration:none;border-bottom:1px solid #444;"><em>Making Up My Minds</em></a>, '
-        '    and <a href="https://lesleytannahill.com/selected-self-portraits/process-of-discovery/" target="_blank" rel="noopener" style="color:#e0e0e0;text-decoration:none;border-bottom:1px solid #444;"><em>Process of Discovery</em></a>. '
-        '    Every image was captioned with its title, medium, dimensions, and year, '
-        '    binding the trigger to specific painterly cues rather than a generic style label.'
-        '  </p>'
-
-        # Data grid: Bloomberg-style label/value pairs
-        '  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a;margin:0 0 1.25rem;">'
-        '    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
-        '      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Base Model</div>'
-        '      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">FLUX.1-dev</div>'
-        '    </div>'
-        '    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
-        '      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Training Set</div>'
-        '      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">28 canvases</div>'
-        '    </div>'
-        '    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
-        '      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">LoRA Rank</div>'
-        '      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">32</div>'
-        '    </div>'
-        '    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
-        '      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Steps</div>'
-        '      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">1,500</div>'
-        '    </div>'
-        '    <div style="padding:0.85rem 1rem;">'
-        '      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Train Time</div>'
-        '      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">'
-        '12 min &middot; '
-        # Custom CSS tooltip — title attribute is slow + ugly. Wrap H100 in
-        # a positioned span with a hover-revealed popup via ::after.
-        '<span class="tip-h100" style="position:relative;border-bottom:1px dotted #888;cursor:help;">H100</span>'
-        '      </div>'
-        '    </div>'
-        '  </div>'
-
-        # Tooltip CSS (scoped via class, popup on hover)
-        '  <style>'
-        '    .tip-h100::after {'
-        '      content: "NVIDIA H100 Tensor Core GPU - 80GB HBM3, datacenter accelerator rented on demand from Replicate.";'
-        '      position: absolute;'
-        '      left: 50%;'
-        '      bottom: calc(100% + 8px);'
-        '      transform: translateX(-50%);'
-        '      width: 260px;'
-        '      padding: 0.6rem 0.75rem;'
-        '      background: #0a0a0a;'
-        '      color: #ddd;'
-        '      border: 1px solid #333;'
-        '      border-radius: 4px;'
-        '      font-family: -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;'
-        '      font-size: 0.72rem;'
-        '      font-weight: 400;'
-        '      line-height: 1.5;'
-        '      letter-spacing: 0;'
-        '      text-transform: none;'
-        '      white-space: normal;'
-        '      opacity: 0;'
-        '      pointer-events: none;'
-        '      transition: opacity 0.15s ease;'
-        '      z-index: 100;'
-        '      box-shadow: 0 4px 16px rgba(0,0,0,0.5);'
-        '    }'
-        '    .tip-h100:hover::after { opacity: 1; }'
-        '  </style>'
-
-        '  <p style="font-size:0.78rem;color:#888;line-height:1.6;margin:0;font-style:italic;">'
-        '    Trigger word <code style="font-family:\'Courier New\',monospace;background:#1a1a1a;color:#ccc;padding:1px 6px;border-radius:2px;font-style:normal;">lesley_tannahill_style</code> '
-        '    is prepended to every weather-derived prompt before inference. '
-        '    Trained via <code style="font-family:\'Courier New\',monospace;background:#1a1a1a;color:#ccc;padding:1px 6px;border-radius:2px;font-style:normal;">ostris/flux-dev-lora-trainer</code> on Replicate.'
-        '  </p>'
-        '</div>'
+    "lesley_tannahill": _bloomberg_methodology(
+        artist_display="Lesley Tannahill",
+        source_url="https://lesleytannahill.com",
+        source_label="lesleytannahill.com",
+        series_html=(
+            ', spanning the <em>Selected Self-Portraits</em> series: '
+            '<a href="https://lesleytannahill.com/selected-self-portraits/fictions/" '
+            'target="_blank" rel="noopener" style="color:#e0e0e0;text-decoration:none;border-bottom:1px solid #444;"><em>Fictions</em></a>, '
+            '<a href="https://lesleytannahill.com/selected-self-portraits/making-up-my-minds/" '
+            'target="_blank" rel="noopener" style="color:#e0e0e0;text-decoration:none;border-bottom:1px solid #444;"><em>Making Up My Minds</em></a>, '
+            'and <a href="https://lesleytannahill.com/selected-self-portraits/process-of-discovery/" '
+            'target="_blank" rel="noopener" style="color:#e0e0e0;text-decoration:none;border-bottom:1px solid #444;"><em>Process of Discovery</em></a>'
+        ),
+        training_set_count=28,
+        lora_rank=32,
+        steps=1500,
+        train_minutes=12,
+        trigger_word="lesley_tannahill_style",
+        filed_date="2026-05-05",
+    ),
+    "sam_francis": _bloomberg_methodology(
+        artist_display="Sam Francis",
+        source_url="https://samfrancis.com",
+        source_label="samfrancis.com",
+        series_html=(
+            ', drawn from his <em>Works on Canvas</em> catalog '
+            '(1946-1992), including oil and acrylic paintings across '
+            'his action-painting and color-field periods'
+        ),
+        training_set_count=31,
+        lora_rank=32,
+        steps=1500,
+        train_minutes=12,
+        trigger_word="sam_francis_style",
+        filed_date="2026-05-05",
     ),
 }
 
