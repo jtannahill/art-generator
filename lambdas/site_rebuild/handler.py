@@ -36,6 +36,15 @@ def _bloomberg_methodology(*, artist_display, source_url, source_label,
         f'  <h2 style="font-size:1.4rem;color:#fff;margin:0 0 1rem;letter-spacing:-0.5px;line-height:1.25;">'
         f'    Custom FLUX.1-dev LoRA, fine-tuned on {artist_display}\'s own canvas work.'
         f'  </h2>'
+        # Plain-English explainer of LoRA + FLUX.1-dev for non-ML readers.
+        f'  <p style="font-size:0.84rem;line-height:1.7;color:#999;margin:0 0 1.25rem;max-width:62ch;font-style:italic;border-left:2px solid #2a2a2a;padding-left:0.85rem;">'
+        f'    A <strong style="color:#ddd;">LoRA</strong> (low-rank adaptation) is a compact set of '
+        f'    trainable weights that sits on top of a much larger frozen base model. Instead of retraining '
+        f'    <strong style="color:#ddd;">FLUX.1-dev</strong>, the open-source 12-billion-parameter '
+        f'    text-to-image transformer from Black Forest Labs, the LoRA only adjusts ~50 million new '
+        f'    parameters using a small artist-specific dataset. The result keeps FLUX\'s general '
+        f'    image-generation ability intact while teaching it one artist\'s visual language.'
+        f'  </p>'
         f'  <p style="font-size:0.92rem;line-height:1.7;color:#bbb;margin:0 0 1.25rem;max-width:62ch;">'
         f'    Pieces in this gallery are produced by a private FLUX.1-dev LoRA '
         f'    trained on {training_set_count} hand-curated reproductions from '
@@ -44,45 +53,34 @@ def _bloomberg_methodology(*, artist_display, source_url, source_label,
         f'    Every image was captioned with its title, medium, dimensions, and year, '
         f'    binding the trigger to specific painterly cues rather than a generic style label.'
         f'  </p>'
+        # Tooltip explanations for each data-grid label. Hover the label to see.
         f'  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a;margin:0 0 1.25rem;">'
         f'    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
-        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Base Model</div>'
+        f'      <div class="tip" data-tip="Base diffusion model from Black Forest Labs. A 12B-parameter rectified-flow transformer trained on natural-language prompts. The LoRA rides on top, adapting it to a specific artist." style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Base Model</div>'
         f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">FLUX.1-dev</div>'
         f'    </div>'
         f'    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
-        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Training Set</div>'
+        f'      <div class="tip" data-tip="Number of curated canvas reproductions used to fine-tune the LoRA. Each image was hand-picked for fidelity to the artist\'s signature style and captioned with title, medium, dimensions, and year." style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Training Set</div>'
         f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">{training_set_count} canvases</div>'
         f'    </div>'
         f'    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
-        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">LoRA Rank</div>'
+        f'      <div class="tip" data-tip="Dimensionality of the low-rank adaptation matrices. Higher rank captures more style nuance but takes longer to train and risks overfitting on small datasets. 32 is a balanced choice for ~30-image sets." style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">LoRA Rank</div>'
         f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">{lora_rank}</div>'
         f'    </div>'
         f'    <div style="padding:0.85rem 1rem;border-right:1px solid #2a2a2a;">'
-        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Steps</div>'
+        f'      <div class="tip" data-tip="Number of optimizer updates during fine-tuning. Each step processes a single image and nudges the LoRA weights toward the training distribution. Below ~800 the model under-fits; above ~2000 it starts to memorize." style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Steps</div>'
         f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">{steps:,}</div>'
         f'    </div>'
         f'    <div style="padding:0.85rem 1rem;">'
-        f'      <div style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Train Time</div>'
+        f'      <div class="tip" data-tip="Wall-clock training time on the rented GPU. The trainer is ostris/flux-dev-lora-trainer running on Replicate." style="font-size:0.62rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.25rem;">Train Time</div>'
         f'      <div style="font-family:\'Courier New\',monospace;font-size:0.95rem;color:#fff;font-weight:700;">'
         f'{train_minutes} min &middot; '
-        f'<span class="tip-h100" style="position:relative;border-bottom:1px dotted #888;cursor:help;">H100</span>'
+        f'<span class="tip" data-tip="NVIDIA H100 Tensor Core GPU - 80GB HBM3, datacenter accelerator rented on demand from Replicate." style="position:relative;border-bottom:1px dotted #888;cursor:help;">H100</span>'
         f'      </div>'
         f'    </div>'
         f'  </div>'
-        f'  <style>'
-        f'    .tip-h100::after {{'
-        f'      content: "NVIDIA H100 Tensor Core GPU - 80GB HBM3, datacenter accelerator rented on demand from Replicate.";'
-        f'      position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);'
-        f'      width: 260px; padding: 0.6rem 0.75rem;'
-        f'      background: #0a0a0a; color: #ddd; border: 1px solid #333; border-radius: 4px;'
-        f'      font-family: -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;'
-        f'      font-size: 0.72rem; font-weight: 400; line-height: 1.5;'
-        f'      letter-spacing: 0; text-transform: none; white-space: normal;'
-        f'      opacity: 0; pointer-events: none; transition: opacity 0.15s ease;'
-        f'      z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.5);'
-        f'    }}'
-        f'    .tip-h100:hover::after {{ opacity: 1; }}'
-        f'  </style>'
+        # Tooltip popups are handled by the existing .tip-bubble system in
+        # base.html (listens for [data-tip] attributes). No custom CSS needed.
         f'  <p style="font-size:0.78rem;color:#888;line-height:1.6;margin:0;font-style:italic;">'
         f'    Trigger word <code style="font-family:\'Courier New\',monospace;background:#1a1a1a;color:#ccc;padding:1px 6px;border-radius:2px;font-style:normal;">{trigger_word}</code> '
         f'    is prepended to every weather-derived prompt before inference. '
@@ -127,6 +125,23 @@ ARTIST_METHODOLOGY = {
         steps=1500,
         train_minutes=12,
         trigger_word="sam_francis_style",
+        filed_date="2026-05-05",
+    ),
+    "hilma_af_klint": _bloomberg_methodology(
+        artist_display="Hilma af Klint",
+        source_url="https://www.wikiart.org/en/hilma-af-klint",
+        source_label="WikiArt catalog",
+        series_html=(
+            ', covering the <em>Paintings for the Temple</em> body of '
+            'work (1906-1920) including <em>The Ten Largest</em>, '
+            '<em>The Swan</em>, <em>The Dove</em>, <em>Atom Series</em>, '
+            'and the <em>Altarpieces</em>'
+        ),
+        training_set_count=27,
+        lora_rank=32,
+        steps=1500,
+        train_minutes=12,
+        trigger_word="hilma_af_klint_style",
         filed_date="2026-05-05",
     ),
 }

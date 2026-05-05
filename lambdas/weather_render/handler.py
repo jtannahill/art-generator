@@ -40,6 +40,12 @@ ARTIST_LORA_MODELS = {
         "trigger_word": "sam_francis_style",
         "lora_scale": 1.0,
     },
+    "hilma_af_klint": {
+        "model": "jtannahill/lora-hilma-af-klint",
+        "version": "4521f6f2e5bc9e21d2ca16458cd3266ebc9c9ffd99c4ef8578ca7b5bc93c9791",
+        "trigger_word": "hilma_af_klint_style",
+        "lora_scale": 1.0,
+    },
 }
 
 
