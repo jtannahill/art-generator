@@ -1,0 +1,11 @@
+PIL/
+pillow.libs/
+boto3/
+botocore/
+s3transfer/
+dateutil/
+jmespath/
+urllib3/
+*.dist-info/
+__pycache__/
+*.pyc
