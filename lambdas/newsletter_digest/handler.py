@@ -3,6 +3,7 @@ Triggered after site-rebuild in the daily pipeline."""
 
 import json
 import os
+import re
 import xml.etree.ElementTree as ET
 import urllib.parse
 import urllib.request
@@ -102,13 +103,20 @@ def handler(event, context):
     return {"sent": sent, "failed": failed, "subscribers": len(subscribers)}
 
 
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def _strip_html(s: str) -> str:
+    return _HTML_TAG_RE.sub("", s).strip()
+
+
 def build_email_html(items, today):
     """Build branded HTML email with artwork grid."""
     artwork_cards = ""
     for item in items:
         title = item.findtext("title", "")
         link = item.findtext("link", "")
-        description = item.findtext("description", "")
+        description = _strip_html(item.findtext("description", ""))
         enclosure = item.find("enclosure")
         img_url = enclosure.get("url", "") if enclosure is not None else ""
 
@@ -116,10 +124,13 @@ def build_email_html(items, today):
         if not img_url and link:
             img_url = link.rstrip("/") + "/preview-2048.png"
 
-        # Parse title: "Arctic 60N 130W — Wassily Kandinsky"
-        parts = title.split(" — ", 1)
-        location = parts[0] if parts else title
-        artist = parts[1] if len(parts) > 1 else ""
+        # Live RSS titles use " - " (hyphen); legacy " — " (em dash) kept as fallback.
+        if " - " in title:
+            location, artist = title.split(" - ", 1)
+        elif " — " in title:
+            location, artist = title.split(" — ", 1)
+        else:
+            location, artist = title, ""
 
         desc_short = description[:120] + "..." if len(description) > 120 else description
 
@@ -185,7 +196,7 @@ def build_email_text(items, today):
     for item in items:
         title = item.findtext("title", "")
         link = item.findtext("link", "")
-        description = item.findtext("description", "")
+        description = _strip_html(item.findtext("description", ""))
         desc_short = description[:150] + "..." if len(description) > 150 else description
         lines.append(f"{title}")
         lines.append(f"{desc_short}")
