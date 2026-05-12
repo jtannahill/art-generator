@@ -1,5 +1,14 @@
 # art.jamestannahill.com
 
+![Status](https://img.shields.io/badge/status-active-success)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![AWS Lambda](https://img.shields.io/badge/AWS-Lambda-FF9900?logo=awslambda&logoColor=white)
+![Bedrock](https://img.shields.io/badge/AWS-Bedrock-FF9900?logo=amazonaws&logoColor=white)
+![Step Functions](https://img.shields.io/badge/AWS-Step_Functions-FF4F8B?logo=amazonaws&logoColor=white)
+![Replicate](https://img.shields.io/badge/Replicate-000000?logo=replicate&logoColor=white)
+[![Live](https://img.shields.io/badge/live-art.jamestannahill.com-blue)](https://art.jamestannahill.com)
+![Last Commit](https://img.shields.io/github/last-commit/jtannahill/art-generator)
+
 Generative art from real atmospheric data. Daily artworks derived entirely from live weather patterns - pressure, wind, temperature - rendered as high-resolution digital art through the lens of abstract expressionism.
 
 **Live:** [art.jamestannahill.com](https://art.jamestannahill.com)
