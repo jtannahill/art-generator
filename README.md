@@ -90,8 +90,7 @@ EventBridge (daily 06:00 UTC)
         │   ├── Art Critic (scores + commentary on generated pieces)
         │   └── Weather Forecast (atmospheric condition predictions)
         ├── Newsletter + Social
-        │   ├── Newsletter Digest (Resend → subscribers)
-        │   └── X Poster (RSS → OAuth 1.0a posting, DynamoDB dedup)
+        │   └── Newsletter Digest (Resend → subscribers)
         └── Site Rebuild
             ├── Jinja2 templates → static HTML (homepage, archive, artists, studies, map, about, privacy, terms)
             ├── Asset copying (artwork PNGs/SVGs + satellite thumbs → site/ prefix)
@@ -123,7 +122,6 @@ EventBridge (daily 06:00 UTC)
 |----------|---------|
 | `art-weather-ingest` | Scans 54 global weather points, scores for visual drama |
 | `art-weather-render` | Tri-mode art generation: Flux 1.1 Pro (PNG), per-artist FLUX.1-dev LoRA fine-tune (7 artists, dispatched via `ARTIST_LORA_MODELS`), or Bedrock Claude (SVG). PNG preview rendering (CairoSVG). |
-| `art-x-poster` | RSS-driven X/Twitter posting with OAuth 1.0a (text + link, DynamoDB dedup) |
 | `art-satellite-ingest` | Sentinel Hub Process API → true-color imagery for 30 rotating locations |
 | `art-palette-extract` | Color quantization + Bedrock mood descriptions |
 | `art-critic` | ML commentary scoring on generated artworks |
