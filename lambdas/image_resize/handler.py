@@ -2,9 +2,11 @@
 art-image-resize — generate WebP variants AND pre-warm watermarked downloads.
 
 Triggered by S3 PUT events on `weather/*/preview-2048.png`. Produces
-preview-480.webp / preview-960.webp / preview-1920.webp at quality 82,
-written to the same prefix. Idempotent — skips a variant if it already
-exists.
+preview-480.webp / preview-960.webp / preview-1200.webp /
+preview-1920.webp at quality 82, written to the same prefix. The 1200
+variant exists for og:image / twitter:image (social scrapers want
+~1200px and the old 2048 PNG was ~1.7 MB). Idempotent — skips a
+variant if it already exists.
 
 After WebP generation, fans out two async invocations of
 art-watermark-download (z=4k, z=8k) so the watermarked PNGs are cached
@@ -25,7 +27,7 @@ from botocore.exceptions import ClientError
 from PIL import Image
 
 BUCKET = os.environ.get("BUCKET_NAME", "art-generator-216890068001")
-WIDTHS = [480, 960, 1920]
+WIDTHS = [480, 960, 1200, 1920]
 QUALITY = 82
 WATERMARK_FUNCTION = os.environ.get("WATERMARK_FUNCTION", "art-watermark-download")
 WATERMARK_SIZES = ["4k", "8k"]
