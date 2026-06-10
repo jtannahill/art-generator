@@ -97,53 +97,62 @@ def _try_get(key):
 
 
 def _watermark(png_bytes: bytes, run_id: str) -> bytes:
+    """Tile 'art.jt + site + date' across the whole image at low opacity,
+    rotated -22°. Hard to crop out, doesn't destroy the artwork view."""
     img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
     w, h = img.size
-
-    title_size = max(28, int(w * 0.018))
-    sub_size = max(18, int(w * 0.011))
-    pad = max(20, int(w * 0.022))
-
-    title_font = ImageFont.truetype(FONT_PATH, title_size)
-    sub_font = ImageFont.truetype(FONT_PATH, sub_size)
 
     title = "art.jt"
     date = run_id[:10] if len(run_id) >= 10 else ""
     sub = f"{SITE_URL}  ·  {date}" if date else SITE_URL
 
-    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    draw = ImageDraw.Draw(overlay)
+    title_size = max(48, int(w * 0.030))
+    sub_size = max(20, int(title_size * 0.42))
+    title_font = ImageFont.truetype(FONT_PATH, title_size)
+    sub_font = ImageFont.truetype(FONT_PATH, sub_size)
 
-    title_bbox = draw.textbbox((0, 0), title, font=title_font)
-    sub_bbox = draw.textbbox((0, 0), sub, font=sub_font)
+    # Build one stamp on a transparent canvas, rotate, then tile-paste
+    # it across the full image.
+    stamp_canvas_w = max(title_size * 8, int(w * 0.22))
+    stamp_canvas_h = max(title_size * 3, int(title_size * 2.6))
+    stamp = Image.new("RGBA", (stamp_canvas_w, stamp_canvas_h), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(stamp)
+
+    title_bbox = sd.textbbox((0, 0), title, font=title_font)
     title_w = title_bbox[2] - title_bbox[0]
     title_h = title_bbox[3] - title_bbox[1]
+    sub_bbox = sd.textbbox((0, 0), sub, font=sub_font)
     sub_w = sub_bbox[2] - sub_bbox[0]
-    sub_h = sub_bbox[3] - sub_bbox[1]
 
-    block_w = max(title_w, sub_w)
-    block_h = title_h + sub_h + int(title_size * 0.3)
+    cx_title = (stamp_canvas_w - title_w) // 2
+    cy_title = (stamp_canvas_h - title_h - sub_size - 8) // 2
+    cx_sub = (stamp_canvas_w - sub_w) // 2
+    cy_sub = cy_title + title_h + max(4, sub_size // 3)
 
-    x = w - block_w - pad
-    y = h - block_h - pad
+    # Soft shadow then white text for legibility on any background.
+    shadow_off = max(2, title_size // 22)
+    sd.text((cx_title + shadow_off, cy_title + shadow_off), title,
+            font=title_font, fill=(0, 0, 0, 110))
+    sd.text((cx_title, cy_title), title, font=title_font, fill=(255, 255, 255, 105))
+    sd.text((cx_sub + shadow_off // 2, cy_sub + shadow_off // 2), sub,
+            font=sub_font, fill=(0, 0, 0, 90))
+    sd.text((cx_sub, cy_sub), sub, font=sub_font, fill=(255, 255, 255, 90))
 
-    bg_pad = int(title_size * 0.6)
-    draw.rectangle(
-        [x - bg_pad, y - bg_pad, x + block_w + bg_pad, y + block_h + bg_pad],
-        fill=(0, 0, 0, 110),
-    )
+    rotated = stamp.rotate(-22, expand=True, resample=Image.Resampling.BICUBIC)
+    tw, th = rotated.size
 
-    draw.text((x, y), title, font=title_font, fill=(255, 255, 255, 230))
-    draw.text(
-        (x, y + title_h + int(title_size * 0.3)),
-        sub,
-        font=sub_font,
-        fill=(255, 255, 255, 180),
-    )
+    # Stagger every other row to break the grid.
+    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    step_x = int(tw * 0.95)
+    step_y = int(th * 0.85)
+    for ri, y in enumerate(range(-th, h + th, step_y)):
+        x_offset = (ri % 2) * (step_x // 2)
+        for x in range(-tw + x_offset, w + tw, step_x):
+            overlay.paste(rotated, (x, y), rotated)
 
     composited = Image.alpha_composite(img, overlay).convert("RGB")
     buf = io.BytesIO()
-    composited.save(buf, format="PNG", optimize=True)
+    composited.save(buf, format="PNG", optimize=False)
     return buf.getvalue()
 
 
