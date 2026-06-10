@@ -1,11 +1,13 @@
 """Satellite Ingest Lambda — fetches Sentinel-2 imagery for active locations."""
 
+import hashlib
 import json
 import os
 from datetime import datetime, timedelta
 
 import boto3
 import requests
+from botocore.exceptions import ClientError
 
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "")
 COPERNICUS_CLIENT_ID = os.environ.get("COPERNICUS_CLIENT_ID", "")
@@ -148,6 +150,17 @@ function evaluatePixel(sample) {
     return None, None
 
 
+def get_last_ingested_hash(s3, slug: str) -> str | None:
+    """Return md5 hex of the most recent ingested source.jpg for this slug, or None."""
+    try:
+        resp = s3.get_object(Bucket=BUCKET_NAME, Key=f"satellite/_latest/{slug}.md5")
+        return resp["Body"].read().decode().strip()
+    except ClientError as e:
+        if e.response["Error"]["Code"] in ("NoSuchKey", "404"):
+            return None
+        raise
+
+
 def handler(event, context):
     """Fetch Sentinel-2 imagery for active locations and save to S3."""
     today = datetime.utcnow()
@@ -185,12 +198,23 @@ def handler(event, context):
             print(f"No suitable imagery found for {slug}")
             continue
 
+        md5_hex = hashlib.md5(jpeg_bytes).hexdigest()
+        if get_last_ingested_hash(s3, slug) == md5_hex:
+            print(f"Skipping {slug}: source unchanged since last ingest (md5={md5_hex})")
+            continue
+
         s3_key = f"satellite/{date_str}/{slug}/source.jpg"
         s3.put_object(
             Bucket=BUCKET_NAME,
             Key=s3_key,
             Body=jpeg_bytes,
             ContentType="image/jpeg",
+        )
+        s3.put_object(
+            Bucket=BUCKET_NAME,
+            Key=f"satellite/_latest/{slug}.md5",
+            Body=md5_hex.encode(),
+            ContentType="text/plain",
         )
 
         results.append(
