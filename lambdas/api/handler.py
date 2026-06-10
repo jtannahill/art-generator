@@ -46,8 +46,7 @@ def handler(event, context):
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(TABLE_NAME)
 
-    # Scan all WEATHER# items, filter by artist
-    # For better performance at scale, add a GSI on artist
+    # Full paginated scan — collect all matching items, then paginate in memory
     items = []
     scan_params = {
         "FilterExpression": "begins_with(PK, :prefix)",
@@ -58,26 +57,25 @@ def handler(event, context):
         scan_params["FilterExpression"] += " AND artist = :artist"
         scan_params["ExpressionAttributeValues"][":artist"] = artist
 
-    if cursor:
-        scan_params["ExclusiveStartKey"] = json.loads(cursor)
+    while True:
+        response = table.scan(**scan_params)
+        items.extend(response.get("Items", []))
+        if not response.get("LastEvaluatedKey"):
+            break
+        scan_params["ExclusiveStartKey"] = response["LastEvaluatedKey"]
 
-    response = table.scan(**scan_params)
-    items = response.get("Items", [])
+    # Sort by run_id descending (newest first). Old items lack the run_id
+    # attribute, so fall back to the date embedded in the PK.
+    items.sort(
+        key=lambda x: x.get("run_id") or x.get("PK", "").replace("WEATHER#", ""),
+        reverse=True,
+    )
 
-    # Sort by run_id descending (newest first)
-    items.sort(key=lambda x: x.get("run_id", x.get("PK", "")), reverse=True)
-
-    # Paginate
-    page = items[:page_size]
-    has_more = len(items) > page_size
-
-    # Build next cursor from DynamoDB pagination
-    next_cursor = None
-    if response.get("LastEvaluatedKey"):
-        next_cursor = json.dumps(response["LastEvaluatedKey"], cls=DecimalEncoder)
-    elif has_more:
-        # If we got more items than page_size from a single scan, we need another scan
-        next_cursor = "more"
+    # In-memory pagination using integer offset cursor
+    offset = int(cursor) if cursor and cursor.isdigit() else 0
+    page = items[offset:offset + page_size]
+    has_more = offset + page_size < len(items)
+    next_cursor = str(offset + page_size) if has_more else None
 
     # Build response with S3 URLs
     results = []
