@@ -37,9 +37,11 @@ ARTIST_FIDELITY = {
 def build_critic_prompt(artist_key=None):
     fidelity_section = ""
     if artist_key and artist_key in ARTIST_FIDELITY:
+        name = artist_key.replace('_', ' ').title()
         fidelity_section = f"""
-- Artist fidelity (does this look like it could be by {artist_key.replace('_', ' ').title()}? Key markers: {ARTIST_FIDELITY[artist_key]})
-"""
+- Artist fidelity: how unmistakably does this read as a {name} work? Key markers: {ARTIST_FIDELITY[artist_key]}
+  Be a strict, discriminating judge and USE THE FULL 1-10 RANGE — do not default to 7-8:
+  1-3 = generic/off-style, the markers are absent or contradicted; 4-5 = vaguely evocative but a stranger would not name {name}; 6-7 = recognizably in the manner; 8-9 = a convincing {name}; 10 = could pass for an actual {name}. Judge fidelity independently of overall quality."""
     return f"""You are an art critic evaluating a generative artwork created from atmospheric weather data.
 
 Score this artwork on a scale of 1-10 across these criteria:
@@ -120,15 +122,22 @@ def handler(event, context):
     overall = scores.get("overall", 5)
     fidelity = scores.get("artist_fidelity", None)
 
-    # Store score in DynamoDB
+    # Store score in DynamoDB. artist_fidelity is promoted to a top-level
+    # attribute (not just buried in quality_detail JSON) so it is queryable
+    # for the per-artist on-point monitor / low-fidelity drift alerts.
     table = dynamodb.Table(TABLE_NAME)
+    update_expr = "SET quality_score = :qs, quality_detail = :qd"
+    expr_vals = {
+        ":qs": Decimal(str(overall)),
+        ":qd": json.dumps(scores),
+    }
+    if fidelity is not None:
+        update_expr += ", artist_fidelity = :af"
+        expr_vals[":af"] = Decimal(str(fidelity))
     table.update_item(
         Key={"PK": f"WEATHER#{run_id}", "SK": slug},
-        UpdateExpression="SET quality_score = :qs, quality_detail = :qd",
-        ExpressionAttributeValues={
-            ":qs": Decimal(str(overall)),
-            ":qd": json.dumps(scores),
-        },
+        UpdateExpression=update_expr,
+        ExpressionAttributeValues=expr_vals,
     )
 
     fidelity_msg = f", fidelity={fidelity}/10" if fidelity else ""

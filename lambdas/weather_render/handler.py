@@ -238,6 +238,7 @@ def handler(event, context):
         "date": date,
         "s3_prefix": prefix,
         "score": region["score"],
+        "artist": artist,
     }
 
 
