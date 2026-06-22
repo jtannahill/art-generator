@@ -70,6 +70,12 @@ ARTIST_LORA_MODELS = {
         "trigger_word": "gerhard_richter_style",
         "lora_scale": 1.0,
     },
+    "norman_lewis": {
+        "model": "jtannahill/lora-norman-lewis",
+        "version": "f8791c71c54bbc41b27d2387e8f02c152aafc0ff60c9057f9b9c3a6c176f2369",
+        "trigger_word": "norman_lewis_style",
+        "lora_scale": 1.0,
+    },
 }
 
 
@@ -736,6 +742,12 @@ ARTIST_PROFILES = {
         "weather_mapping": "Wind direction drives the squeegee drag direction — SW wind = diagonal drags from lower-left. Wind speed controls stroke length — strong wind = long sweeping drags across the full canvas. Pressure gradient maps to how many layers are revealed — steep gradient = more layers visible, more complexity. Temperature anomaly controls the underlying color warmth being revealed.",
         "negative": "NOT dotted, NOT circular, NOT geometric shapes, NOT clean edges, NOT minimal. No discrete elements — everything should feel like continuous dragged paint. NOT illustrative.",
         "palette_guidance": "Rich layered colors: deep reds, greys, greens, yellows showing through. Each layer a different temperature. Cool over warm or warm over cool.",
+    },
+    "norman_lewis": {
+        "description": "Norman Lewis — pioneering African-American Abstract Expressionist of the New York School. Calligraphic, gestural abstraction: rhythmic clusters of small linear marks that suggest figures, birds, or massing crowds drifting across deep atmospheric fields. His 'Processional' works array delicate white and colored marks in horizontal bands against dark grounds; other works dissolve luminous color into veils of improvisatory, jazz-inflected mark-making.",
+        "weather_mapping": "Wind speed drives the density and agitation of the calligraphic marks — strong wind = swarming, crowded processions of marks; calm = sparse, drifting notations. Wind direction sets the procession's flow across the canvas. Pressure maps to massing — low pressure = marks coalesce into dense crowds and dark veils, high pressure = airy dispersal into open ground. Temperature drives palette warmth — heat = ochres, reds, and warm whites; cold = blues, silver, and stark white on near-black grounds. Humidity controls atmospheric veiling — high humidity = misty, layered fields softening the marks.",
+        "negative": "NOT hard-edged geometric, NOT a grid, NOT photorealistic, NOT literal figures or illustration. Marks should read as improvisatory calligraphy and gesture, not drawn figures. No precise mechanical lines, no clean vector shapes.",
+        "palette_guidance": "Predominantly deep black, blue-black, or smoky grounds carrying rhythmic white, ochre, crimson, and cerulean marks; some works fully atmospheric in warm earths or cool blues. Keep marks delicate and gestural; let the dark ground breathe and dominate.",
     },
     "hilma_af_klint": {
         "description": "Hilma af Klint — mystical geometric abstraction with biomorphic forms. Soft pastels alongside deep saturated colors. Spirals, circles within circles, botanical symmetry. Sacred geometry meets organic growth.",

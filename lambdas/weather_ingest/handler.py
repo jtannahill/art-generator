@@ -101,7 +101,7 @@ def handler(event, context):
         "yayoi_kusama", "mark_rothko", "bridget_riley",
         "kazimir_malevich", "lesley_tannahill",
         "arshile_gorky", "willem_de_kooning", "joan_mitchell", "mark_tobey",
-        "peter_max",
+        "peter_max", "norman_lewis",
     ]
     if isinstance(event, dict) and event.get("artist"):
         artist = event["artist"]  # Allow manual override via Step Function input

@@ -17,6 +17,7 @@ s3 = boto3.client("s3")
 ARTIST_FIDELITY = {
     "sam_francis": "Sam Francis: bold saturated color fields, energetic splashes/splatters, luminous negative space, color pooling at edges. Palette: pure saturated cadmium yellow, ultramarine blue, cadmium red. White space is luminous.",
     "gerhard_richter": "Gerhard Richter: sweeping squeegee strokes layering and revealing color beneath. Horizontal/vertical paint drags. Rich complex color layering. No discrete shapes — continuous dragged paint.",
+    "norman_lewis": "Norman Lewis: calligraphic abstraction — teeming small marks, glyphs, and tiny figures massing in horizontal processions across deep atmospheric grounds (blue-black, smoky umber). Restrained palette: dark ground with white/ochre/crimson/cerulean notations. Atmospheric veils, jazz rhythm, crowds dissolving into abstraction. No hard edges, no literal figures.",
     "hilma_af_klint": "Hilma af Klint: mystical geometric abstraction, biomorphic spirals, circles within circles, botanical symmetry. Pastels alongside jewel tones. Gold/ochre as sacred element.",
     "wassily_kandinsky": "Wassily Kandinsky: geometric shapes (circles, triangles, lines) in musical harmony. Bold primaries on muted backgrounds. Shapes suggest rhythm and movement.",
     "helen_frankenthaler": "Helen Frankenthaler: stain painting — color soaked/bled into canvas. Transparent washes pooling and overlapping. No visible brushstrokes — poured, absorbed color.",
