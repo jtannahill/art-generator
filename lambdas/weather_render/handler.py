@@ -76,6 +76,12 @@ ARTIST_LORA_MODELS = {
         "trigger_word": "norman_lewis_style",
         "lora_scale": 1.0,
     },
+    "arshile_gorky": {
+        "model": "jtannahill/lora-arshile-gorky",
+        "version": "ab705893532a60f0dde7c7175e64111ba4f0224848c7f97fb39fdabd6b3f1251",
+        "trigger_word": "arshile_gorky_style",
+        "lora_scale": 1.0,
+    },
 }
 
 
