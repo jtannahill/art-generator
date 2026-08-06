@@ -337,6 +337,16 @@ export class ArtGeneratorStack extends cdk.Stack {
     });
     table.grantReadData(apiFn);
 
+    // Newsletter subscribe/unsubscribe: writes confined to the SUBSCRIBER partition
+    // so the public, unauthenticated function URL can never touch artwork rows.
+    apiFn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:PutItem', 'dynamodb:DeleteItem'],
+      resources: [table.tableArn],
+      conditions: {
+        'ForAllValues:StringEquals': { 'dynamodb:LeadingKeys': ['SUBSCRIBER'] },
+      },
+    }));
+
     const apiUrl = apiFn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
       cors: {
