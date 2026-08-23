@@ -74,3 +74,20 @@ def test_build_retry_prompt():
     assert original in result
     assert "fix" in result.lower() or "correct" in result.lower()
     assert bad_svg in result
+
+
+def test_daily_render_never_calls_clarity(monkeypatch):
+    """The 8K Clarity pass is on-demand only; the daily pipeline must not invoke it."""
+    import lambdas.weather_render.handler as h
+    src = open(h.__file__).read()
+    body = src.split("def handler(event, context):")[1].split("\ndef ")[0]
+    assert "upscale_clarity(" not in body
+    assert "upscale_8k_on_demand(" in body
+
+
+def test_upscale_8k_action_dispatches(monkeypatch):
+    import lambdas.weather_render.handler as h
+    calls = []
+    monkeypatch.setattr(h, "upscale_8k_on_demand", lambda r, s: calls.append((r, s)) or {"status": "ok"})
+    out = h.handler({"action": "upscale_8k", "run_id": "2026-08-23", "slug": "x"}, None)
+    assert out == {"status": "ok"} and calls == [("2026-08-23", "x")]

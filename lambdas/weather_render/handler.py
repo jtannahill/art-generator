@@ -86,7 +86,12 @@ ARTIST_LORA_MODELS = {
 
 
 def handler(event, context):
-    """Receives a single region dict, generates Flux raster + Claude SVG in parallel."""
+    """Receives a single region dict, generates Flux raster + Claude SVG in parallel.
+
+    Also accepts {"action": "upscale_8k", "run_id": ..., "slug": ...} to produce the
+    8K print file on demand (see upscale_8k_on_demand)."""
+    if event.get("action") == "upscale_8k":
+        return upscale_8k_on_demand(event["run_id"], event["slug"])
     region = event
     date = region.get("date", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
     run_id = region.get("run_id", date)
@@ -130,17 +135,14 @@ def handler(event, context):
     png_8k = None
     if flux_png:
         png_2048 = flux_png  # Flux output is the primary preview (~1024px)
-        # Two-pass upscale: Real-ESRGAN 4x (1024→4096) then Clarity 2x (4096→8192)
+        # Real-ESRGAN 4x (1024→4096) only. The 8K Clarity pass (~200s of A100,
+        # ~$0.28/piece, 92% of Replicate spend in Aug 2026) is no longer run for every
+        # piece; it is produced on demand via the "upscale_8k" action when a print
+        # product is registered or an 8K download is wanted.
         try:
-            print("Pass 1: Real-ESRGAN 4x (1024→4096)...")
+            print("Real-ESRGAN 4x (1024→4096)...")
             png_4k = upscale_image(flux_png, scale=4)
-            print(f"Pass 1 complete: {len(png_4k)/1024/1024:.1f} MB")
-            try:
-                print("Pass 2: Clarity Upscaler 2x (4096→8192)...")
-                png_8k = upscale_clarity(png_4k, scale=2)
-                print(f"Pass 2 complete: {len(png_8k)/1024/1024:.1f} MB (8K print-ready)")
-            except Exception as e:
-                print(f"8K upscale failed (non-fatal, 4K still saved): {e}")
+            print(f"Upscale complete: {len(png_4k)/1024/1024:.1f} MB")
         except Exception as e:
             print(f"Upscale failed, using Flux original as fallback: {e}")
             png_4k = flux_png
@@ -488,6 +490,29 @@ def upscale_image(png_bytes, scale=4):
             raise RuntimeError(f"Upscale failed: {status.get('error', 'unknown')}")
 
     raise RuntimeError("Upscale timed out after 5 minutes")
+
+
+def upscale_8k_on_demand(run_id, slug):
+    """Produce preview-8k.png for one existing piece from its preview-4k.png and flag
+    has_8k in DynamoDB. Idempotent: returns immediately if the 8K file already exists."""
+    s3 = boto3.client("s3")
+    prefix = f"weather/{run_id}/{slug}"
+    key_8k = f"{prefix}/preview-8k.png"
+    try:
+        s3.head_object(Bucket=BUCKET_NAME, Key=key_8k)
+        return {"status": "exists", "key": key_8k}
+    except Exception:
+        pass
+    png_4k = s3.get_object(Bucket=BUCKET_NAME, Key=f"{prefix}/preview-4k.png")["Body"].read()
+    print(f"On-demand 8K: Clarity 2x for {prefix} ({len(png_4k)/1024/1024:.1f} MB in)")
+    png_8k = upscale_clarity(png_4k, scale=2)
+    s3.put_object(Bucket=BUCKET_NAME, Key=key_8k, Body=png_8k, ContentType="image/png")
+    boto3.resource("dynamodb").Table(TABLE_NAME).update_item(
+        Key={"PK": f"WEATHER#{run_id}", "SK": slug},
+        UpdateExpression="SET has_8k = :t",
+        ExpressionAttributeValues={":t": True},
+    )
+    return {"status": "created", "key": key_8k, "bytes": len(png_8k)}
 
 
 def upscale_clarity(png_bytes, scale=2):
