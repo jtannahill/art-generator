@@ -121,6 +121,9 @@ def handler(event, context):
         # Claude SVG result — vector download
         try:
             svg_text, rationale = svg_future.result(timeout=120)
+            rationale = sanitize_rationale(
+                rationale, region.get("temp"), region.get("pressure")
+            )
             print(f"SVG generation succeeded: {len(svg_text)} chars")
         except Exception as e:
             print(f"SVG generation failed: {e}")
@@ -659,6 +662,8 @@ def generate_rationale(region):
         f"Atmospheric conditions: pressure {region['pressure']} hPa, "
         f"wind {region['wind_speed']} m/s, temp {region['temp']}°C "
         f"(anomaly {region['temp_anomaly']}°C). "
+        f"Use °C and hPa exactly as given. Do not convert to Kelvin or Pascals "
+        f"and do not add parenthetical unit conversions. "
         f"Write in plain prose — no markdown, no bold, no headers."
     )
     client = boto3.client("bedrock-runtime", region_name="us-east-1")
@@ -679,7 +684,9 @@ def generate_rationale(region):
     text = re.sub(r"\*\*[^*]*\*\*:?\s*", "", text)
     text = re.sub(r"\n+", " ", text)
     text = re.sub(r"\s{2,}", " ", text)
-    return text.strip()
+    return sanitize_rationale(
+        text.strip(), region.get("temp"), region.get("pressure")
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -736,6 +743,52 @@ def extract_svg(text):
     if match:
         return match.group(1)
     return None
+
+
+# Surface weather is stored as °C and hPa. Values in these ranges that
+# the model labels K / Pa are mislabeled, not converted.
+_C_RANGE = (-90.0, 60.0)
+_HPA_RANGE = (300.0, 1100.0)
+
+
+def sanitize_rationale(text, temp=None, pressure=None):
+    """Rewrite Kelvin/Pascal mislabels so copy matches the station fields.
+
+    The SVG prompt used to say 'K' and 'Pa' while the numbers were °C and
+    hPa. Claude then 'converted' 27.8 K to −245°C. Lock the units here so
+    a prompt regression cannot ship contradictory numbers.
+    """
+    if not text:
+        return text
+
+    def _celsius(match):
+        n = float(match.group(1))
+        if _C_RANGE[0] <= n <= _C_RANGE[1]:
+            return f"{match.group(1)}°C"
+        return match.group(0)
+
+    def _hpa(match):
+        n = float(match.group(1))
+        if _HPA_RANGE[0] <= n <= _HPA_RANGE[1]:
+            return f"{match.group(1)} hPa"
+        return match.group(0)
+
+    # "27.8 K (-245°C)" / "27.8 Kelvin (300 K)" → "27.8°C"
+    text = re.sub(
+        r"(\d+(?:\.\d+)?)\s*(?:K|Kelvin)\s*\([^)]*\)",
+        r"\1°C",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r"(\d+(?:\.\d+)?)\s*(?:K|Kelvin)\b",
+        _celsius,
+        text,
+        flags=re.IGNORECASE,
+    )
+    # "830 Pa" but not "830 hPa"
+    text = re.sub(r"(\d+(?:\.\d+)?)\s*Pa\b", _hpa, text)
+    return re.sub(r"\s{2,}", " ", text).strip()
 
 
 def extract_rationale(text):
@@ -907,10 +960,14 @@ Canvas: viewBox="0 0 {width} {height}" — use the full canvas. This is a {'land
 
 Location: {region['slug']} ({region['lat']}, {region['lng']})
 Atmospheric conditions:
-- Sea-level pressure: {region['pressure']} Pa (gradient: {region['pressure_gradient']} Pa/cell)
+- Sea-level pressure: {region['pressure']} hPa (gradient: {region['pressure_gradient']} hPa/cell)
 - Wind: {region['wind_speed']} m/s from {region['wind_direction']} degrees
-- Temperature: {region['temp']} K (anomaly from zonal mean: {region['temp_anomaly']} K){humidity_line}{precip_line}
+- Temperature: {region['temp']}°C (anomaly from zonal mean: {region['temp_anomaly']}°C){humidity_line}{precip_line}
 - Visual interest score: {region['score']}
+
+UNITS: Temperature is Celsius (°C). Pressure is hectopascals (hPa). Quote these
+values and units verbatim. Do not convert to Kelvin or Pascals. Do not add
+parenthetical conversions such as "(300 K)" or "(-245°C)".
 
 Artistic direction:
 - Draw inspiration from {artist_desc}

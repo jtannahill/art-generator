@@ -2,7 +2,9 @@
 
 from lambdas.weather_render.handler import (
     build_retry_prompt,
+    build_svg_prompt,
     extract_svg,
+    sanitize_rationale,
     validate_svg,
 )
 
@@ -74,6 +76,55 @@ def test_build_retry_prompt():
     assert original in result
     assert "fix" in result.lower() or "correct" in result.lower()
     assert bad_svg in result
+
+
+def test_sanitize_rationale_fixes_kelvin_and_pascal_mislabels():
+    raw = (
+        "The extremely low sea-level pressure of 830 Pa with a strong gradient "
+        "suggests dramatic topographical shifts, while the frigid temperature "
+        "of 27.8 K (-245°C) and low humidity of 36% indicate high-altitude winter."
+    )
+    out = sanitize_rationale(raw, temp=27.8, pressure=830)
+    assert "830 hPa" in out
+    assert "27.8°C" in out
+    assert "Pa" not in out.replace("hPa", "")
+    assert "K" not in out
+    assert "-245" not in out
+
+
+def test_sanitize_rationale_leaves_true_kelvin_alone():
+    # 255 K is a real polar Kelvin value, not a mislabeled Celsius reading.
+    raw = "The air mass sits near 255 K over the ice sheet."
+    assert sanitize_rationale(raw) == raw
+
+
+def test_sanitize_rationale_is_idempotent():
+    text = "Pressure 1013 hPa, temperature 18.2°C."
+    assert sanitize_rationale(text) == text
+    assert sanitize_rationale(sanitize_rationale(text)) == text
+
+
+def test_build_svg_prompt_uses_celsius_and_hpa():
+    region = {
+        "slug": "central-asia-30n-70e",
+        "lat": 30,
+        "lng": 70,
+        "pressure": 830,
+        "pressure_gradient": 12.4,
+        "wind_speed": 3.9,
+        "wind_direction": 227,
+        "temp": 27.8,
+        "temp_anomaly": 4.1,
+        "score": 41.2,
+        "artist": "helen_frankenthaler",
+        "date": "2026-09-16",
+    }
+    prompt, _fmt = build_svg_prompt(region)
+    assert "830 hPa" in prompt
+    assert "27.8°C" in prompt
+    assert "830 Pa" not in prompt
+    assert "27.8 K" not in prompt
+    assert "Do not convert to Kelvin or Pascals" in prompt
 
 
 def test_daily_render_never_calls_clarity(monkeypatch):
