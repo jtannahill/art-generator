@@ -20,6 +20,7 @@ Also runs as a backfill via direct invoke:
 import io
 import os
 import json
+import time
 import urllib.parse
 
 import boto3
@@ -50,10 +51,26 @@ def _key_for(run_id: str, slug: str) -> str:
     return f"weather/{run_id}/{slug}/preview-2048.png"
 
 
+def _best_source(run_id: str, slug: str, wait_s: int = 0) -> str:
+    """Prefer the upscaled 4K master. preview-2048.png is only 768px wide for
+    FLUX.1-dev LoRA pieces, so resizing from it made every "1920w" WebP a 768px
+    image and heroes looked soft on retina screens. The 4K file lands about a
+    second after the 2048 PNG that triggers us, so the S3 path waits briefly."""
+    k4 = f"weather/{run_id}/{slug}/preview-4k.png"
+    deadline = time.time() + wait_s
+    while True:
+        if _exists(k4):
+            return k4
+        if time.time() >= deadline:
+            return _key_for(run_id, slug)
+        time.sleep(5)
+
+
 def _resize_one(src_key: str, force: bool = False) -> dict:
     """Read src_key, write WebP variants. Returns counts."""
     obj = s3.get_object(Bucket=BUCKET, Key=src_key)
     src_bytes = obj["Body"].read()
+    Image.MAX_IMAGE_PIXELS = None  # the 4K master is a trusted pipeline output
     img = Image.open(io.BytesIO(src_bytes)).convert("RGB")
 
     base_prefix = src_key.rsplit("/", 1)[0]
@@ -110,9 +127,9 @@ def _prewarm_watermarks(run_id: str, slug: str) -> dict:
     return {"fired": fired, "skipped": skipped}
 
 
-def _process_piece(run_id: str, slug: str, force: bool = False) -> dict:
+def _process_piece(run_id: str, slug: str, force: bool = False, wait_s: int = 0) -> dict:
     """One piece end-to-end: WebP + prewarm watermarks."""
-    src = _key_for(run_id, slug)
+    src = _best_source(run_id, slug, wait_s)
     resize = _resize_one(src, force=force)
     prewarm = _prewarm_watermarks(run_id, slug)
     return {"resize": resize, "prewarm": prewarm}
@@ -141,7 +158,7 @@ def handler(event, context):
                 continue
             run_id, slug = split
             try:
-                results.append(_process_piece(run_id, slug))
+                results.append(_process_piece(run_id, slug, wait_s=45))
             except Exception as e:
                 print(f"process {key}: {e}")
                 results.append({"src": key, "error": str(e)})
@@ -177,7 +194,7 @@ def handler(event, context):
                 run_id, slug = split
                 try:
                     if not prewarm_only:
-                        r = _resize_one(key, force=force)
+                        r = _resize_one(_best_source(run_id, slug), force=force)
                         results["webp_written"] += r["written"]
                         results["webp_skipped"] += r["skipped"]
                     p = _prewarm_watermarks(run_id, slug)
