@@ -3,7 +3,8 @@ art-image-resize — generate WebP variants AND pre-warm watermarked downloads.
 
 Triggered by S3 PUT events on `weather/*/preview-2048.png`. Produces
 preview-480.webp / preview-960.webp / preview-1200.webp /
-preview-1920.webp at quality 82, written to the same prefix. The 1200
+preview-1920.webp at quality 82, written to the same prefix. The source is
+the upscaled preview-4k.png when present (see _best_source), else the 2048 PNG. The 1200
 variant exists for og:image / twitter:image (social scrapers want
 ~1200px and the old 2048 PNG was ~1.7 MB). Idempotent — skips a
 variant if it already exists.

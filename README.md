@@ -130,11 +130,13 @@ The static HTML frontend now lives in the separate [art-astro](https://github.co
 | `art-study-admin` | Manages study generation and publishing workflow |
 | `art-print-shop` | Print inquiry handling and theprintspace integration |
 | `art-api-product` | Product catalog API for print shop listings |
-| `art-site-rebuild` | Asset mirror only: copies new `weather/` and `palettes/` files into the `site/` prefix. Jinja renderer retired; HTML, sitemap, robots.txt, and llms.txt are built by the art-astro repo. |
-| `art-image-resize` | WebP variants (480 / 960 / 1200 / 1920) for every `preview-2048.png`; the 1200 width serves og:image and twitter:image. Also pre-warms watermarked 4K/8K downloads. |
+| `art-site-rebuild` | Asset mirror only: copies new `weather/` and `palettes/` files into the `site/` prefix. Jinja renderer retired; HTML, sitemap, robots.txt, and llms.txt are built by the art-astro repo. Times out at 900s on a full run, so large backfills need a direct copy of the changed keys into `site/weather/` plus a CloudFront invalidation of `/weather/*`. |
+| `art-image-resize` | Triggered by each `preview-2048.png` PUT. Builds WebP variants (480 / 960 / 1200 / 1920) from the upscaled `preview-4k.png` master when it exists (waiting up to 45s for it, since it lands just after the 2048 PNG), falling back to `preview-2048.png`. The 1200 width serves og:image and twitter:image. Also pre-warms watermarked 4K/8K downloads. Direct invoke supports `{run_id, slug, force?}` and `{backfill: true, force?, prewarm_only?}`. |
 | `art-trigger` | Generate button endpoint (2-hour cooldown) |
 | `art-api` | Paginated DynamoDB queries for infinite scroll galleries |
 | `art-watermark-download` | Watermarks public PNG downloads (4K/8K) on demand. Caches to `site/downloads/`, returns 302 to CloudFront. Print-shop fulfillment uses the un-watermarked source path directly. |
+
+Until 2026-09-23 the WebP previews were resized from `preview-2048.png`, which is only 768 to 1024px wide, so every "1920w" variant was really the small preview and heroes looked soft on retina screens. All 2,281 FLUX pieces were re-rendered from their 4K masters on 2026-09-23 and mirrored into `site/weather/`. Source selection is covered by `tests/image_resize/test_best_source.py`.
 
 ## SEO & Discoverability
 
