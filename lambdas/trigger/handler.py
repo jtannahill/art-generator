@@ -10,6 +10,12 @@ import boto3
 
 STATE_MACHINE_ARN = os.environ.get("STATE_MACHINE_ARN", "")
 TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", "")
+# Must match data-action on the art site's Generate widget.
+TURNSTILE_ACTION = "generate"
+# Frontend hostnames whose tokens may start a run. Production must never list localhost.
+TURNSTILE_HOSTNAMES = frozenset(
+    h.strip() for h in os.environ.get("TURNSTILE_HOSTNAMES", "art.jamestannahill.com").split(",") if h.strip()
+)
 COOLDOWN_HOURS = 2
 ARTIST_RE = re.compile(r"^[a-z_]{3,40}$")
 
@@ -21,7 +27,7 @@ def _json(status_code, body):
 def verify_turnstile(token, remote_ip):
     """Server-side Cloudflare Turnstile check. A public trigger URL with no human check
     let bots start ~$3 pipeline runs at will (Aug 2026); every start now needs a token."""
-    if not TURNSTILE_SECRET_KEY:
+    if not TURNSTILE_SECRET_KEY or not TURNSTILE_HOSTNAMES:
         return False
     if not token or len(token) > 2048:
         return False
@@ -29,10 +35,15 @@ def verify_turnstile(token, remote_ip):
     req = urllib.request.Request("https://challenges.cloudflare.com/turnstile/v0/siteverify", data=data, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            return bool(json.loads(resp.read()).get("success"))
+            result = json.loads(resp.read())
     except Exception as e:
         print(f"Turnstile verify error: {e}")
         return False
+    return (
+        result.get("success") is True
+        and result.get("action") == TURNSTILE_ACTION
+        and result.get("hostname") in TURNSTILE_HOSTNAMES
+    )
 
 
 def handler(event, context):
