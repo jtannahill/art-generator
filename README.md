@@ -18,10 +18,10 @@ Generative art from real atmospheric data. Daily artworks derived entirely from 
 Every day, this system scans 54 weather points across the globe, identifies the 10 most visually dramatic atmospheric conditions, and generates original artwork for each. There are three rendering paths:
 
 1. **Flux 1.1 Pro** from a descriptive text prompt (most artists)
-2. **Custom FLUX.1-dev LoRA fine-tunes** for seven artists trained on their own canvas reproductions (Lesley Tannahill, Sam Francis, Hilma af Klint, Joan Mitchell, Willem de Kooning, Helen Frankenthaler, Gerhard Richter)
+2. **Custom FLUX.1-dev LoRA fine-tunes** for nine artists trained on their own canvas reproductions (Lesley Tannahill, Sam Francis, Hilma af Klint, Joan Mitchell, Willem de Kooning, Helen Frankenthaler, Gerhard Richter, Norman Lewis, Arshile Gorky)
 3. **Bedrock Claude SVG** for a parallel vector version of every piece
 
-Users can select from 16 artist inspirations - each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
+Users can select from 17 artist inspirations - each producing radically different visual interpretations of the same weather data across 7 canvas formats (square, landscape, portrait, cinematic, golden ratio).
 
 A parallel pipeline extracts color palettes from Copernicus Sentinel-2 satellite imagery, building a seasonal archive of Earth's real colors as seen from 786 km above the surface.
 
@@ -29,13 +29,13 @@ Every piece is permanently archived, browsable via infinite-scroll artist galler
 
 ## Artists
 
-Sam Francis* | Gerhard Richter* | Hilma af Klint* | Wassily Kandinsky | Helen Frankenthaler* | Piet Mondrian | Yayoi Kusama | Mark Rothko | Bridget Riley | Kazimir Malevich | Lesley Tannahill* | Arshile Gorky | Willem de Kooning* | Joan Mitchell* | Mark Tobey | Peter Max
+Sam Francis* | Gerhard Richter* | Hilma af Klint* | Wassily Kandinsky | Helen Frankenthaler* | Piet Mondrian | Yayoi Kusama | Mark Rothko | Bridget Riley | Kazimir Malevich | Lesley Tannahill* | Arshile Gorky* | Willem de Kooning* | Joan Mitchell* | Mark Tobey | Peter Max | Norman Lewis*
 
 *Asterisked artists have a custom FLUX.1-dev LoRA fine-tune. See [Custom LoRAs](#custom-loras).*
 
 ## Custom LoRAs
 
-Seven artists are rendered through private FLUX.1-dev LoRA fine-tunes trained on hand-curated canvas reproductions, rather than from text prompts alone. Each artist's `/artist/{key}/` page carries a "Model & Methodology" block documenting the training corpus, hyperparameters, and provenance.
+Nine artists are rendered through private FLUX.1-dev LoRA fine-tunes trained on hand-curated canvas reproductions, rather than from text prompts alone. Each artist's `/artist/{key}/` page carries a "Model & Methodology" block documenting the training corpus, hyperparameters, and provenance.
 
 | Artist | Source | Training Set | Replicate Model |
 |---|---|---|---|
@@ -46,6 +46,8 @@ Seven artists are rendered through private FLUX.1-dev LoRA fine-tunes trained on
 | Willem de Kooning | [Willem de Kooning Foundation](https://www.dekooning.org/) (1916-1988) | 66 canvases | `jtannahill/lora-willem-de-kooning` |
 | Helen Frankenthaler | WikiArt (Soak-Stain + Color Field works) | curated canvases | `jtannahill/lora-helen-frankenthaler` |
 | Gerhard Richter | WikiArt (Abstrakte Bilder squeegee period) | curated canvases | `jtannahill/lora-gerhard-richter` |
+| Norman Lewis | See the artist page's Model & Methodology block | curated canvases | `jtannahill/lora-norman-lewis` |
+| Arshile Gorky | See the artist page's Model & Methodology block | curated canvases | `jtannahill/lora-arshile-gorky` |
 
 All LoRAs use rank 32, 1500 training steps, learning rate 1e-4, trained on Lambda Cloud H100 in ~12 minutes via [`ostris/flux-dev-lora-trainer`](https://replicate.com/ostris/flux-dev-lora-trainer) on Replicate (~$1-2 per training). Per-image captions encode title, medium, dimensions, and year. Trigger words follow the convention `{artist}_style`.
 
@@ -61,7 +63,7 @@ Training scaffold lives in [`~/lora-train/`](../lora-train/) (separate repo).
 | Orchestration | Step Functions, EventBridge (daily 06:00 UTC) |
 | Weather Data | Open-Meteo API (GFS/NOAA model) |
 | Satellite Imagery | Copernicus Sentinel Hub Process API (Sentinel-2 L2A) |
-| Art Generation | Flux 1.1 Pro (PNG, most artists), FLUX.1-dev LoRA fine-tunes (7 artists), Amazon Bedrock Claude (SVG, parallel) |
+| Art Generation | Flux 1.1 Pro (PNG, most artists), FLUX.1-dev LoRA fine-tunes (9 artists), Amazon Bedrock Claude (SVG, parallel) |
 | Color Extraction | Pillow median cut quantization |
 | Storage | S3 (versioned), DynamoDB |
 | CDN | CloudFront with OAC + CloudFront Function (index rewrite) |
@@ -120,7 +122,7 @@ The static HTML frontend now lives in the separate [art-astro](https://github.co
 | Function | Purpose |
 |----------|---------|
 | `art-weather-ingest` | Scans 54 global weather points, scores for visual drama |
-| `art-weather-render` | Tri-mode art generation: Flux 1.1 Pro (PNG), per-artist FLUX.1-dev LoRA fine-tune (7 artists, dispatched via `ARTIST_LORA_MODELS`), or Bedrock Claude (SVG). PNG preview rendering (CairoSVG). |
+| `art-weather-render` | Tri-mode art generation: Flux 1.1 Pro (PNG), per-artist FLUX.1-dev LoRA fine-tune (9 artists, dispatched via `ARTIST_LORA_MODELS`), or Bedrock Claude (SVG). PNG preview rendering (CairoSVG). |
 | `art-satellite-ingest` | Sentinel Hub Process API → true-color imagery for 30 rotating locations |
 | `art-palette-extract` | Color quantization + Bedrock mood descriptions |
 | `art-critic` | ML commentary scoring on generated artworks |
